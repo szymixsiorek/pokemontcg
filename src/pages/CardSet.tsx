@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSetById, getUserCollection } from "@/lib/api";
@@ -16,9 +17,10 @@ const CardSet = () => {
   const { language, t } = useLanguage();
   const { region } = useRegion();
   const { user } = useAuth();
+  const [logoError, setLogoError] = useState(false);
   
   const { data: set, isLoading: isLoadingSet } = useQuery({
-    queryKey: ['cardSet', setId],
+    queryKey: ['cardSet', setId, region],
     queryFn: () => getCardSetById(setId || ''),
     enabled: !!setId
   });
@@ -30,6 +32,10 @@ const CardSet = () => {
   });
   
   const isLoading = isLoadingSet || (!!user && isLoadingCollection);
+  
+  const handleLogoError = () => {
+    setLogoError(true);
+  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -62,11 +68,20 @@ const CardSet = () => {
                   {t("series")}: {set.series}
                 </p>
               </div>
-              <img 
-                src={set.logo} 
-                alt={language === "en" ? set.name : set.nameJp}
-                className="h-16 object-contain mx-auto md:mx-0" 
-              />
+              <div className="h-16 flex items-center justify-center md:justify-end">
+                {!logoError ? (
+                  <img 
+                    src={set.logo} 
+                    alt={language === "en" ? set.name : set.nameJp}
+                    className="max-h-full object-contain"
+                    onError={handleLogoError}
+                  />
+                ) : (
+                  <div className="text-muted-foreground text-sm">
+                    {t("logo_not_available")}
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -98,3 +113,4 @@ const CardSet = () => {
 };
 
 export default CardSet;
+

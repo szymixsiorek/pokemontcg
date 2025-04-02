@@ -1,4 +1,3 @@
-
 interface Translations {
   [key: string]: {
     [key: string]: string;
@@ -84,8 +83,9 @@ const translations: Translations = {
     "error": "An error occurred.",
     "try_again": "Try Again",
     "language": "Language",
+    "logo_not_available": "Logo not available",
   },
-  ja: {
+  jp: {
     // ナビゲーション
     "home": "ホーム",
     "sets": "カードセット",
@@ -163,6 +163,7 @@ const translations: Translations = {
     "error": "エラーが発生しました。",
     "try_again": "再試行",
     "language": "言語",
+    "logo_not_available": "ロゴが利用できません",
   }
 };
 

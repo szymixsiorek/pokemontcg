@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import type { CardSet } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 interface SetCardProps {
   set: CardSet;
@@ -12,23 +13,42 @@ interface SetCardProps {
 
 const SetCard = ({ set }: SetCardProps) => {
   const { language, t } = useLanguage();
-  
+  const [logoError, setLogoError] = useState(false);
+
+  const handleLogoError = () => {
+    setLogoError(true);
+  };
+
   return (
     <Card className="overflow-hidden card-hover">
       <CardContent className="p-4 space-y-4">
-        <div className="flex justify-center">
-          <img 
-            src={set.logo} 
-            alt={language === "en" ? set.name : set.nameJp} 
-            className="h-24 object-contain"
-          />
+        <div className="flex justify-center h-24 items-center">
+          {!logoError ? (
+            <img 
+              src={set.logo} 
+              alt={language === "en" ? set.name : set.nameJp} 
+              className="max-h-full object-contain"
+              onError={handleLogoError}
+            />
+          ) : (
+            <div className="text-muted-foreground text-sm text-center">
+              {t("logo_not_available")}
+            </div>
+          )}
         </div>
         <div className="text-center">
           <h3 className="font-medium text-lg">
             {language === "en" ? set.name : set.nameJp}
           </h3>
           <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-            <img src={set.symbol} alt="Set Symbol" className="w-4 h-4" />
+            <img 
+              src={set.symbol} 
+              alt="Set Symbol" 
+              className="w-4 h-4 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
             <span>{set.cardCount} {t("cards_in_set")}</span>
           </div>
           <p className="text-sm mt-1 text-muted-foreground">
@@ -53,3 +73,4 @@ const SetCard = ({ set }: SetCardProps) => {
 };
 
 export default SetCard;
+
