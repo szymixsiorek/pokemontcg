@@ -7,16 +7,18 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegion } from "@/context/RegionContext";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft } from "lucide-react";
 
 const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
   const { language, t } = useLanguage();
+  const { region } = useRegion();
   const { user } = useAuth();
   
   const { data: set, isLoading: isLoadingSet } = useQuery({
-    queryKey: ['cardSet', setId],
+    queryKey: ['cardSet', setId, region],
     queryFn: () => getCardSetById(setId || ''),
     enabled: !!setId
   });
@@ -55,6 +57,9 @@ const CardSet = () => {
                 </h1>
                 <p className="text-muted-foreground">
                   {set.cardCount} {t("cards_in_set")} • {t("release_date")}: {set.releaseDate}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t("series")}: {set.series}
                 </p>
               </div>
               <img 

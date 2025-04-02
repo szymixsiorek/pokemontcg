@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import type { CardSet } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
 
 interface SetCardProps {
   set: CardSet;
@@ -33,6 +34,11 @@ const SetCard = ({ set }: SetCardProps) => {
           <p className="text-sm mt-1 text-muted-foreground">
             {t("release_date")}: {set.releaseDate}
           </p>
+          <div className="mt-2">
+            <Badge variant="outline" className="text-xs">
+              {set.region === "jp" ? t("japanese_sets") : t("english_sets")}
+            </Badge>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-center">

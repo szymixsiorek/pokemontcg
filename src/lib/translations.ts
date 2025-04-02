@@ -30,6 +30,13 @@ const translations: Translations = {
     "release_date": "Release Date",
     "view_set": "View Set",
     "search_sets": "Search sets...",
+    "no_sets_found": "No sets found for your search",
+    "clear_search": "Clear Search",
+    "japanese_sets": "Japanese Sets",
+    "english_sets": "English Sets",
+    "back_to_sets": "Back to Sets",
+    "set_not_found": "Set not found",
+    "series": "Series",
 
     // Card Details
     "card_number": "Card Number",
@@ -55,6 +62,11 @@ const translations: Translations = {
     "remove_card": "Remove Card",
     "filter_collection": "Filter Collection",
     "sort_by": "Sort By",
+    "cards_collected": "Cards Collected",
+    "no_matching_cards": "No matching cards found",
+    "no_cards_in_collection": "No cards in your collection",
+    "browse_sets": "Browse Sets",
+    "search_cards": "Search cards...",
     
     // Themes
     "theme_original": "Original Series",
@@ -97,6 +109,13 @@ const translations: Translations = {
     "release_date": "発売日",
     "view_set": "セットを見る",
     "search_sets": "セットを検索...",
+    "no_sets_found": "検索に一致するセットがありません",
+    "clear_search": "検索をクリア",
+    "japanese_sets": "日本語版セット",
+    "english_sets": "英語版セット",
+    "back_to_sets": "セット一覧に戻る",
+    "set_not_found": "セットが見つかりません",
+    "series": "シリーズ",
 
     // カード詳細
     "card_number": "カード番号",
@@ -122,6 +141,11 @@ const translations: Translations = {
     "remove_card": "カードを削除",
     "filter_collection": "コレクションをフィルター",
     "sort_by": "並び替え",
+    "cards_collected": "収集したカード",
+    "no_matching_cards": "一致するカードがありません",
+    "no_cards_in_collection": "コレクションにカードがありません",
+    "browse_sets": "セットを閲覧",
+    "search_cards": "カードを検索...",
     
     // テーマ
     "theme_original": "初代",

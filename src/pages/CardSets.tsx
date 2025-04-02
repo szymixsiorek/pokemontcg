@@ -1,35 +1,53 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCardSets } from "@/lib/api";
+import { getCardSetsBySeries } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegion } from "@/context/RegionContext";
 import SetCard from "@/components/SetCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import RegionSelector from "@/components/RegionSelector";
 import { Search } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const CardSets = () => {
   const { t } = useLanguage();
+  const { region } = useRegion();
   const [searchQuery, setSearchQuery] = useState("");
   
-  const { data: sets, isLoading, error } = useQuery({
-    queryKey: ['cardSets'],
-    queryFn: getCardSets
+  const { data: setsBySeries, isLoading, error } = useQuery({
+    queryKey: ['cardSetsBySeries', region],
+    queryFn: () => getCardSetsBySeries(region)
   });
+
+  // Filter sets based on search query
+  const filteredSeries = Object.entries(setsBySeries || {}).reduce((acc, [series, sets]) => {
+    const filteredSets = sets.filter(set => 
+      set.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      set.nameJp.includes(searchQuery)
+    );
+    
+    if (filteredSets.length > 0) {
+      acc[series] = filteredSets;
+    }
+    
+    return acc;
+  }, {} as Record<string, typeof setsBySeries[string]>);
   
-  const filteredSets = sets?.filter(set => 
-    set.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    set.nameJp.includes(searchQuery)
-  ) || [];
+  const hasResults = Object.keys(filteredSeries || {}).length > 0;
   
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold mb-6">{t("all_sets")}</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <h1 className="text-3xl font-bold">{t("all_sets")}</h1>
+          <RegionSelector />
+        </div>
         
         {/* Search bar */}
         <div className="relative max-w-md mb-8">
@@ -55,7 +73,7 @@ const CardSets = () => {
               {t("try_again")}
             </Button>
           </div>
-        ) : filteredSets.length === 0 ? (
+        ) : !hasResults ? (
           <div className="text-center py-12">
             <p className="mb-4">{t("no_sets_found")}</p>
             <Button onClick={() => setSearchQuery("")}>
@@ -63,11 +81,26 @@ const CardSets = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredSets.map((set) => (
-              <SetCard key={set.id} set={set} />
+          <Accordion
+            type="multiple"
+            defaultValue={Object.keys(filteredSeries || {})}
+            className="space-y-6"
+          >
+            {Object.entries(filteredSeries || {}).map(([series, sets]) => (
+              <AccordionItem key={series} value={series} className="border-b-0">
+                <AccordionTrigger className="text-xl font-semibold hover:no-underline py-2">
+                  {series}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {sets.map((set) => (
+                      <SetCard key={set.id} set={set} />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         )}
       </main>
       

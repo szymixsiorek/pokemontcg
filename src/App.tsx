@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { RegionProvider } from "@/context/RegionContext";
 import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -23,22 +24,24 @@ const App = () => (
     <TooltipProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <AuthProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/sign-in" element={<SignIn />} />
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/sets" element={<CardSets />} />
-                <Route path="/sets/:setId" element={<CardSet />} />
-                <Route path="/my-collection" element={<MyCollection />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </AuthProvider>
+          <RegionProvider>
+            <AuthProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/sign-in" element={<SignIn />} />
+                  <Route path="/sign-up" element={<SignUp />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/sets" element={<CardSets />} />
+                  <Route path="/sets/:setId" element={<CardSet />} />
+                  <Route path="/my-collection" element={<MyCollection />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </AuthProvider>
+          </RegionProvider>
         </LanguageProvider>
       </ThemeProvider>
     </TooltipProvider>
