@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,15 +53,36 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				pokemon: {
+					red: '#E53935',
+					blue: '#1E88E5',
+					yellow: '#FDD835',
+					green: '#43A047',
+					purple: '#8E24AA',
+					brown: '#6D4C41',
+					black: '#212121',
+					white: '#FAFAFA',
+				},
+				series: {
+					original: '#E53935',
+					gold: '#FFD700',
+					crystal: '#4FC3F7',
+					ruby: '#B71C1C',
+					sapphire: '#0D47A1',
+					emerald: '#2E7D32',
+					diamond: '#90A4AE',
+					pearl: '#FFECB3',
+					platinum: '#757575',
+					heartgold: '#FFC107',
+					soulsilver: '#B0BEC5',
+					black: '#212121',
+					white: '#FAFAFA',
+					xy: '#FF4081',
+					sunmoon: '#FF9800',
+					sword: '#2196F3',
+					shield: '#F44336',
+					scarlet: '#F44336',
+					violet: '#9C27B0',
 				}
 			},
 			borderRadius: {
@@ -84,11 +106,20 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'float': 'float 3s ease-in-out infinite'
+			},
+			fontFamily: {
+				sans: ['Nunito Sans', 'sans-serif'],
+				heading: ['"Pokemon Solid"', 'sans-serif'],
 			}
 		}
 	},
