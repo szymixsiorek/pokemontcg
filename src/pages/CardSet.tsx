@@ -18,7 +18,7 @@ const CardSet = () => {
   const { user } = useAuth();
   
   const { data: set, isLoading: isLoadingSet } = useQuery({
-    queryKey: ['cardSet', setId, region],
+    queryKey: ['cardSet', setId],
     queryFn: () => getCardSetById(setId || ''),
     enabled: !!setId
   });

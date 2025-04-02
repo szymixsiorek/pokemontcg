@@ -9,15 +9,17 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useRegion } from "@/context/RegionContext";
 import { ChevronRight } from "lucide-react";
 
 const Index = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { region } = useRegion();
   
   const { data: sets, isLoading } = useQuery({
-    queryKey: ['cardSets'],
-    queryFn: getCardSets
+    queryKey: ['cardSets', region],
+    queryFn: () => getCardSets(region)
   });
   
   const latestSets = sets?.slice(0, 3) || [];
