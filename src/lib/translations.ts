@@ -49,7 +49,6 @@ const translations: Translations = {
     "reset_link_sent": "Password reset link sent!",
 
     // Collection
-    "my_collection": "My Collection",
     "your_cards": "Your Cards",
     "collected": "Collected",
     "add_card": "Add Card",
@@ -117,7 +116,6 @@ const translations: Translations = {
     "reset_link_sent": "パスワードリセットリンクを送信しました！",
 
     // コレクション
-    "my_collection": "マイコレクション",
     "your_cards": "あなたのカード",
     "collected": "収集済み",
     "add_card": "カードを追加",
