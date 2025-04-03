@@ -2,33 +2,23 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import translations from "@/lib/translations";
 
-type Language = "en" | "ja";
-
 interface LanguageContextType {
-  language: Language;
-  setLanguage: (language: Language) => void;
   t: (key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [language, setLanguage] = useState<Language>(() => {
-    const savedLanguage = localStorage.getItem("pokemon-language");
-    return (savedLanguage as Language) || "en";
-  });
-
   useEffect(() => {
-    localStorage.setItem("pokemon-language", language);
-    document.documentElement.lang = language;
-  }, [language]);
+    document.documentElement.lang = "en";
+  }, []);
 
   const t = (key: string): string => {
-    return translations[language]?.[key] || key;
+    return translations[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ t }}>
       {children}
     </LanguageContext.Provider>
   );

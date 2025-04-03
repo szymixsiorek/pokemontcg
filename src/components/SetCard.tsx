@@ -6,18 +6,22 @@ import { useLanguage } from "@/context/LanguageContext";
 import type { CardSet } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface SetCardProps {
   set: CardSet;
 }
 
 const SetCard = ({ set }: SetCardProps) => {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const { getSeriesColors } = useTheme();
   const [logoError, setLogoError] = useState(false);
 
   const handleLogoError = () => {
     setLogoError(true);
   };
+
+  const { primary, secondary } = getSeriesColors(set.series);
 
   return (
     <Card className="overflow-hidden card-hover">
@@ -26,7 +30,7 @@ const SetCard = ({ set }: SetCardProps) => {
           {!logoError ? (
             <img 
               src={set.logo} 
-              alt={language === "en" ? set.name : set.nameJp} 
+              alt={set.name} 
               className="max-h-full object-contain"
               onError={handleLogoError}
             />
@@ -38,7 +42,7 @@ const SetCard = ({ set }: SetCardProps) => {
         </div>
         <div className="text-center">
           <h3 className="font-medium text-lg">
-            {language === "en" ? set.name : set.nameJp}
+            {set.name}
           </h3>
           <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
             <img 
@@ -55,8 +59,15 @@ const SetCard = ({ set }: SetCardProps) => {
             {t("release_date")}: {set.releaseDate}
           </p>
           <div className="mt-2">
-            <Badge variant="outline" className="text-xs">
-              {set.region === "jp" ? t("japanese_sets") : t("english_sets")}
+            <Badge 
+              variant="outline" 
+              className="text-xs"
+              style={{
+                borderColor: primary,
+                color: secondary
+              }}
+            >
+              {set.series}
             </Badge>
           </div>
         </div>
@@ -73,4 +84,3 @@ const SetCard = ({ set }: SetCardProps) => {
 };
 
 export default SetCard;
-

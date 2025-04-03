@@ -1,5 +1,19 @@
-// This is a mock API service for Pokemon TCG data
-// This would be replaced with actual API calls to a backend service
+
+// Pokemon TCG API service
+// Documentation: https://docs.pokemontcg.io/
+
+import { toast } from "sonner";
+
+// API key for Pokemon TCG API
+const API_KEY = "783dd1e4-d581-4f0a-9ed0-9112094116a4";
+
+// Base URL for the API
+const BASE_URL = "https://api.pokemontcg.io/v2";
+
+// Headers for API requests
+const headers = {
+  "X-Api-Key": API_KEY,
+};
 
 export interface Pokemon {
   id: string;
@@ -8,261 +22,178 @@ export interface Pokemon {
   number: string;
   rarity: string;
   type: string;
+  prices?: {
+    normal?: { low: number; mid: number; high: number; market: number; directLow: number };
+    holofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
+    reverseHolofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
+  };
+  tcgplayer?: {
+    url: string;
+    updatedAt: string;
+    prices: {
+      normal?: { low: number; mid: number; high: number; market: number; directLow: number };
+      holofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
+      reverseHolofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
+    };
+  };
 }
 
 export interface CardSet {
   id: string;
   name: string;
-  nameJp: string;
   logo: string;
   symbol: string;
   releaseDate: string;
   cardCount: number;
   cards: Pokemon[];
-  region: "jp" | "en";
   series: string;
+  images: {
+    symbol: string;
+    logo: string;
+  };
 }
 
-// Mock data for card sets
-const jpCardSets: CardSet[] = [
-  {
-    id: "jp-sv1",
-    name: "Scarlet & Violet",
-    nameJp: "スカーレット&バイオレット",
-    logo: "https://jp.pokellector.com/sets/SV1-Violet-71",
-    symbol: "https://jp.pokellector.com/images/sets/Japanese/SV1.png",
-    releaseDate: "2023-01-20",
-    cardCount: 198,
-    region: "jp",
-    series: "Scarlet & Violet",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `jp-sv1-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/sv1/${i + 1}.png`,
-      number: `${i + 1}/198`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "jp-swsh12",
-    name: "VSTAR Universe",
-    nameJp: "VSTARユニバース",
-    logo: "https://jp.pokellector.com/sets/VSTAR-Universe-60",
-    symbol: "https://jp.pokellector.com/images/sets/Japanese/VSTAR.png",
-    releaseDate: "2022-12-02",
-    cardCount: 165,
-    region: "jp",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `jp-swsh12-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh12/${i + 1}.png`,
-      number: `${i + 1}/165`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "jp-swsh11",
-    name: "VMAX Climax",
-    nameJp: "VMAXクライマックス",
-    logo: "https://jp.pokellector.com/sets/VMAX-Climax-57",
-    symbol: "https://jp.pokellector.com/images/sets/Japanese/VMAX-Climax.png", 
-    releaseDate: "2021-12-03",
-    cardCount: 184,
-    region: "jp",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `jp-swsh11-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh11/${i + 1}.png`,
-      number: `${i + 1}/184`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "jp-s8b",
-    name: "Blue Sky Stream",
-    nameJp: "蒼空ストリーム",
-    logo: "https://jp.pokellector.com/sets/S8b-Blue-Sky-Stream-54",
-    symbol: "https://jp.pokellector.com/images/sets/Japanese/S8b.png",
-    releaseDate: "2021-07-09",
-    cardCount: 76,
-    region: "jp",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `jp-s8b-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/s8b/${i + 1}.png`,
-      number: `${i + 1}/76`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "jp-sm12a",
-    name: "Tag All Stars",
-    nameJp: "タッグオールスターズ",
-    logo: "https://jp.pokellector.com/sets/TAG-TEAM-All-Stars-43",
-    symbol: "https://jp.pokellector.com/images/sets/Japanese/TAG-TEAM-All-Stars.png",
-    releaseDate: "2019-10-04",
-    cardCount: 173,
-    region: "jp",
-    series: "Sun & Moon",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `jp-sm12a-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/sm12a/${i + 1}.png`,
-      number: `${i + 1}/173`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-];
+// Fetch all sets from the API
+export const getCardSets = async (): Promise<CardSet[]> => {
+  try {
+    // Simulate API delay for development
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const response = await fetch(`${BASE_URL}/sets`, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform API data to match our CardSet interface
+    return data.data.map((set: any) => ({
+      id: set.id,
+      name: set.name,
+      logo: set.images.logo,
+      symbol: set.images.symbol,
+      releaseDate: set.releaseDate,
+      cardCount: set.printedTotal || set.total,
+      cards: [], // Cards will be loaded separately when needed
+      series: set.series,
+      images: {
+        symbol: set.images.symbol,
+        logo: set.images.logo,
+      }
+    }));
+  } catch (error) {
+    console.error("Error fetching card sets:", error);
+    toast.error("Failed to load card sets");
+    return [];
+  }
+};
 
-const enCardSets: CardSet[] = [
-  {
-    id: "sv01",
-    name: "Scarlet & Violet",
-    nameJp: "スカーレット&バイオレット",
-    logo: "https://www.pokellector.com/sets/SV1-Scarlet-Violet",
-    symbol: "https://www.pokellector.com/images/sets/SV1.png",
-    releaseDate: "2023-03-31",
-    cardCount: 258,
-    region: "en",
-    series: "Scarlet & Violet",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-sv1-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/sv1/${i + 1}.png`,
-      number: `${i + 1}/258`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "swsh12",
-    name: "Silver Tempest",
-    nameJp: "シルバーテンペスト",
-    logo: "https://www.pokellector.com/sets/SIT-Silver-Tempest",
-    symbol: "https://www.pokellector.com/images/sets/SIT.png",
-    releaseDate: "2022-11-11",
-    cardCount: 195,
-    region: "en",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-swsh12-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh12/${i + 1}.png`,
-      number: `${i + 1}/195`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "swsh11",
-    name: "Lost Origin",
-    nameJp: "ロストアビス",
-    logo: "https://www.pokellector.com/sets/LOR-Lost-Origin",
-    symbol: "https://www.pokellector.com/images/sets/LOR.png",
-    releaseDate: "2022-09-09",
-    cardCount: 196,
-    region: "en",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-swsh11-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh11/${i + 1}.png`,
-      number: `${i + 1}/196`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "swsh10",
-    name: "Astral Radiance",
-    nameJp: "アストラルレイズ",
-    logo: "https://www.pokellector.com/sets/ASR-Astral-Radiance",
-    symbol: "https://www.pokellector.com/images/sets/ASR.png",
-    releaseDate: "2022-05-27",
-    cardCount: 189,
-    region: "en",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-swsh10-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh10/${i + 1}.png`,
-      number: `${i + 1}/189`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "swsh9",
-    name: "Brilliant Stars",
-    nameJp: "ブリリアントスターズ",
-    logo: "https://www.pokellector.com/sets/BRS-Brilliant-Stars",
-    symbol: "https://www.pokellector.com/images/sets/BRS.png",
-    releaseDate: "2022-02-25",
-    cardCount: 172,
-    region: "en",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-swsh9-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh9/${i + 1}.png`,
-      number: `${i + 1}/172`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-  {
-    id: "swsh8",
-    name: "Fusion Strike",
-    nameJp: "フュージョンアーツ",
-    logo: "https://www.pokellector.com/sets/FST-Fusion-Strike",
-    symbol: "https://www.pokellector.com/images/sets/FST.png",
-    releaseDate: "2021-11-12",
-    cardCount: 264,
-    region: "en",
-    series: "Sword & Shield",
-    cards: Array.from({ length: 12 }, (_, i) => ({
-      id: `en-swsh8-${i + 1}`,
-      name: `Pokemon ${i + 1}`,
-      image: `https://images.pokemontcg.io/swsh8/${i + 1}.png`,
-      number: `${i + 1}/264`,
-      rarity: ["Common", "Uncommon", "Rare", "Ultra Rare"][Math.floor(Math.random() * 4)],
-      type: ["Fire", "Water", "Grass", "Electric", "Psychic"][Math.floor(Math.random() * 5)]
-    }))
-  },
-];
-
-// Get all card sets
-export const getCardSets = async (region: "jp" | "en" = "jp"): Promise<CardSet[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  return region === "jp" ? jpCardSets : enCardSets;
+// Get sets grouped by series
+export const getCardSetsBySeries = async (): Promise<Record<string, CardSet[]>> => {
+  try {
+    const sets = await getCardSets();
+    
+    return sets.reduce((acc, set) => {
+      if (!acc[set.series]) {
+        acc[set.series] = [];
+      }
+      acc[set.series].push(set);
+      return acc;
+    }, {} as Record<string, CardSet[]>);
+  } catch (error) {
+    console.error("Error fetching sets by series:", error);
+    toast.error("Failed to load card sets");
+    return {};
+  }
 };
 
 // Get a specific card set by ID
 export const getCardSetById = async (id: string): Promise<CardSet | undefined> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  return [...jpCardSets, ...enCardSets].find(set => set.id === id);
+  try {
+    // First fetch the set information
+    const response = await fetch(`${BASE_URL}/sets/${id}`, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const setData = await response.json();
+    const set = setData.data;
+    
+    // Then fetch all cards in this set
+    const cardsResponse = await fetch(
+      `${BASE_URL}/cards?q=set.id:${id}`,
+      { headers }
+    );
+    
+    if (!cardsResponse.ok) {
+      throw new Error(`Cards API request failed with status ${cardsResponse.status}`);
+    }
+    
+    const cardsData = await cardsResponse.json();
+    
+    // Transform card data to match our Pokemon interface
+    const cards = cardsData.data.map((card: any) => ({
+      id: card.id,
+      name: card.name,
+      image: card.images.small,
+      number: card.number,
+      rarity: card.rarity || "Unknown",
+      type: card.types ? card.types[0] : "Unknown",
+      tcgplayer: card.tcgplayer,
+      prices: card.tcgplayer?.prices
+    }));
+    
+    // Return the complete set with cards
+    return {
+      id: set.id,
+      name: set.name,
+      logo: set.images.logo,
+      symbol: set.images.symbol,
+      releaseDate: set.releaseDate,
+      cardCount: set.printedTotal || set.total,
+      cards: cards,
+      series: set.series,
+      images: {
+        symbol: set.images.symbol,
+        logo: set.images.logo,
+      }
+    };
+  } catch (error) {
+    console.error(`Error fetching set ${id}:`, error);
+    toast.error("Failed to load card set");
+    return undefined;
+  }
 };
 
-// Get sets grouped by series
-export const getCardSetsBySeries = async (region: "jp" | "en" = "jp"): Promise<Record<string, CardSet[]>> => {
-  const sets = region === "jp" ? jpCardSets : enCardSets;
-  return sets.reduce((acc, set) => {
-    if (!acc[set.series]) {
-      acc[set.series] = [];
+// Get detailed card information
+export const getCardById = async (id: string): Promise<Pokemon | undefined> => {
+  try {
+    const response = await fetch(`${BASE_URL}/cards/${id}`, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
     }
-    acc[set.series].push(set);
-    return acc;
-  }, {} as Record<string, CardSet[]>);
+    
+    const data = await response.json();
+    const card = data.data;
+    
+    return {
+      id: card.id,
+      name: card.name,
+      image: card.images.small,
+      number: card.number,
+      rarity: card.rarity || "Unknown",
+      type: card.types ? card.types[0] : "Unknown",
+      tcgplayer: card.tcgplayer,
+      prices: card.tcgplayer?.prices
+    };
+  } catch (error) {
+    console.error(`Error fetching card ${id}:`, error);
+    toast.error("Failed to load card details");
+    return undefined;
+  }
 };
 
 // Mock user collection service

@@ -5,9 +5,17 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, DollarSign, ExternalLink } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface PokemonCardProps {
   card: Pokemon;
@@ -60,6 +68,32 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
       setIsLoading(false);
     }
   };
+
+  // Format price with dollar sign
+  const formatPrice = (price?: number) => {
+    if (price === undefined || price === null) return "N/A";
+    return `$${price.toFixed(2)}`;
+  };
+  
+  // Get price data from the card
+  const getPriceData = () => {
+    if (!card.tcgplayer?.prices) return null;
+    
+    // Find the first available price data
+    const priceTypes = ["normal", "holofoil", "reverseHolofoil"];
+    for (const type of priceTypes) {
+      const priceData = card.tcgplayer.prices[type as keyof typeof card.tcgplayer.prices];
+      if (priceData) {
+        return {
+          type,
+          ...priceData
+        };
+      }
+    }
+    return null;
+  };
+
+  const priceData = getPriceData();
   
   return (
     <Card className="overflow-hidden card-hover">
@@ -71,21 +105,87 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
             className="rounded-md w-full object-contain"
           />
           
-          {user && (
-            <Button
-              size="icon"
-              variant={isInCollection ? "destructive" : "default"}
-              className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={handleToggleCollection}
-              disabled={isLoading}
-            >
-              {isInCollection ? (
-                <Minus className="h-4 w-4" />
-              ) : (
-                <Plus className="h-4 w-4" />
-              )}
-            </Button>
-          )}
+          <div className="absolute bottom-2 right-2 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {user && (
+              <Button
+                size="icon"
+                variant={isInCollection ? "destructive" : "default"}
+                onClick={handleToggleCollection}
+                disabled={isLoading}
+              >
+                {isInCollection ? (
+                  <Minus className="h-4 w-4" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+            
+            {card.tcgplayer && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="outline">
+                    <DollarSign className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{card.name}</DialogTitle>
+                    <DialogDescription>
+                      {card.number} • {card.rarity}
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-center">
+                      <img 
+                        src={card.image} 
+                        alt={card.name} 
+                        className="h-48 object-contain" 
+                      />
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">{t("price_information")}</h3>
+                      {priceData ? (
+                        <div className="space-y-1">
+                          <div className="grid grid-cols-2 gap-2">
+                            <span className="text-muted-foreground">{t("market_price")}:</span>
+                            <span className="font-semibold">{formatPrice(priceData.market)}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <span className="text-muted-foreground">{t("low_price")}:</span>
+                            <span>{formatPrice(priceData.low)}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <span className="text-muted-foreground">{t("mid_price")}:</span>
+                            <span>{formatPrice(priceData.mid)}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <span className="text-muted-foreground">{t("high_price")}:</span>
+                            <span>{formatPrice(priceData.high)}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-sm">{t("no_price_data")}</p>
+                      )}
+                      
+                      {card.tcgplayer.url && (
+                        <Button 
+                          className="mt-4 w-full" 
+                          variant="outline" 
+                          onClick={() => window.open(card.tcgplayer.url, "_blank")}
+                        >
+                          {t("buy_on_tcgplayer")}
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </div>
         
         <div className="text-center">

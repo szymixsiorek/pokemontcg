@@ -57,7 +57,7 @@
   /* Theme styles */
   .theme-original {
     --primary: 0 72.2% 50.6%;
-    --secondary: 240 5.9% 10%;
+    --secondary: 210 100% 50.6%;
   }
 
   .theme-gold-silver {
@@ -81,23 +81,31 @@
   }
 
   .theme-xy {
-    --primary: 330 100% 50%;
-    --secondary: 240 100% 50%;
+    --primary: 205 100% 33%;
+    --secondary: 358 79% 43%;
   }
 
   .theme-sun-moon {
     --primary: 35 100% 50%;
-    --secondary: 260 100% 50%;
+    --secondary: 210 55% 56%;
   }
 
   .theme-sword-shield {
-    --primary: 210 100% 50%;
-    --secondary: 0 100% 50%;
+    --primary: 200 100% 45%;
+    --secondary: 342 100% 37%;
   }
 
   .theme-scarlet-violet {
-    --primary: 0 84.2% 60.2%;
-    --secondary: 280 100% 50%;
+    --primary: 353 94% 43%;
+    --secondary: 267 62% 46%;
+  }
+
+  /* Custom Pokémon font styling */
+  .font-heading {
+    font-family: 'Pokemon Solid', sans-serif;
+    color: #3B4CCA; /* Pokémon blue */
+    -webkit-text-stroke: 2px #FFCB05; /* Pokémon yellow outline */
+    letter-spacing: 2px;
   }
 }
 

@@ -8,19 +8,19 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRegion } from "@/context/RegionContext";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
-  const { language, t } = useLanguage();
-  const { region } = useRegion();
+  const { t } = useLanguage();
   const { user } = useAuth();
+  const { getSeriesColors } = useTheme();
   const [logoError, setLogoError] = useState(false);
   
   const { data: set, isLoading: isLoadingSet } = useQuery({
-    queryKey: ['cardSet', setId, region],
+    queryKey: ['cardSet', setId],
     queryFn: () => getCardSetById(setId || ''),
     enabled: !!setId
   });
@@ -36,6 +36,9 @@ const CardSet = () => {
   const handleLogoError = () => {
     setLogoError(true);
   };
+
+  // Get series colors if set is available
+  const seriesColors = set ? getSeriesColors(set.series) : { primary: "", secondary: "" };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -59,20 +62,20 @@ const CardSet = () => {
             <div className="mb-8 text-center md:text-left md:flex md:items-center md:justify-between">
               <div className="mb-4 md:mb-0">
                 <h1 className="text-3xl font-bold">
-                  {language === "en" ? set.name : set.nameJp}
+                  {set.name}
                 </h1>
                 <p className="text-muted-foreground">
                   {set.cardCount} {t("cards_in_set")} • {t("release_date")}: {set.releaseDate}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t("series")}: {set.series}
+                  {t("series")}: <span style={{ color: seriesColors.primary }}>{set.series}</span>
                 </p>
               </div>
               <div className="h-16 flex items-center justify-center md:justify-end">
                 {!logoError ? (
                   <img 
                     src={set.logo} 
-                    alt={language === "en" ? set.name : set.nameJp}
+                    alt={set.name}
                     className="max-h-full object-contain"
                     onError={handleLogoError}
                   />
@@ -113,4 +116,3 @@ const CardSet = () => {
 };
 
 export default CardSet;
-
