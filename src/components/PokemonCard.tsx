@@ -15,7 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PokemonCardProps {
   card: Pokemon;
@@ -75,8 +77,14 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
     return `$${price.toFixed(2)}`;
   };
   
+  // Format price with Euro sign
+  const formatEuroPrice = (price?: number) => {
+    if (price === undefined || price === null) return "N/A";
+    return `€${price.toFixed(2)}`;
+  };
+  
   // Get price data from the card
-  const getPriceData = () => {
+  const getTCGPlayerPriceData = () => {
     if (!card.tcgplayer?.prices) return null;
     
     // Find the first available price data
@@ -93,7 +101,8 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
     return null;
   };
 
-  const priceData = getPriceData();
+  const tcgPlayerPriceData = getTCGPlayerPriceData();
+  const cardmarketData = card.cardmarket;
   
   return (
     <Card className="overflow-hidden card-hover">
@@ -121,14 +130,14 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
               </Button>
             )}
             
-            {card.tcgplayer && (
+            {(card.tcgplayer || card.cardmarket) && (
               <Dialog>
                 <DialogTrigger asChild>
                   <Button size="icon" variant="outline">
                     <DollarSign className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle>{card.name}</DialogTitle>
                     <DialogDescription>
@@ -145,42 +154,92 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                       />
                     </div>
                     
-                    <div>
-                      <h3 className="font-semibold mb-2">{t("price_information")}</h3>
-                      {priceData ? (
-                        <div className="space-y-1">
-                          <div className="grid grid-cols-2 gap-2">
-                            <span className="text-muted-foreground">{t("market_price")}:</span>
-                            <span className="font-semibold">{formatPrice(priceData.market)}</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <span className="text-muted-foreground">{t("low_price")}:</span>
-                            <span>{formatPrice(priceData.low)}</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <span className="text-muted-foreground">{t("mid_price")}:</span>
-                            <span>{formatPrice(priceData.mid)}</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <span className="text-muted-foreground">{t("high_price")}:</span>
-                            <span>{formatPrice(priceData.high)}</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-muted-foreground text-sm">{t("no_price_data")}</p>
-                      )}
+                    <Tabs defaultValue="tcgplayer">
+                      <TabsList className="grid grid-cols-2">
+                        <TabsTrigger value="tcgplayer">TCGPlayer</TabsTrigger>
+                        <TabsTrigger value="cardmarket">Cardmarket</TabsTrigger>
+                      </TabsList>
                       
-                      {card.tcgplayer.url && (
-                        <Button 
-                          className="mt-4 w-full" 
-                          variant="outline" 
-                          onClick={() => window.open(card.tcgplayer.url, "_blank")}
-                        >
-                          {t("buy_on_tcgplayer")}
-                          <ExternalLink className="ml-2 h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
+                      <TabsContent value="tcgplayer">
+                        {tcgPlayerPriceData ? (
+                          <div className="space-y-1">
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("market_price")}:</span>
+                              <span className="font-semibold">{formatPrice(tcgPlayerPriceData.market)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("low_price")}:</span>
+                              <span>{formatPrice(tcgPlayerPriceData.low)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("mid_price")}:</span>
+                              <span>{formatPrice(tcgPlayerPriceData.mid)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("high_price")}:</span>
+                              <span>{formatPrice(tcgPlayerPriceData.high)}</span>
+                            </div>
+                            
+                            {card.tcgplayer?.url && (
+                              <Button 
+                                className="mt-4 w-full" 
+                                variant="outline" 
+                                onClick={() => window.open(card.tcgplayer.url, "_blank")}
+                              >
+                                {t("buy_on_tcgplayer")}
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-muted-foreground text-sm p-4">{t("no_price_data")}</p>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="cardmarket">
+                        {cardmarketData?.prices ? (
+                          <div className="space-y-1">
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("trend_price")}:</span>
+                              <span className="font-semibold">{formatEuroPrice(cardmarketData.prices.trendPrice)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("avg_sell_price")}:</span>
+                              <span>{formatEuroPrice(cardmarketData.prices.averageSellPrice)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("low_price")}:</span>
+                              <span>{formatEuroPrice(cardmarketData.prices.lowPrice)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("1_day_avg")}:</span>
+                              <span>{formatEuroPrice(cardmarketData.prices.avg1)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("7_day_avg")}:</span>
+                              <span>{formatEuroPrice(cardmarketData.prices.avg7)}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground">{t("30_day_avg")}:</span>
+                              <span>{formatEuroPrice(cardmarketData.prices.avg30)}</span>
+                            </div>
+                            
+                            {cardmarketData.url && (
+                              <Button 
+                                className="mt-4 w-full" 
+                                variant="outline" 
+                                onClick={() => window.open(cardmarketData.url, "_blank")}
+                              >
+                                {t("buy_on_cardmarket")}
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-muted-foreground text-sm p-4">{t("no_price_data")}</p>
+                        )}
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </DialogContent>
               </Dialog>

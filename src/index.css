@@ -46,58 +46,42 @@
     --radius: 0.5rem;
   }
 
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 72.2% 50.6%;
+    --primary-foreground: 0 85.7% 97.3%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Theme styles */
-  .theme-original {
-    --primary: 0 72.2% 50.6%;
-    --secondary: 210 100% 50.6%;
-  }
-
-  .theme-gold-silver {
-    --primary: 43 100% 50%;
-    --secondary: 0 0% 75%;
-  }
-
-  .theme-ruby-sapphire {
-    --primary: 0 72.2% 50.6%;
-    --secondary: 210 100% 50%;
-  }
-
-  .theme-diamond-pearl {
-    --primary: 220 13% 69%;
-    --secondary: 36 100% 85%;
-  }
-
-  .theme-black-white {
-    --primary: 0 0% 13%;
-    --secondary: 0 0% 98%;
-  }
-
-  .theme-xy {
-    --primary: 205 100% 33%;
-    --secondary: 358 79% 43%;
-  }
-
-  .theme-sun-moon {
-    --primary: 35 100% 50%;
-    --secondary: 210 55% 56%;
-  }
-
-  .theme-sword-shield {
-    --primary: 200 100% 45%;
-    --secondary: 342 100% 37%;
-  }
-
-  .theme-scarlet-violet {
-    --primary: 353 94% 43%;
-    --secondary: 267 62% 46%;
   }
 
   /* Custom Pokémon font styling */
@@ -122,5 +106,11 @@
     @apply relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-white border-2 border-gray-200 
     before:content-[''] before:absolute before:w-10 before:h-1 before:bg-gray-200
     after:content-[''] after:absolute after:w-4 after:h-4 after:bg-gray-200 after:rounded-full after:border-2 after:border-white;
+  }
+  
+  .dark .pokeball-button {
+    @apply bg-gray-800 border-gray-700
+    before:bg-gray-700
+    after:bg-gray-700 after:border-gray-800;
   }
 }

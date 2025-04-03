@@ -36,6 +36,27 @@ export interface Pokemon {
       reverseHolofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
     };
   };
+  cardmarket?: {
+    url: string;
+    updatedAt: string;
+    prices: {
+      averageSellPrice: number;
+      lowPrice: number;
+      trendPrice: number;
+      germanProLow: number;
+      suggestedPrice: number;
+      reverseHoloSell: number;
+      reverseHoloLow: number;
+      reverseHoloTrend: number;
+      lowPriceExPlus: number;
+      avg1: number;
+      avg7: number;
+      avg30: number;
+      reverseHoloAvg1: number;
+      reverseHoloAvg7: number;
+      reverseHoloAvg30: number;
+    };
+  };
 }
 
 export interface CardSet {
@@ -67,8 +88,8 @@ export const getCardSets = async (): Promise<CardSet[]> => {
     
     const data = await response.json();
     
-    // Transform API data to match our CardSet interface
-    return data.data.map((set: any) => ({
+    // Transform API data to match our CardSet interface and sort by release date (newest first)
+    const sets = data.data.map((set: any) => ({
       id: set.id,
       name: set.name,
       logo: set.images.logo,
@@ -82,6 +103,11 @@ export const getCardSets = async (): Promise<CardSet[]> => {
         logo: set.images.logo,
       }
     }));
+    
+    // Sort by release date (newest first)
+    return sets.sort((a: CardSet, b: CardSet) => 
+      new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
+    );
   } catch (error) {
     console.error("Error fetching card sets:", error);
     toast.error("Failed to load card sets");
@@ -94,6 +120,7 @@ export const getCardSetsBySeries = async (): Promise<Record<string, CardSet[]>> 
   try {
     const sets = await getCardSets();
     
+    // Group by series and maintain sort order within each series
     return sets.reduce((acc, set) => {
       if (!acc[set.series]) {
         acc[set.series] = [];
@@ -105,6 +132,41 @@ export const getCardSetsBySeries = async (): Promise<Record<string, CardSet[]>> 
     console.error("Error fetching sets by series:", error);
     toast.error("Failed to load card sets");
     return {};
+  }
+};
+
+// Search cards by name
+export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
+  try {
+    if (!query.trim()) return [];
+    
+    const response = await fetch(
+      `${BASE_URL}/cards?q=name:"${query}"`, 
+      { headers }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform API data to match our Pokemon interface
+    return data.data.map((card: any) => ({
+      id: card.id,
+      name: card.name,
+      image: card.images.small,
+      number: card.number,
+      rarity: card.rarity || "Unknown",
+      type: card.types ? card.types[0] : "Unknown",
+      tcgplayer: card.tcgplayer,
+      prices: card.tcgplayer?.prices,
+      cardmarket: card.cardmarket
+    }));
+  } catch (error) {
+    console.error(`Error searching cards:`, error);
+    toast.error("Failed to search cards");
+    return [];
   }
 };
 
@@ -142,7 +204,8 @@ export const getCardSetById = async (id: string): Promise<CardSet | undefined> =
       rarity: card.rarity || "Unknown",
       type: card.types ? card.types[0] : "Unknown",
       tcgplayer: card.tcgplayer,
-      prices: card.tcgplayer?.prices
+      prices: card.tcgplayer?.prices,
+      cardmarket: card.cardmarket
     }));
     
     // Return the complete set with cards
@@ -187,7 +250,8 @@ export const getCardById = async (id: string): Promise<Pokemon | undefined> => {
       rarity: card.rarity || "Unknown",
       type: card.types ? card.types[0] : "Unknown",
       tcgplayer: card.tcgplayer,
-      prices: card.tcgplayer?.prices
+      prices: card.tcgplayer?.prices,
+      cardmarket: card.cardmarket
     };
   } catch (error) {
     console.error(`Error fetching card ${id}:`, error);
