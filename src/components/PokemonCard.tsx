@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,23 +70,19 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
     }
   };
 
-  // Format price with dollar sign
   const formatPrice = (price?: number) => {
     if (price === undefined || price === null) return "N/A";
     return `$${price.toFixed(2)}`;
   };
   
-  // Format price with Euro sign
   const formatEuroPrice = (price?: number) => {
     if (price === undefined || price === null) return "N/A";
     return `€${price.toFixed(2)}`;
   };
   
-  // Get price data from the card
   const getTCGPlayerPriceData = () => {
     if (!card.tcgplayer?.prices) return null;
     
-    // Find the first available price data
     const priceTypes = ["normal", "holofoil", "reverseHolofoil"];
     for (const type of priceTypes) {
       const priceData = card.tcgplayer.prices[type as keyof typeof card.tcgplayer.prices];
@@ -212,15 +207,15 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                               <span>{formatEuroPrice(cardmarketData.prices.lowPrice)}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
-                              <span className="text-muted-foreground">{t("1_day_avg")}:</span>
+                              <span className="text-muted-foreground">{t("one_day_avg")}:</span>
                               <span>{formatEuroPrice(cardmarketData.prices.avg1)}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
-                              <span className="text-muted-foreground">{t("7_day_avg")}:</span>
+                              <span className="text-muted-foreground">{t("seven_day_avg")}:</span>
                               <span>{formatEuroPrice(cardmarketData.prices.avg7)}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
-                              <span className="text-muted-foreground">{t("30_day_avg")}:</span>
+                              <span className="text-muted-foreground">{t("thirty_day_avg")}:</span>
                               <span>{formatEuroPrice(cardmarketData.prices.avg30)}</span>
                             </div>
                             

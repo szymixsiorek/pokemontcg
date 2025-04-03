@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -39,6 +38,23 @@ const CardSet = () => {
 
   // Get series colors if set is available
   const seriesColors = set ? getSeriesColors(set.series) : { primary: "", secondary: "" };
+  
+  // Sort cards by card number
+  const sortedCards = set?.cards 
+    ? [...set.cards].sort((a, b) => {
+        // Convert card numbers to integers for proper numerical sorting
+        const aNum = parseInt(a.number);
+        const bNum = parseInt(b.number);
+        
+        // If both are valid numbers, compare them numerically
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return aNum - bNum;
+        }
+        
+        // Otherwise, use string comparison
+        return a.number.localeCompare(b.number);
+      })
+    : [];
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -88,7 +104,7 @@ const CardSet = () => {
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {set.cards.map(card => (
+              {sortedCards.map(card => (
                 <PokemonCard 
                   key={card.id} 
                   card={card} 

@@ -30,7 +30,9 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="pokeball-button mr-2" />
             <span className="font-heading text-xl sm:text-2xl">
-              Pokémon TCG Gallery
+              <span className="text-blue-600 dark:text-blue-400">Poké</span>
+              <span className="text-yellow-500 dark:text-yellow-400">mon</span>
+              <span> TCG Gallery</span>
             </span>
           </Link>
         </div>

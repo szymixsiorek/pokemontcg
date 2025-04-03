@@ -59,7 +59,7 @@ const translations: { [key: string]: string } = {
   "enter_details_to_register": "Enter your details to create an account",
   "enter_email_for_reset": "Enter your email to reset your password",
   "back_to_sign_in": "Back to Sign In",
-  "passwords_dont_match": "Passwords don't match",
+  "passwords_do_not_match": "Passwords don't match",
   "signing_in": "Signing In...",
   "creating_account": "Creating Account...",
   "sending": "Sending...",
@@ -93,8 +93,10 @@ const translations: { [key: string]: string } = {
 
   // Cardmarket
   "trend_price": "Trend Price",
-  "avg_price": "Average Price",
-  "avg_price_30d": "30-Day Average",
+  "avg_sell_price": "Average Sell Price",
+  "one_day_avg": "1-Day Average",
+  "seven_day_avg": "7-Day Average",
+  "thirty_day_avg": "30-Day Average",
   "buy_on_cardmarket": "Buy on Cardmarket",
 
   // Footer
