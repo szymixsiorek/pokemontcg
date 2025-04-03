@@ -1,15 +1,12 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-
-interface User {
-  id: string;
-  email: string;
-  displayName: string;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<boolean>;
@@ -21,56 +18,56 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is logged in
-    const loggedInUser = localStorage.getItem("pokemon-user");
-    if (loggedInUser) {
-      try {
-        setUser(JSON.parse(loggedInUser));
-      } catch (error) {
-        console.error("Failed to parse user data", error);
-        localStorage.removeItem("pokemon-user");
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
       }
-    }
-    setIsLoading(false);
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Mock authentication functions (to be replaced with actual auth)
   const signIn = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (email && password) {
-        // Simple validation for demo
-        const mockUser: User = {
-          id: "user-" + Date.now(),
-          email,
-          displayName: email.split('@')[0]
-        };
-        setUser(mockUser);
-        localStorage.setItem("pokemon-user", JSON.stringify(mockUser));
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
-        return true;
-      } 
-      
-      toast({
-        title: "Sign in failed",
-        description: "Invalid email or password",
-        variant: "destructive",
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
-      return false;
+      
+      if (error) {
+        toast({
+          title: "Sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
+      return true;
     } catch (error) {
+      console.error("Error during sign in:", error);
       toast({
         title: "Sign in failed",
-        description: "An error occurred",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
       return false;
@@ -82,35 +79,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
       
-      if (email && password) {
-        // Simple validation for demo
-        const mockUser: User = {
-          id: "user-" + Date.now(),
-          email,
-          displayName: email.split('@')[0]
-        };
-        setUser(mockUser);
-        localStorage.setItem("pokemon-user", JSON.stringify(mockUser));
+      if (error) {
         toast({
-          title: "Account created!",
-          description: "You have successfully created an account.",
+          title: "Sign up failed",
+          description: error.message,
+          variant: "destructive",
         });
-        return true;
+        return false;
       }
       
       toast({
-        title: "Sign up failed",
-        description: "Invalid email or password",
-        variant: "destructive",
+        title: "Account created!",
+        description: "Please check your email to confirm your account.",
       });
-      return false;
+      return true;
     } catch (error) {
+      console.error("Error during sign up:", error);
       toast({
         title: "Sign up failed",
-        description: "An error occurred",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
       return false;
@@ -120,38 +112,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async (): Promise<void> => {
-    setUser(null);
-    localStorage.removeItem("pokemon-user");
-    toast({
-      title: "Signed out",
-      description: "You have successfully signed out.",
-    });
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Sign out failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have successfully signed out.",
+      });
+    }
   };
 
   const resetPassword = async (email: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
       
-      if (email) {
+      if (error) {
         toast({
-          title: "Password reset email sent",
-          description: "Check your email for further instructions.",
+          title: "Password reset failed",
+          description: error.message,
+          variant: "destructive",
         });
-        return true;
+        return false;
       }
       
       toast({
-        title: "Password reset failed",
-        description: "Invalid email",
-        variant: "destructive",
+        title: "Password reset email sent",
+        description: "Check your email for further instructions.",
       });
-      return false;
+      return true;
     } catch (error) {
+      console.error("Error during password reset:", error);
       toast({
         title: "Password reset failed",
-        description: "An error occurred",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
       return false;
@@ -161,7 +162,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, session, isLoading, signIn, signUp, signOut, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

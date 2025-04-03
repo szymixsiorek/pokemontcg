@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import ThemeSelector from "@/components/ThemeSelector";
-import LanguageSelector from "@/components/LanguageSelector";
 import {
   Sheet,
   SheetContent,
@@ -30,7 +29,7 @@ const Header = () => {
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <div className="pokeball-button mr-2" />
-            <span className="font-heading text-xl sm:text-2xl text-pokemon-red">
+            <span className="font-heading text-xl sm:text-2xl">
               Pokémon TCG Gallery
             </span>
           </Link>
@@ -51,7 +50,7 @@ const Header = () => {
           {user ? (
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">
-                {user.displayName}
+                {user.email}
               </span>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -97,7 +96,7 @@ const Header = () => {
                   <>
                     <div className="flex items-center py-2">
                       <User className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{user.displayName}</span>
+                      <span className="text-sm">{user.email}</span>
                     </div>
                     <Button
                       variant="ghost"

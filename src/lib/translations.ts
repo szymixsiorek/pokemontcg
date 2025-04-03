@@ -55,6 +55,14 @@ const translations: { [key: string]: string } = {
   "already_have_account": "Already have an account?",
   "no_account": "Don't have an account?",
   "reset_link_sent": "Password reset link sent!",
+  "enter_credentials": "Enter your credentials below",
+  "enter_details_to_register": "Enter your details to create an account",
+  "enter_email_for_reset": "Enter your email to reset your password",
+  "back_to_sign_in": "Back to Sign In",
+  "passwords_dont_match": "Passwords don't match",
+  "signing_in": "Signing In...",
+  "creating_account": "Creating Account...",
+  "sending": "Sending...",
 
   // Collection
   "your_cards": "Your Cards",
@@ -70,6 +78,9 @@ const translations: { [key: string]: string } = {
   "search_cards": "Search cards...",
   
   // Themes
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_system": "System",
   "theme_original": "Original Series",
   "theme_gold_silver": "Gold & Silver",
   "theme_ruby_sapphire": "Ruby & Sapphire",
@@ -79,6 +90,18 @@ const translations: { [key: string]: string } = {
   "theme_sun_moon": "Sun & Moon",
   "theme_sword_shield": "Sword & Shield",
   "theme_scarlet_violet": "Scarlet & Violet",
+
+  // Cardmarket
+  "trend_price": "Trend Price",
+  "avg_price": "Average Price",
+  "avg_price_30d": "30-Day Average",
+  "buy_on_cardmarket": "Buy on Cardmarket",
+
+  // Footer
+  "site_links": "Site Links",
+  "account": "Account",
+  "all_rights_reserved": "All rights reserved",
+  "fan_site_disclaimer": "This is an unofficial fan site not affiliated with Nintendo, The Pokémon Company, or Game Freak",
 
   // Misc
   "loading": "Loading...",

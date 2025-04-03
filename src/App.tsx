@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import CardSets from "./pages/CardSets";
 import CardSet from "./pages/CardSet";
 import MyCollection from "./pages/MyCollection";
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/sets" element={<CardSets />} />
                 <Route path="/sets/:setId" element={<CardSet />} />
                 <Route path="/my-collection" element={<MyCollection />} />
