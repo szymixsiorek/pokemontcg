@@ -37,7 +37,7 @@ const ResetPassword = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setPasswordError(t("passwords_dont_match"));
+      setPasswordError(t("passwords_do_not_match"));
       return;
     }
     
