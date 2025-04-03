@@ -1,5 +1,5 @@
 
-// This component is no longer needed as we're removing Japanese language support
+// This component is no longer needed as we're removing language support
 // We'll create an empty component that doesn't render anything
 import React from 'react';
 

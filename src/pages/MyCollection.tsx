@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getCardSets, getUserCollection } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRegion } from "@/context/RegionContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
@@ -16,7 +15,6 @@ import { Search } from "lucide-react";
 const MyCollection = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const { region } = useRegion();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -33,8 +31,8 @@ const MyCollection = () => {
   });
   
   const { data: allSets = [], isLoading: isLoadingSets } = useQuery({
-    queryKey: ['cardSets', region],
-    queryFn: () => getCardSets(region),
+    queryKey: ['cardSets'],
+    queryFn: () => getCardSets(),
     enabled: !!user
   });
   

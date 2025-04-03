@@ -11,7 +11,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Globe } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -31,7 +31,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="pokeball-button mr-2" />
             <span className="font-heading text-xl sm:text-2xl text-pokemon-red">
-              JP Pokémon TCG
+              Pokémon TCG Gallery
             </span>
           </Link>
         </div>
@@ -47,7 +47,6 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
-          <LanguageSelector />
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
@@ -73,7 +72,6 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center">
-          <LanguageSelector variant="icon" />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">

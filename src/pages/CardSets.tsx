@@ -5,29 +5,25 @@ import { getCardSetsBySeries } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRegion } from "@/context/RegionContext";
 import SetCard from "@/components/SetCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import RegionSelector from "@/components/RegionSelector";
 import { Search } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const CardSets = () => {
   const { t } = useLanguage();
-  const { region } = useRegion();
   const [searchQuery, setSearchQuery] = useState("");
   
   const { data: setsBySeries, isLoading, error } = useQuery({
-    queryKey: ['cardSetsBySeries', region],
-    queryFn: () => getCardSetsBySeries(region)
+    queryKey: ['cardSetsBySeries'],
+    queryFn: () => getCardSetsBySeries()
   });
 
   // Filter sets based on search query
   const filteredSeries = Object.entries(setsBySeries || {}).reduce((acc, [series, sets]) => {
     const filteredSets = sets.filter(set => 
-      set.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      set.nameJp.includes(searchQuery)
+      set.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     
     if (filteredSets.length > 0) {
@@ -46,7 +42,6 @@ const CardSets = () => {
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-3xl font-bold">{t("all_sets")}</h1>
-          <RegionSelector />
         </div>
         
         {/* Search bar */}
