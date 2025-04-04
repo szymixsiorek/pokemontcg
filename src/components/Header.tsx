@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Sun, Moon, Computer, LogOut, User, FolderOpen } from "lucide-react";
+import { Menu, Sun, Moon, Computer, LogOut, User, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
@@ -37,34 +37,32 @@ const Header = () => {
   };
 
   return (
-    <header className="border-b sticky top-0 z-40 bg-background">
-      <div className="container flex items-center justify-between py-2">
+    <header className="border-b sticky top-0 z-40 bg-background shadow-sm">
+      <div className="container flex items-center justify-between py-3">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="flex items-center">
             <div className="pokeball-button hidden md:block" />
-            <div className="ml-2 flex items-center">
-              <span className="text-xl md:text-2xl">
-                <NeonTitle text="TCG Gallery" className="text-xl md:text-2xl" />
-              </span>
+            <div className="ml-2">
+              <NeonTitle text="TCG Gallery" className="text-xl md:text-2xl" />
             </div>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm text-muted-foreground">
-          <Link to="/sets" className="hover:text-foreground transition-colors duration-200">
+        <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
+          <Link to="/sets" className="hover:text-primary transition-colors duration-200">
             {t("card_sets")}
           </Link>
           {user && (
-            <Link to="/my-collection" className="hover:text-foreground transition-colors duration-200">
+            <Link to="/my-collection" className="hover:text-primary transition-colors duration-200">
               {t("my_collection")}
             </Link>
           )}
         </nav>
 
         {/* Theme & User Menu */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <ThemeSelector />
 
           {user ? (
@@ -75,7 +73,7 @@ const Header = () => {
                   <span className="sr-only">User menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent className="w-56">
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-0.5">
                     <p className="text-sm font-medium">{user.email}</p>

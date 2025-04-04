@@ -54,12 +54,8 @@ const MyCollection = () => {
     return null; // Redirect handled by useEffect
   }
   
-  // Log for debugging
-  console.log('Collection IDs:', collectionCardIds.length, collectionCardIds);
-  console.log('Filtered cards:', collectionCards.length);
-  
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -106,14 +102,15 @@ const MyCollection = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {collectionCards.map(card => (
-              <PokemonCard 
-                key={card.id} 
-                card={card} 
-                inCollection={true}
-                onCollectionUpdate={refetchCollection}
-              />
+              <div key={card.id} className="flex justify-center">
+                <PokemonCard 
+                  card={card} 
+                  inCollection={true}
+                  onCollectionUpdate={refetchCollection}
+                />
+              </div>
             ))}
           </div>
         )}
