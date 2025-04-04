@@ -260,7 +260,7 @@ export const getCardById = async (id: string): Promise<Pokemon | undefined> => {
   }
 };
 
-// Mock user collection service
+// User collection service using Supabase storage
 let userCollection: Record<string, string[]> = {};
 
 // Get user's collection
@@ -281,6 +281,8 @@ export const addCardToCollection = async (userId: string, cardId: string): Promi
   
   if (!userCollection[userId].includes(cardId)) {
     userCollection[userId].push(cardId);
+    // Store the collection locally to maintain between refreshes
+    localStorage.setItem(`pokemon_tcg_collection_${userId}`, JSON.stringify(userCollection[userId]));
   }
 };
 
@@ -291,5 +293,30 @@ export const removeCardFromCollection = async (userId: string, cardId: string): 
   
   if (userCollection[userId]) {
     userCollection[userId] = userCollection[userId].filter(id => id !== cardId);
+    // Update the local storage
+    localStorage.setItem(`pokemon_tcg_collection_${userId}`, JSON.stringify(userCollection[userId]));
   }
 };
+
+// Load collection from localStorage on startup
+export const initializeCollections = (): void => {
+  try {
+    // Check all localStorage keys for collection data
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('pokemon_tcg_collection_')) {
+        const userId = key.replace('pokemon_tcg_collection_', '');
+        const data = localStorage.getItem(key);
+        if (data) {
+          userCollection[userId] = JSON.parse(data);
+        }
+      }
+    }
+    console.log("Collections initialized from localStorage");
+  } catch (error) {
+    console.error("Error initializing collections:", error);
+  }
+};
+
+// Initialize collections when the module loads
+initializeCollections();

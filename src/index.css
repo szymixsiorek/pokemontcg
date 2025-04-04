@@ -87,8 +87,6 @@
   /* Custom Pokémon font styling */
   .font-heading {
     font-family: 'Pokemon Solid', sans-serif;
-    color: #3B4CCA; /* Pokémon blue */
-    -webkit-text-stroke: 2px #FFCB05; /* Pokémon yellow outline */
     letter-spacing: 2px;
   }
 }
@@ -103,14 +101,70 @@
   }
 
   .pokeball-button {
-    @apply relative inline-flex items-center justify-center w-12 h-12 rounded-full bg-white border-2 border-gray-200 
-    before:content-[''] before:absolute before:w-10 before:h-1 before:bg-gray-200
-    after:content-[''] after:absolute after:w-4 after:h-4 after:bg-gray-200 after:rounded-full after:border-2 after:border-white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #f1f1f1 0%, #f1f1f1 48%, #111 48%, #111 52%, #cc0000 52%, #cc0000 100%);
+    position: relative;
+    border: 2px solid #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  
+  .pokeball-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 2px solid #333;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
   }
   
   .dark .pokeball-button {
-    @apply bg-gray-800 border-gray-700
-    before:bg-gray-700
-    after:bg-gray-700 after:border-gray-800;
+    box-shadow: 0 1px 3px rgba(255,255,255,0.2);
+    border: 2px solid #eee;
+  }
+  
+  .dark .pokeball-button::after {
+    border: 2px solid #eee;
+    box-shadow: inset 0 0 3px rgba(255,255,255,0.3);
+  }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1.5rem;
+  color: var(--destructive);
+}
+
+.error-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  margin-bottom: 1.5rem;
+  color: var(--muted-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
   }
 }

@@ -4,37 +4,43 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const Footer = () => {
   const { t } = useLanguage();
-  
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-muted py-8 px-4 sm:px-6 mt-16">
+    <footer className="bg-secondary/50 py-8 px-4 sm:px-6">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-heading text-lg mb-4">JP Pokémon TCG Gallery</h3>
-            <p className="text-muted-foreground text-sm">
-              A fan site dedicated to Japanese Pokémon Trading Card Game collectibles.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
-              {t("site_links")}
-            </h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-medium mb-4">{t("site_links")}</h3>
+            <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-foreground hover:text-primary transition-colors">
+                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("home")}
                 </Link>
               </li>
               <li>
-                <Link to="/sets" className="text-foreground hover:text-primary transition-colors">
+                <Link to="/sets" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("sets")}
                 </Link>
               </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-medium mb-4">{t("account")}</h3>
+            <ul className="space-y-2">
               <li>
-                <Link to="/my-collection" className="text-foreground hover:text-primary transition-colors">
+                <Link to="/sign-in" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t("sign_in")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/sign-up" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t("sign_up")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/my-collection" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("my_collection")}
                 </Link>
               </li>
@@ -42,32 +48,21 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
-              {t("account")}
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/sign-in" className="text-foreground hover:text-primary transition-colors">
-                  {t("sign_in")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/sign-up" className="text-foreground hover:text-primary transition-colors">
-                  {t("sign_up")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/forgot-password" className="text-foreground hover:text-primary transition-colors">
-                  {t("forgot_password")}
-                </Link>
-              </li>
-            </ul>
+            <div className="flex items-center mb-4">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg" 
+                alt="Pokeball"
+                className="h-6 w-6 mr-2" 
+              />
+              <span className="font-heading">Pokémon TCG Gallery</span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              &copy; {currentYear} {t("all_rights_reserved")}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              {t("fan_site_disclaimer")}
+            </p>
           </div>
-        </div>
-        
-        <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} JP Pokémon TCG Gallery. {t("all_rights_reserved")}</p>
-          <p className="mt-2">{t("fan_site_disclaimer")}</p>
         </div>
       </div>
     </footer>

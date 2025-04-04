@@ -9,13 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Separator } from "@/components/ui/separator";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const { signUp, isLoading } = useAuth();
+  const { signUp, signInWithGoogle, isLoading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   
@@ -23,12 +25,12 @@ const SignUp = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setPasswordError(t("passwords_dont_match"));
+      setPasswordError(t("passwords_do_not_match"));
       return;
     }
     
     setPasswordError("");
-    const success = await signUp(email, password);
+    const success = await signUp(email, password, displayName);
     if (success) {
       navigate("/");
     }
@@ -50,6 +52,17 @@ const SignUp = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="displayName">{t("display_name")}</Label>
+                <Input 
+                  id="displayName" 
+                  type="text" 
+                  placeholder="Your Name" 
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">{t("email")}</Label>
                 <Input 
@@ -90,6 +103,29 @@ const SignUp = () => {
                 disabled={isLoading}
               >
                 {isLoading ? t("creating_account") : t("sign_up")}
+              </Button>
+              
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    {t("or_continue_with")}
+                  </span>
+                </div>
+              </div>
+              
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => signInWithGoogle()}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512" className="h-4 w-4 mr-2">
+                  <path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" fill="currentColor"/>
+                </svg>
+                {t("sign_up_with_google")}
               </Button>
             </form>
           </CardContent>

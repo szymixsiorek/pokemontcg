@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CardSets from "./pages/CardSets";
 import CardSet from "./pages/CardSet";
 import MyCollection from "./pages/MyCollection";
+import AuthError from "./pages/AuthError";
 
 const queryClient = new QueryClient();
 
@@ -42,16 +43,17 @@ const App = () => (
     <TooltipProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <AuthProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+          <BrowserRouter>
+            <AuthProvider>
+              <Toaster />
+              <Sonner />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/auth-error" element={<AuthError />} />
                 <Route path="/sets" element={<CardSets />} />
                 <Route path="/sets/:setId" element={<CardSet />} />
                 <Route path="/my-collection" element={
@@ -61,8 +63,8 @@ const App = () => (
                 } />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </AuthProvider>
+            </AuthProvider>
+          </BrowserRouter>
         </LanguageProvider>
       </ThemeProvider>
     </TooltipProvider>

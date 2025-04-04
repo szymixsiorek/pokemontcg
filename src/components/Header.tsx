@@ -13,7 +13,7 @@ import {
 import { Menu, User, LogOut } from "lucide-react";
 
 const Header = () => {
-  const { user, signOut } = useAuth();
+  const { user, displayName, signOut } = useAuth();
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,7 +28,11 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="pokeball-button mr-2" />
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg" 
+              alt="Pokeball"
+              className="h-7 w-7 sm:h-8 sm:w-8" 
+            />
             <span className="font-heading text-xl sm:text-2xl">
               <span className="text-blue-600 dark:text-blue-400">Poké</span>
               <span className="text-yellow-500 dark:text-yellow-400">mon</span>
@@ -52,7 +56,7 @@ const Header = () => {
           {user ? (
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">
-                {user.email}
+                {displayName || user.email}
               </span>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -98,7 +102,7 @@ const Header = () => {
                   <>
                     <div className="flex items-center py-2">
                       <User className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{user.email}</span>
+                      <span className="text-sm">{displayName || user.email}</span>
                     </div>
                     <Button
                       variant="ghost"

@@ -3,15 +3,19 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  displayName: string;
   signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<boolean>;
+  signInWithGoogle: () => Promise<void>;
+  signUp: (email: string, password: string, name: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<boolean>;
+  updateDisplayName: (name: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,7 +24,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [displayName, setDisplayName] = useState<string>("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -28,6 +34,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Set display name from metadata
+          const userName = session.user.user_metadata?.name || "";
+          setDisplayName(userName);
+        }
       }
     );
 
@@ -35,6 +47,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Set display name from metadata
+        const userName = session.user.user_metadata?.name || "";
+        setDisplayName(userName);
+      }
+      
       setIsLoading(false);
     });
 
@@ -76,13 +95,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string): Promise<boolean> => {
+  const signInWithGoogle = async (): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
+      if (error) {
+        toast({
+          title: "Google sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error during Google sign in:", error);
+      toast({
+        title: "Google sign in failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const signUp = async (email: string, password: string, name: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          data: {
+            name: name // Store display name in user metadata
+          },
           emailRedirectTo: window.location.origin
         }
       });
@@ -127,6 +175,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Signed out",
         description: "You have successfully signed out.",
       });
+      navigate('/');
     }
   };
 
@@ -164,8 +213,51 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateDisplayName = async (name: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { name }
+      });
+      
+      if (error) {
+        toast({
+          title: "Update failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      setDisplayName(name);
+      toast({
+        title: "Profile updated",
+        description: "Your display name has been updated.",
+      });
+      return true;
+    } catch (error) {
+      console.error("Error updating display name:", error);
+      toast({
+        title: "Update failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, signIn, signUp, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      isLoading, 
+      displayName,
+      signIn, 
+      signInWithGoogle,
+      signUp, 
+      signOut, 
+      resetPassword,
+      updateDisplayName
+    }}>
       {children}
     </AuthContext.Provider>
   );

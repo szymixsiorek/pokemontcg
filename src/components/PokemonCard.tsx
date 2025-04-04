@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -96,6 +97,11 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
     return null;
   };
 
+  // Get high-resolution image URL
+  const getHighResImage = (imageUrl: string): string => {
+    return imageUrl.replace(/\.png$/, '_hires.png');
+  };
+
   const tcgPlayerPriceData = getTCGPlayerPriceData();
   const cardmarketData = card.cardmarket;
   
@@ -143,9 +149,13 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                   <div className="space-y-4">
                     <div className="flex justify-center">
                       <img 
-                        src={card.image} 
+                        src={getHighResImage(card.image)} 
                         alt={card.name} 
-                        className="h-48 object-contain" 
+                        className="h-64 object-contain" 
+                        onError={(e) => {
+                          // Fallback to standard image if high-res fails
+                          (e.target as HTMLImageElement).src = card.image;
+                        }}
                       />
                     </div>
                     

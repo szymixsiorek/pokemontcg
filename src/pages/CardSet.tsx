@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -42,12 +43,14 @@ const CardSet = () => {
   // Sort cards by card number
   const sortedCards = set?.cards 
     ? [...set.cards].sort((a, b) => {
-        // Convert card numbers to integers for proper numerical sorting
-        const aNum = parseInt(a.number);
-        const bNum = parseInt(b.number);
+        // Extract numeric parts from card numbers
+        const aMatch = a.number.match(/^(\d+)/);
+        const bMatch = b.number.match(/^(\d+)/);
         
-        // If both are valid numbers, compare them numerically
-        if (!isNaN(aNum) && !isNaN(bNum)) {
+        // If both have numeric parts, compare them as numbers
+        if (aMatch && bMatch) {
+          const aNum = parseInt(aMatch[1]);
+          const bNum = parseInt(bMatch[1]);
           return aNum - bNum;
         }
         
@@ -84,7 +87,7 @@ const CardSet = () => {
                   {set.cardCount} {t("cards_in_set")} • {t("release_date")}: {set.releaseDate}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t("series")}: <span style={{ color: seriesColors.primary }}>{set.series}</span>
+                  {t("series")}: <span className="dark:text-white text-black">{set.series}</span>
                 </p>
               </div>
               <div className="h-16 flex items-center justify-center md:justify-end">

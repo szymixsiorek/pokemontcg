@@ -9,6 +9,10 @@ const translations: { [key: string]: string } = {
   "sign_up": "Sign Up",
   "sign_out": "Sign Out",
   "forgot_password": "Forgot Password?",
+  "sign_in_with_google": "Sign in with Google",
+  "sign_up_with_google": "Sign up with Google",
+  "or_continue_with": "Or continue with",
+  "display_name": "Display Name",
 
   // Home Page
   "welcome": "Welcome to Pokemon TCG Gallery",
@@ -63,6 +67,9 @@ const translations: { [key: string]: string } = {
   "signing_in": "Signing In...",
   "creating_account": "Creating Account...",
   "sending": "Sending...",
+  "auth_error": "Authentication Error",
+  "link_expired": "Email verification link has expired",
+  "try_again_or_contact": "Please try again or contact support",
 
   // Collection
   "your_cards": "Your Cards",
