@@ -28,9 +28,9 @@ const MyCollection = () => {
     queryKey: ['collection', user?.id],
     queryFn: () => getUserCollection(user?.id || ''),
     enabled: !!user,
-    refetchOnMount: 'always',
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
-    staleTime: 1000, // Consider data stale after 1 second to ensure fresh data
+    staleTime: 0, // Always refetch to ensure fresh data
   });
   
   const { data: allSets = [], isLoading: isLoadingSets } = useQuery({

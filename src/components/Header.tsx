@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Sun, Moon, Computer, LogOut, User, CollectionItem } from "lucide-react";
+import { Menu, X, Sun, Moon, Computer, LogOut, User, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
@@ -65,7 +65,7 @@ const Header = () => {
 
         {/* Theme & User Menu */}
         <div className="flex items-center gap-2">
-          <ThemeSelector align="end" />
+          <ThemeSelector />
 
           {user ? (
             <DropdownMenu>
@@ -89,7 +89,7 @@ const Header = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/my-collection" className="cursor-pointer">
-                    <CollectionItem className="mr-2 h-4 w-4" />
+                    <FolderOpen className="mr-2 h-4 w-4" />
                     {t("my_collection")}
                   </Link>
                 </DropdownMenuItem>
