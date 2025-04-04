@@ -14,7 +14,7 @@ interface SetCardProps {
 
 const SetCard = ({ set }: SetCardProps) => {
   const { t } = useLanguage();
-  const { getSeriesColors } = useTheme();
+  const { getSeriesColors, theme } = useTheme();
   const [logoError, setLogoError] = useState(false);
 
   const handleLogoError = () => {
@@ -22,6 +22,11 @@ const SetCard = ({ set }: SetCardProps) => {
   };
 
   const { primary, secondary } = getSeriesColors(set.series);
+  
+  // Special handling for Black & White series in light mode
+  const badgeStyle = set.series === "Black & White" && theme === "light" 
+    ? { borderColor: primary, color: "#000000", backgroundColor: "#f8f8f8" }
+    : { borderColor: primary, color: secondary };
 
   return (
     <Card className="overflow-hidden card-hover">
@@ -62,10 +67,7 @@ const SetCard = ({ set }: SetCardProps) => {
             <Badge 
               variant="outline" 
               className="text-xs"
-              style={{
-                borderColor: primary,
-                color: secondary
-              }}
+              style={badgeStyle}
             >
               {set.series}
             </Badge>

@@ -55,9 +55,10 @@ const Index = () => {
         {/* Hero section with search */}
         <section className={`py-16 px-4 sm:px-6 lg:px-8 bg-primary/10`}>
           <div className="container mx-auto text-center">
-            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl mb-6" 
-                style={{ color: "#3B4CCA", WebkitTextStroke: "2px #FFCB05" }}>
-              {t("welcome")}
+            <h1 className="mb-6 font-heading text-4xl md:text-5xl lg:text-6xl">
+              <span className="neon-text neon-blue">Poké</span>
+              <span className="neon-text neon-yellow">mon</span>
+              <span className="neon-text neon-red"> TCG Gallery</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               {t("welcome_subtitle")}

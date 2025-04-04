@@ -33,10 +33,10 @@ const Header = () => {
               alt="Pokeball"
               className="h-7 w-7 sm:h-8 sm:w-8" 
             />
-            <span className="font-heading text-xl sm:text-2xl">
-              <span className="text-blue-600 dark:text-blue-400">Poké</span>
-              <span className="text-yellow-500 dark:text-yellow-400">mon</span>
-              <span> TCG Gallery</span>
+            <span className="font-heading text-xl sm:text-2xl hidden sm:inline-block">
+              <span className="neon-text neon-blue">Poké</span>
+              <span className="neon-text neon-yellow">mon</span>
+              <span className="neon-text neon-red"> TCG</span>
             </span>
           </Link>
         </div>
@@ -77,13 +77,26 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center">
+          <ThemeSelector />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="ml-2">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent>
+              <div className="flex items-center mb-6">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg" 
+                  alt="Pokeball"
+                  className="h-7 w-7 mr-2" 
+                />
+                <span className="font-heading text-xl">
+                  <span className="neon-text neon-blue">Poké</span>
+                  <span className="neon-text neon-yellow">mon</span>
+                  <span className="neon-text neon-red"> TCG</span>
+                </span>
+              </div>
               <div className="flex flex-col space-y-4 mt-8">
                 {menuItems.map((item) => (
                   <Link
@@ -95,9 +108,6 @@ const Header = () => {
                     {item.label}
                   </Link>
                 ))}
-                <div className="py-2">
-                  <ThemeSelector />
-                </div>
                 {user ? (
                   <>
                     <div className="flex items-center py-2">

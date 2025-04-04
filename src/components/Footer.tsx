@@ -54,7 +54,11 @@ const Footer = () => {
                 alt="Pokeball"
                 className="h-6 w-6 mr-2" 
               />
-              <span className="font-heading">Pokémon TCG Gallery</span>
+              <span className="font-heading">
+                <span className="neon-text neon-blue">Poké</span>
+                <span className="neon-text neon-yellow">mon</span>
+                <span className="neon-text neon-red"> TCG</span>
+              </span>
             </div>
             <p className="text-sm text-muted-foreground">
               &copy; {currentYear} {t("all_rights_reserved")}
