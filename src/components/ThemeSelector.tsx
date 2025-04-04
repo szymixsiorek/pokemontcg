@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 
 const ThemeSelector = () => {
   const { theme, setTheme } = useTheme();
@@ -19,10 +19,10 @@ const ThemeSelector = () => {
       value={theme} 
       onValueChange={(value) => setTheme(value as any)}
     >
-      <SelectTrigger className="w-[130px] h-9">
+      <SelectTrigger className="w-[120px]">
         <SelectValue placeholder={t("choose_theme")} />
       </SelectTrigger>
-      <SelectContent position="popper" align="end">
+      <SelectContent>
         <SelectItem value="light">
           <div className="flex items-center">
             <Sun className="w-4 h-4 mr-2" />
@@ -37,7 +37,10 @@ const ThemeSelector = () => {
         </SelectItem>
         <SelectItem value="system">
           <div className="flex items-center">
-            <Monitor className="w-4 h-4 mr-2" />
+            <div className="w-4 h-4 mr-2 flex">
+              <Sun className="w-2 h-4" />
+              <Moon className="w-2 h-4" />
+            </div>
             <span>{t("theme_system")}</span>
           </div>
         </SelectItem>

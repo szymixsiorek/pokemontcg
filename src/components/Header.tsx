@@ -1,182 +1,140 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, Sun, Moon, Computer, LogOut, User, FolderOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import ThemeSelector from "@/components/ThemeSelector";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
-  SheetClose,
 } from "@/components/ui/sheet";
-import NeonTitle from "./NeonTitle";
+import { Menu, User, LogOut } from "lucide-react";
 
 const Header = () => {
-  const { theme, setTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, displayName, signOut } = useAuth();
   const { t } = useLanguage();
-  const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
+  const menuItems = [
+    { label: t("home"), href: "/" },
+    { label: t("sets"), href: "/sets" },
+    ...(user ? [{ label: t("my_collection"), href: "/my-collection" }] : []),
+  ];
 
   return (
-    <header className="border-b sticky top-0 z-40 bg-background shadow-sm">
-      <div className="container flex items-center justify-between py-3">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex items-center">
-            <div className="pokeball-button hidden md:block" />
-            <div className="ml-2">
-              <NeonTitle text="TCG Gallery" className="text-xl md:text-2xl" />
-            </div>
-          </div>
-        </Link>
+    <header className="py-4 px-4 sm:px-6 border-b">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg" 
+              alt="Pokeball"
+              className="h-7 w-7 sm:h-8 sm:w-8" 
+            />
+            <span className="font-heading text-xl sm:text-2xl hidden sm:inline-block">
+              <span className="neon-text neon-blue">Poké</span>
+              <span className="neon-text neon-yellow">mon</span>
+              <span className="neon-text neon-red"> TCG</span>
+            </span>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
-          <Link to="/sets" className="hover:text-primary transition-colors duration-200">
-            {t("card_sets")}
-          </Link>
-          {user && (
-            <Link to="/my-collection" className="hover:text-primary transition-colors duration-200">
-              {t("my_collection")}
+        <nav className="hidden md:flex items-center space-x-6">
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              to={item.href}
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              {item.label}
             </Link>
+          ))}
+          <ThemeSelector />
+          {user ? (
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-muted-foreground">
+                {displayName || user.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                <LogOut className="h-4 w-4 mr-2" />
+                {t("sign_out")}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/sign-in">{t("sign_in")}</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/sign-up">{t("sign_up")}</Link>
+              </Button>
+            </div>
           )}
         </nav>
 
-        {/* Theme & User Menu */}
-        <div className="flex items-center gap-3">
+        {/* Mobile Navigation */}
+        <div className="md:hidden flex items-center">
           <ThemeSelector />
-
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative rounded-full">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">User menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-0.5">
-                    <p className="text-sm font-medium">{user.email}</p>
-                    {user.user_metadata?.full_name && (
-                      <p className="text-xs text-muted-foreground">
-                        {user.user_metadata.full_name}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/my-collection" className="cursor-pointer">
-                    <FolderOpen className="mr-2 h-4 w-4" />
-                    {t("my_collection")}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  {t("sign_out")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button asChild variant="default" size="sm">
-              <Link to="/sign-in">
-                {t("sign_in")}
-              </Link>
-            </Button>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
+              <Button variant="ghost" size="icon" className="ml-2">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80">
-              <SheetHeader className="text-left">
-                <SheetTitle>{t("menu")}</SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col mt-8 space-y-4">
-                <SheetClose asChild>
-                  <Link to="/sets" className="py-2 text-lg">
-                    {t("card_sets")}
+            <SheetContent>
+              <div className="flex items-center mb-6">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg" 
+                  alt="Pokeball"
+                  className="h-7 w-7 mr-2" 
+                />
+                <span className="font-heading text-xl">
+                  <span className="neon-text neon-blue">Poké</span>
+                  <span className="neon-text neon-yellow">mon</span>
+                  <span className="neon-text neon-red"> TCG</span>
+                </span>
+              </div>
+              <div className="flex flex-col space-y-4 mt-8">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="text-foreground hover:text-primary transition-colors py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
                   </Link>
-                </SheetClose>
-                {user && (
-                  <SheetClose asChild>
-                    <Link to="/my-collection" className="py-2 text-lg">
-                      {t("my_collection")}
-                    </Link>
-                  </SheetClose>
-                )}
-                <div className="py-2">
-                  <p className="text-lg mb-4">{t("theme")}</p>
-                  <div className="grid grid-cols-3 gap-2">
+                ))}
+                {user ? (
+                  <>
+                    <div className="flex items-center py-2">
+                      <User className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{displayName || user.email}</span>
+                    </div>
                     <Button
-                      variant={theme === 'light' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setTheme('light')}
-                      className="justify-start"
+                      variant="ghost"
+                      className="justify-start px-0"
+                      onClick={() => {
+                        signOut();
+                        setIsOpen(false);
+                      }}
                     >
-                      <Sun className="h-4 w-4 mr-2" />
-                      {t("light")}
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {t("sign_out")}
                     </Button>
-                    <Button
-                      variant={theme === 'dark' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setTheme('dark')}
-                      className="justify-start"
-                    >
-                      <Moon className="h-4 w-4 mr-2" />
-                      {t("dark")}
+                  </>
+                ) : (
+                  <div className="flex flex-col space-y-2 pt-4">
+                    <Button asChild onClick={() => setIsOpen(false)}>
+                      <Link to="/sign-in">{t("sign_in")}</Link>
                     </Button>
-                    <Button
-                      variant={theme === 'system' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setTheme('system')}
-                      className="justify-start"
-                    >
-                      <Computer className="h-4 w-4 mr-2" />
-                      {t("system")}
+                    <Button variant="outline" asChild onClick={() => setIsOpen(false)}>
+                      <Link to="/sign-up">{t("sign_up")}</Link>
                     </Button>
                   </div>
-                </div>
-                
-                {user ? (
-                  <Button onClick={handleSignOut} variant="ghost" className="justify-start">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    {t("sign_out")}
-                  </Button>
-                ) : (
-                  <SheetClose asChild>
-                    <Button asChild className="mt-4">
-                      <Link to="/sign-in">
-                        {t("sign_in")}
-                      </Link>
-                    </Button>
-                  </SheetClose>
                 )}
               </div>
             </SheetContent>
