@@ -151,7 +151,7 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                       <img 
                         src={getHighResImage(card.image)} 
                         alt={card.name} 
-                        className="h-80 object-contain" 
+                        className="w-full max-w-[300px] object-contain" 
                         onError={(e) => {
                           // Fallback to standard image if high-res fails
                           (e.target as HTMLImageElement).src = card.image;

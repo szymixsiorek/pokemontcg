@@ -28,8 +28,9 @@ const MyCollection = () => {
     queryKey: ['collection', user?.id],
     queryFn: () => getUserCollection(user?.id || ''),
     enabled: !!user,
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 1000, // Consider data stale after 1 second to ensure fresh data
   });
   
   const { data: allSets = [], isLoading: isLoadingSets } = useQuery({
@@ -52,6 +53,10 @@ const MyCollection = () => {
   if (!user) {
     return null; // Redirect handled by useEffect
   }
+  
+  // Log for debugging
+  console.log('Collection IDs:', collectionCardIds.length, collectionCardIds);
+  console.log('Filtered cards:', collectionCards.length);
   
   return (
     <div className="flex flex-col min-h-screen">
