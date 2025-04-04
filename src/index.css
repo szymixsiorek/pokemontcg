@@ -49,6 +49,8 @@
     --neon-blue: 210 100% 60%;
     --neon-red: 0 100% 60%;
     --neon-yellow: 50 100% 60%;
+    --neon-green: 120 100% 60%;
+    --neon-purple: 270 100% 60%;
   }
 
   .dark {
@@ -84,6 +86,8 @@
     --neon-blue: 210 100% 70%;
     --neon-red: 0 100% 70%;
     --neon-yellow: 50 100% 70%;
+    --neon-green: 120 100% 70%;
+    --neon-purple: 270 100% 70%;
   }
 
   * {
@@ -144,43 +148,63 @@
     box-shadow: inset 0 0 3px rgba(255,255,255,0.3);
   }
   
-  /* Neon text effect */
+  /* Modern Neon text effect with outlines */
   .neon-text {
+    font-family: 'Pokemon Solid', sans-serif;
     position: relative;
     color: transparent;
-    background-clip: text;
-    -webkit-background-clip: text;
+    -webkit-text-stroke: 1.5px currentColor;
     animation: neon-flicker 5s infinite alternate;
   }
   
   .neon-blue {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--neon-blue));
     text-shadow: 
       0 0 5px hsla(var(--neon-blue) / 0.5),
-      0 0 10px hsla(var(--neon-blue) / 0.5),
-      0 0 15px hsla(var(--neon-blue) / 0.5),
-      0 0 20px hsla(var(--neon-blue) / 0.5);
-    background-image: linear-gradient(to bottom, #1E88E5, #1565C0);
+      0 0 10px hsla(var(--neon-blue) / 0.3),
+      0 0 15px hsla(var(--neon-blue) / 0.2);
     animation-delay: 0.4s;
   }
   
   .neon-red {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--neon-red));
     text-shadow: 
       0 0 5px hsla(var(--neon-red) / 0.5),
-      0 0 10px hsla(var(--neon-red) / 0.5),
-      0 0 15px hsla(var(--neon-red) / 0.5),
-      0 0 20px hsla(var(--neon-red) / 0.5);
-    background-image: linear-gradient(to bottom, #E53935, #C62828);
+      0 0 10px hsla(var(--neon-red) / 0.3),
+      0 0 15px hsla(var(--neon-red) / 0.2);
     animation-delay: 0s;
   }
   
   .neon-yellow {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--neon-yellow));
     text-shadow: 
       0 0 5px hsla(var(--neon-yellow) / 0.5),
-      0 0 10px hsla(var(--neon-yellow) / 0.5),
-      0 0 15px hsla(var(--neon-yellow) / 0.5),
-      0 0 20px hsla(var(--neon-yellow) / 0.5);
-    background-image: linear-gradient(to bottom, #FDD835, #FBC02D);
+      0 0 10px hsla(var(--neon-yellow) / 0.3),
+      0 0 15px hsla(var(--neon-yellow) / 0.2);
     animation-delay: 0.8s;
+  }
+  
+  .neon-green {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--neon-green));
+    text-shadow: 
+      0 0 5px hsla(var(--neon-green) / 0.5),
+      0 0 10px hsla(var(--neon-green) / 0.3),
+      0 0 15px hsla(var(--neon-green) / 0.2);
+    animation-delay: 1.2s;
+  }
+  
+  .neon-purple {
+    color: transparent;
+    -webkit-text-stroke: 1.5px hsl(var(--neon-purple));
+    text-shadow: 
+      0 0 5px hsla(var(--neon-purple) / 0.5),
+      0 0 10px hsla(var(--neon-purple) / 0.3),
+      0 0 15px hsla(var(--neon-purple) / 0.2);
+    animation-delay: 1.6s;
   }
   
   @keyframes neon-flicker {

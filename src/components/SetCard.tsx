@@ -25,7 +25,7 @@ const SetCard = ({ set }: SetCardProps) => {
   
   // Special handling for Black & White series in light mode
   const badgeStyle = set.series === "Black & White" && theme === "light" 
-    ? { borderColor: primary, color: "#000000", backgroundColor: "#f8f8f8" }
+    ? { borderColor: primary, color: "#000000", backgroundColor: "#ffffff", border: "1px solid #000000" }
     : { borderColor: primary, color: secondary };
 
   return (

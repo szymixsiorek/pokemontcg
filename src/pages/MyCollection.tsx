@@ -27,7 +27,9 @@ const MyCollection = () => {
   const { data: collectionCardIds = [], isLoading: isLoadingCollection, refetch: refetchCollection } = useQuery({
     queryKey: ['collection', user?.id],
     queryFn: () => getUserCollection(user?.id || ''),
-    enabled: !!user
+    enabled: !!user,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
   
   const { data: allSets = [], isLoading: isLoadingSets } = useQuery({
