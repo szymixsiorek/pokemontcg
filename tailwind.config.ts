@@ -110,16 +110,29 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' },
-				}
+				},
+                'color-cycle': {
+                    '0%': { color: '#4299e1' },
+                    '14%': { color: '#f56565' },
+                    '28%': { color: '#ecc94b' },
+                    '42%': { color: '#48bb78' },
+                    '56%': { color: '#9f7aea' },
+                    '70%': { color: '#ed8936' },
+                    '84%': { color: '#ed64a6' },
+                    '100%': { color: '#38b2ac' }
+                }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 3s ease-in-out infinite',
+                'color-cycle': 'color-cycle 8s infinite'
 			},
 			fontFamily: {
 				sans: ['Nunito Sans', 'sans-serif'],
 				heading: ['"Pokemon Solid"', 'sans-serif'],
+                pixel: ['"Press Start 2P"', 'cursive'],
+                mono: ['monospace']
 			}
 		}
 	},

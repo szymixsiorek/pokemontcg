@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
@@ -38,6 +38,33 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Add theme transition class to body
+const ThemeTransition = () => {
+  useEffect(() => {
+    document.body.classList.add('theme-transition');
+    
+    // Try to remove the "edit with lovable" button if it exists
+    const removeEditButton = () => {
+      const editButton = document.querySelector('a[href*="lovable.ai"]');
+      if (editButton) {
+        editButton.remove();
+      }
+    };
+    
+    // Run initially and set up a MutationObserver to keep checking
+    removeEditButton();
+    const observer = new MutationObserver(removeEditButton);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => {
+      document.body.classList.remove('theme-transition');
+      observer.disconnect();
+    };
+  }, []);
+  
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -45,6 +72,7 @@ const App = () => (
         <LanguageProvider>
           <BrowserRouter>
             <AuthProvider>
+              <ThemeTransition />
               <Toaster />
               <Sonner />
               <Routes>

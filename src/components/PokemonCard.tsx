@@ -147,26 +147,26 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                   </DialogHeader>
                   
                   <div className="space-y-4">
-                    <div className="flex justify-center mb-4 relative">
+                    <div className="flex justify-center mb-4">
+                      <div className="w-full flex justify-center items-center relative group">
+                        <img 
+                          src={getHighResImage(card.image)} 
+                          alt={card.name} 
+                          className="w-[80%] object-contain" 
+                          onError={(e) => {
+                            // Fallback to standard image if high-res fails
+                            (e.target as HTMLImageElement).src = card.image;
+                          }}
+                        />
+                        <button
+                          onClick={() => setIsFullSizeImage(true)}
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 rounded-full p-1"
+                        >
+                          <Maximize className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
                       <Dialog open={isFullSizeImage} onOpenChange={setIsFullSizeImage}>
-                        <DialogTrigger asChild>
-                          <div className="relative cursor-pointer group">
-                            <img 
-                              src={getHighResImage(card.image)} 
-                              alt={card.name} 
-                              className="h-64 md:h-72 object-contain" 
-                              onError={(e) => {
-                                // Fallback to standard image if high-res fails
-                                (e.target as HTMLImageElement).src = card.image;
-                              }}
-                            />
-                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button size="icon" variant="outline" className="h-8 w-8">
-                                <Maximize className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           <img 
                             src={getHighResImage(card.image)} 
@@ -270,6 +270,14 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                 </DialogContent>
               </Dialog>
             )}
+            
+            <Button 
+              size="icon" 
+              variant="outline" 
+              onClick={() => setIsFullSizeImage(true)}
+            >
+              <Maximize className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         

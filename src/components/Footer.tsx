@@ -31,7 +31,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-secondary/50 py-8 px-4 sm:px-6">
+    <footer className="bg-secondary/50 py-8 px-4 sm:px-6 theme-transition">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -79,7 +79,7 @@ const Footer = () => {
                 className="h-6 w-6 mr-2" 
               />
               <span className="font-heading text-xl">
-                <NeonText text="Pokémon TCG" />
+                <NeonText text="PokémonTCG" />
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -88,6 +88,9 @@ const Footer = () => {
             <p className="text-xs text-muted-foreground mt-2">
               {t("fan_site_disclaimer")}
             </p>
+            <div className="mt-4 text-xs text-muted-foreground">
+              <p>Powered by <a href="https://pokemontcg.io/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">pokemontcg.io API</a></p>
+            </div>
           </div>
         </div>
       </div>

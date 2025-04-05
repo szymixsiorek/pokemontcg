@@ -72,7 +72,7 @@ const Index = () => {
   const popularSets = sets.slice(3, 6);
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen theme-transition">
       <Header />
       
       <main className="flex-grow">
@@ -80,7 +80,7 @@ const Index = () => {
         <section className={`py-16 px-4 sm:px-6 lg:px-8 bg-primary/10`}>
           <div className="container mx-auto text-center">
             <h1 className="mb-6 font-heading text-4xl md:text-5xl lg:text-6xl">
-              <NeonText text="Pokémon TCG Gallery" />
+              <NeonText text="PokémonTCGGallery" />
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               {t("welcome_subtitle")}
@@ -128,7 +128,7 @@ const Index = () => {
               
               {isLoadingSearch ? (
                 <div className="text-center py-12">
-                  <div className="pokeball-button animate-spin mx-auto mb-4" />
+                  <div className="pokeball-loader mx-auto mb-4" />
                   <p>{t("loading")}</p>
                 </div>
               ) : searchResults.length === 0 ? (
@@ -162,7 +162,7 @@ const Index = () => {
               
               {isLoading ? (
                 <div className="text-center py-12">
-                  <div className="pokeball-button animate-spin mx-auto mb-4" />
+                  <div className="pokeball-loader mx-auto mb-4" />
                   <p>{t("loading")}</p>
                 </div>
               ) : (
@@ -192,7 +192,7 @@ const Index = () => {
               
               {isLoading ? (
                 <div className="text-center py-12">
-                  <div className="pokeball-button animate-spin mx-auto mb-4" />
+                  <div className="pokeball-loader mx-auto mb-4" />
                   <p>{t("loading")}</p>
                 </div>
               ) : (

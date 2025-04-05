@@ -12,6 +12,30 @@ import {
 } from "@/components/ui/sheet";
 import { Menu, User, LogOut } from "lucide-react";
 
+// Enhanced neon text with custom animation for each letter
+const NeonText = ({ text }: { text: string }) => {
+  const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
+  
+  return (
+    <span className="neon-text-wrapper inline-block relative">
+      {text.split('').map((letter, index) => {
+        const colorIndex = index % colors.length;
+        const colorClass = `neon-letter-${colors[colorIndex]}`;
+        
+        return (
+          <span 
+            key={index} 
+            className={`neon-letter ${colorClass}`}
+            style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
+          >
+            {letter}
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
   const { t } = useLanguage();
@@ -24,7 +48,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="py-4 px-4 sm:px-6 border-b">
+    <header className="py-4 px-4 sm:px-6 border-b theme-transition">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
@@ -33,11 +57,12 @@ const Header = () => {
               alt="Pokeball"
               className="h-7 w-7 sm:h-8 sm:w-8" 
             />
-            <span className="font-heading text-xl sm:text-2xl hidden sm:inline-block">
-              <span className="neon-text neon-blue">Poké</span>
-              <span className="neon-text neon-yellow">mon</span>
-              <span className="neon-text neon-red"> TCG</span>
-            </span>
+            <div className="flex flex-col items-start">
+              <span className="font-heading text-xl sm:text-2xl">
+                <NeonText text="Pokémon" /><NeonText text="TCG" />
+              </span>
+              <span className="text-xs font-mono tracking-wide uppercase">Gallery</span>
+            </div>
           </Link>
         </div>
 
@@ -91,11 +116,12 @@ const Header = () => {
                   alt="Pokeball"
                   className="h-7 w-7 mr-2" 
                 />
-                <span className="font-heading text-xl">
-                  <span className="neon-text neon-blue">Poké</span>
-                  <span className="neon-text neon-yellow">mon</span>
-                  <span className="neon-text neon-red"> TCG</span>
-                </span>
+                <div className="flex flex-col items-start">
+                  <span className="font-heading text-xl">
+                    <NeonText text="Pokémon" /><NeonText text="TCG" />
+                  </span>
+                  <span className="text-xs font-mono tracking-wide uppercase">Gallery</span>
+                </div>
               </div>
               <div className="flex flex-col space-y-4 mt-8">
                 {menuItems.map((item) => (
