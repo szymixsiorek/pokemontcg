@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -33,14 +32,11 @@ const Header = () => {
               alt="Pokeball"
               className="h-7 w-7 sm:h-8 sm:w-8" 
             />
-            <div className="flex flex-col items-start">
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Pok%C3%A9mon_Trading_Card_Game_logo.svg/2560px-Pok%C3%A9mon_Trading_Card_Game_logo.svg.png" 
-                alt="Pokémon Trading Card Game"
-                className="h-7 sm:h-8 object-contain" 
-              />
-              <span className="text-xs font-mono tracking-wide uppercase">Gallery</span>
-            </div>
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Pok%C3%A9mon_Trading_Card_Game_logo.svg/2560px-Pok%C3%A9mon_Trading_Card_Game_logo.svg.png" 
+              alt="Pokémon Trading Card Game"
+              className="h-8 sm:h-10 object-contain" 
+            />
           </Link>
         </div>
 
