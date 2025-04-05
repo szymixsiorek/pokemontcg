@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -73,7 +72,7 @@ const CardSet = () => {
         
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="pokeball-button animate-spin mx-auto mb-4" />
+            <div className="pokeball-loader mx-auto mb-4" />
             <p>{t("loading")}</p>
           </div>
         ) : set ? (

@@ -58,7 +58,7 @@ const CardSets = () => {
         
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="pokeball-button animate-spin mx-auto mb-4" />
+            <div className="pokeball-loader mx-auto mb-4" />
             <p>{t("loading")}</p>
           </div>
         ) : error ? (

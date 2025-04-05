@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, searchCardsByName } from "@/lib/api";
@@ -11,30 +10,6 @@ import { useState } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
-
-// Enhanced neon text with custom animation for each letter
-const NeonText = ({ text }: { text: string }) => {
-  const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
-  
-  return (
-    <span className="neon-text-wrapper inline-block relative">
-      {text.split('').map((letter, index) => {
-        const colorIndex = index % colors.length;
-        const colorClass = `neon-letter-${colors[colorIndex]}`;
-        
-        return (
-          <span 
-            key={index} 
-            className={`neon-letter ${colorClass}`}
-            style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
-          >
-            {letter}
-          </span>
-        );
-      })}
-    </span>
-  );
-};
 
 const Index = () => {
   const { t } = useLanguage();
@@ -79,9 +54,13 @@ const Index = () => {
         {/* Hero section with search */}
         <section className={`py-16 px-4 sm:px-6 lg:px-8 bg-primary/10`}>
           <div className="container mx-auto text-center">
-            <h1 className="mb-6 font-heading text-4xl md:text-5xl lg:text-6xl">
-              <NeonText text="PokémonTCGGallery" />
-            </h1>
+            <div className="flex justify-center mb-6">
+              <img 
+                src="https://i.postimg.cc/xjWWBNCG/Projekt-bez-nazwy-1.png" 
+                alt="Pokémon TCG Gallery"
+                className="max-w-md w-full h-auto object-contain" 
+              />
+            </div>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
               {t("welcome_subtitle")}
             </p>

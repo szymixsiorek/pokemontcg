@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -97,7 +96,6 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
     return null;
   };
 
-  // Get high-resolution image URL
   const getHighResImage = (imageUrl: string): string => {
     return imageUrl.replace(/\.png$/, '_hires.png');
   };
@@ -154,7 +152,6 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                           alt={card.name} 
                           className="w-[80%] object-contain" 
                           onError={(e) => {
-                            // Fallback to standard image if high-res fails
                             (e.target as HTMLImageElement).src = card.image;
                           }}
                         />
@@ -270,14 +267,6 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                 </DialogContent>
               </Dialog>
             )}
-            
-            <Button 
-              size="icon" 
-              variant="outline" 
-              onClick={() => setIsFullSizeImage(true)}
-            >
-              <Maximize className="h-4 w-4" />
-            </Button>
           </div>
         </div>
         

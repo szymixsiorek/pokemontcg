@@ -12,30 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import { Menu, User, LogOut } from "lucide-react";
 
-// Enhanced neon text with custom animation for each letter
-const NeonText = ({ text }: { text: string }) => {
-  const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
-  
-  return (
-    <span className="neon-text-wrapper inline-block relative">
-      {text.split('').map((letter, index) => {
-        const colorIndex = index % colors.length;
-        const colorClass = `neon-letter-${colors[colorIndex]}`;
-        
-        return (
-          <span 
-            key={index} 
-            className={`neon-letter ${colorClass}`}
-            style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
-          >
-            {letter}
-          </span>
-        );
-      })}
-    </span>
-  );
-};
-
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
   const { t } = useLanguage();
@@ -58,9 +34,11 @@ const Header = () => {
               className="h-7 w-7 sm:h-8 sm:w-8" 
             />
             <div className="flex flex-col items-start">
-              <span className="font-heading text-xl sm:text-2xl">
-                <NeonText text="Pokémon" /><NeonText text="TCG" />
-              </span>
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Pok%C3%A9mon_Trading_Card_Game_logo.svg/2560px-Pok%C3%A9mon_Trading_Card_Game_logo.svg.png" 
+                alt="Pokémon Trading Card Game"
+                className="h-7 sm:h-8 object-contain" 
+              />
               <span className="text-xs font-mono tracking-wide uppercase">Gallery</span>
             </div>
           </Link>
@@ -117,9 +95,11 @@ const Header = () => {
                   className="h-7 w-7 mr-2" 
                 />
                 <div className="flex flex-col items-start">
-                  <span className="font-heading text-xl">
-                    <NeonText text="Pokémon" /><NeonText text="TCG" />
-                  </span>
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Pok%C3%A9mon_Trading_Card_Game_logo.svg/2560px-Pok%C3%A9mon_Trading_Card_Game_logo.svg.png" 
+                    alt="Pokémon Trading Card Game"
+                    className="h-6 object-contain" 
+                  />
                   <span className="text-xs font-mono tracking-wide uppercase">Gallery</span>
                 </div>
               </div>
