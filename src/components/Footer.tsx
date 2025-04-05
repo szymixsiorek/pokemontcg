@@ -2,6 +2,30 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 
+// Helper component for neon text with individual letters
+const NeonText = ({ text }: { text: string }) => {
+  const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
+  
+  return (
+    <span className="neon-text-wrapper">
+      {text.split('').map((letter, index) => {
+        const colorIndex = index % colors.length;
+        const colorClass = `neon-letter-${colors[colorIndex]}`;
+        
+        return (
+          <span 
+            key={index} 
+            className={`neon-letter ${colorClass}`}
+            style={{ '--letter-index': index } as React.CSSProperties}
+          >
+            {letter}
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
 const Footer = () => {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
@@ -55,9 +79,7 @@ const Footer = () => {
                 className="h-6 w-6 mr-2" 
               />
               <span className="font-heading">
-                <span className="neon-text neon-blue">Poké</span>
-                <span className="neon-text neon-yellow">mon</span>
-                <span className="neon-text neon-red"> TCG</span>
+                <NeonText text="Pokémon TCG" />
               </span>
             </div>
             <p className="text-sm text-muted-foreground">

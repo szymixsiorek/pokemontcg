@@ -15,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -147,11 +146,11 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                   </DialogHeader>
                   
                   <div className="space-y-4">
-                    <div className="flex justify-center">
+                    <div className="flex justify-center mb-4">
                       <img 
                         src={getHighResImage(card.image)} 
                         alt={card.name} 
-                        className="h-80 object-contain" 
+                        className="h-64 object-contain" 
                         onError={(e) => {
                           // Fallback to standard image if high-res fails
                           (e.target as HTMLImageElement).src = card.image;
@@ -159,15 +158,15 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                       />
                     </div>
                     
-                    <Tabs defaultValue="tcgplayer">
-                      <TabsList className="grid grid-cols-2">
+                    <Tabs defaultValue="tcgplayer" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="tcgplayer">TCGPlayer</TabsTrigger>
                         <TabsTrigger value="cardmarket">Cardmarket</TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="tcgplayer">
+                      <TabsContent value="tcgplayer" className="w-full">
                         {tcgPlayerPriceData ? (
-                          <div className="space-y-1">
+                          <div className="space-y-1 w-full">
                             <div className="grid grid-cols-2 gap-2">
                               <span className="text-muted-foreground">{t("market_price")}:</span>
                               <span className="font-semibold">{formatPrice(tcgPlayerPriceData.market)}</span>
@@ -201,9 +200,9 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                         )}
                       </TabsContent>
                       
-                      <TabsContent value="cardmarket">
+                      <TabsContent value="cardmarket" className="w-full">
                         {cardmarketData?.prices ? (
-                          <div className="space-y-1">
+                          <div className="space-y-1 w-full">
                             <div className="grid grid-cols-2 gap-2">
                               <span className="text-muted-foreground">{t("trend_price")}:</span>
                               <span className="font-semibold">{formatEuroPrice(cardmarketData.prices.trendPrice)}</span>
