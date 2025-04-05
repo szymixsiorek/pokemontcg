@@ -12,12 +12,12 @@ import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
 
-// Helper component for neon text with individual letters
+// Enhanced neon text with custom animation for each letter
 const NeonText = ({ text }: { text: string }) => {
   const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
   
   return (
-    <span className="neon-text-wrapper">
+    <span className="neon-text-wrapper inline-block relative">
       {text.split('').map((letter, index) => {
         const colorIndex = index % colors.length;
         const colorClass = `neon-letter-${colors[colorIndex]}`;
@@ -26,7 +26,7 @@ const NeonText = ({ text }: { text: string }) => {
           <span 
             key={index} 
             className={`neon-letter ${colorClass}`}
-            style={{ '--letter-index': index } as React.CSSProperties}
+            style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
           >
             {letter}
           </span>

@@ -1,309 +1,158 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-  font-family: 'Pokemon Solid';
-  src: url('https://db.onlinewebfonts.com/t/f4d1593471d222ddebd973210265762a.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
+ 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    --primary: 0 72.2% 50.6%;
-    --primary-foreground: 0 85.7% 97.3%;
-
-    --secondary: 240 5.9% 10%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
     --radius: 0.5rem;
-    
-    /* Neon colors */
-    --neon-blue: 210 100% 60%;
-    --neon-red: 0 100% 60%;
-    --neon-yellow: 50 100% 60%;
-    --neon-green: 120 100% 60%;
-    --neon-purple: 270 100% 60%;
-    --neon-orange: 30 100% 60%;
-    --neon-pink: 330 100% 60%;
-    --neon-cyan: 180 100% 60%;
   }
-
+ 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 72.2% 50.6%;
-    --primary-foreground: 0 85.7% 97.3%;
-
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-
-    --accent: 35 91% 55.1%;  /* Pokémon yellow */
-    --accent-foreground: 0 0% 98%;
-
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    
-    /* Neon colors in dark mode - brighter */
-    --neon-blue: 210 100% 70%;
-    --neon-red: 0 100% 70%;
-    --neon-yellow: 50 100% 70%;
-    --neon-green: 120 100% 70%;
-    --neon-purple: 270 100% 70%;
-    --neon-orange: 30 100% 70%;
-    --neon-pink: 330 100% 70%;
-    --neon-cyan: 180 100% 70%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
-
+}
+ 
+@layer base {
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
+}
 
-  /* Custom Pokémon font styling */
-  .font-heading {
-    font-family: 'Pokemon Solid', sans-serif;
-    letter-spacing: 2px;
+/* Neon text effect styles */
+.neon-text-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.neon-letter {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  transition: color 0.3s ease;
+  animation: neon-pulse 2s infinite alternate;
+}
+
+/* Different colored letters */
+.neon-letter-blue { color: #4299e1; }
+.neon-letter-red { color: #f56565; }
+.neon-letter-yellow { color: #ecc94b; }
+.neon-letter-green { color: #48bb78; }
+.neon-letter-purple { color: #9f7aea; }
+.neon-letter-orange { color: #ed8936; }
+.neon-letter-pink { color: #ed64a6; }
+.neon-letter-cyan { color: #38b2ac; }
+
+@keyframes neon-pulse {
+  0% {
+    opacity: 0.8;
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
   }
 }
 
-@layer components {
-  .card-hover {
-    @apply transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer;
-  }
-  
-  .card-container {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4;
-  }
-
-  .pokeball-button {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(to bottom, #f1f1f1 0%, #f1f1f1 48%, #111 48%, #111 52%, #cc0000 52%, #cc0000 100%);
-    position: relative;
-    border: 2px solid #333;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-  
-  .pokeball-button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background-color: #fff;
-    border-radius: 50%;
-    border: 2px solid #333;
-    box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
-  }
-  
-  .dark .pokeball-button {
-    box-shadow: 0 1px 3px rgba(255,255,255,0.2);
-    border: 2px solid #eee;
-  }
-  
-  .dark .pokeball-button::after {
-    border: 2px solid #eee;
-    box-shadow: inset 0 0 3px rgba(255,255,255,0.3);
-  }
-  
-  /* Modern Neon text effect with outlines - new version with individual letters */
-  .neon-text-wrapper {
-    font-family: 'Pokemon Solid', sans-serif;
-    display: inline-flex;
-  }
-  
-  .neon-letter {
-    position: relative;
-    color: transparent;
-    -webkit-text-stroke: 1.5px currentColor;
-  }
-  
-  .neon-letter-blue {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-blue));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-blue) / 0.5),
-      0 0 10px hsla(var(--neon-blue) / 0.3),
-      0 0 15px hsla(var(--neon-blue) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 0));
-  }
-  
-  .neon-letter-red {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-red));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-red) / 0.5),
-      0 0 10px hsla(var(--neon-red) / 0.3),
-      0 0 15px hsla(var(--neon-red) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 1));
-  }
-  
-  .neon-letter-yellow {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-yellow));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-yellow) / 0.5),
-      0 0 10px hsla(var(--neon-yellow) / 0.3),
-      0 0 15px hsla(var(--neon-yellow) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 2));
-  }
-  
-  .neon-letter-green {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-green));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-green) / 0.5),
-      0 0 10px hsla(var(--neon-green) / 0.3),
-      0 0 15px hsla(var(--neon-green) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 3));
-  }
-  
-  .neon-letter-purple {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-purple));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-purple) / 0.5),
-      0 0 10px hsla(var(--neon-purple) / 0.3),
-      0 0 15px hsla(var(--neon-purple) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 4));
-  }
-  
-  .neon-letter-orange {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-orange));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-orange) / 0.5),
-      0 0 10px hsla(var(--neon-orange) / 0.3),
-      0 0 15px hsla(var(--neon-orange) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 5));
-  }
-  
-  .neon-letter-pink {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-pink));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-pink) / 0.5),
-      0 0 10px hsla(var(--neon-pink) / 0.3),
-      0 0 15px hsla(var(--neon-pink) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 6));
-  }
-  
-  .neon-letter-cyan {
-    color: transparent;
-    -webkit-text-stroke: 1.5px hsl(var(--neon-cyan));
-    text-shadow: 
-      0 0 5px hsla(var(--neon-cyan) / 0.5),
-      0 0 10px hsla(var(--neon-cyan) / 0.3),
-      0 0 15px hsla(var(--neon-cyan) / 0.2);
-    animation: neon-flicker 5s infinite alternate;
-    animation-delay: calc(0.1s * var(--letter-index, 7));
-  }
-  
-  @keyframes neon-flicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      opacity: 1;
-    }
-    20%, 24%, 55% {
-      opacity: 0.8;
-    }
-  }
-  
-  @keyframes neon-color-shift {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
-  }
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 2rem;
-  text-align: center;
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.error-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 1.5rem;
-  color: var(--destructive);
+/* Pokeball button animation */
+.pokeball-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(to bottom, #ff1a1a 0%, #ff1a1a 50%, #f0f0f0 50%, #f0f0f0 100%);
+  border-radius: 50%;
+  border: 2px solid #333;
 }
 
-.error-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+.pokeball-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  border: 2px solid #333;
+  z-index: 1;
 }
 
-.error-message {
-  margin-bottom: 1.5rem;
-  color: var(--muted-foreground);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-spin {
-    animation: none;
-  }
-  
-  .neon-letter {
-    animation: none;
-    text-shadow: 0 0 10px currentColor;
-  }
+.pokeball-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #333;
+  z-index: 0;
 }

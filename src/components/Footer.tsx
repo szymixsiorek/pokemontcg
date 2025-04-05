@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 
-// Helper component for neon text with individual letters
+// Enhanced neon text with custom animation for each letter
 const NeonText = ({ text }: { text: string }) => {
   const colors = ['blue', 'red', 'yellow', 'green', 'purple', 'orange', 'pink', 'cyan'];
   
@@ -16,7 +16,7 @@ const NeonText = ({ text }: { text: string }) => {
           <span 
             key={index} 
             className={`neon-letter ${colorClass}`}
-            style={{ '--letter-index': index } as React.CSSProperties}
+            style={{ animationDelay: `${index * 0.1}s` } as React.CSSProperties}
           >
             {letter}
           </span>
@@ -78,7 +78,7 @@ const Footer = () => {
                 alt="Pokeball"
                 className="h-6 w-6 mr-2" 
               />
-              <span className="font-heading">
+              <span className="font-heading text-xl">
                 <NeonText text="Pokémon TCG" />
               </span>
             </div>

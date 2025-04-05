@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Minus, DollarSign, ExternalLink } from "lucide-react";
+import { Plus, Minus, DollarSign, ExternalLink, Maximize } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
 import {
@@ -30,6 +30,7 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isInCollection, setIsInCollection] = useState(inCollection);
+  const [isFullSizeImage, setIsFullSizeImage] = useState(false);
   
   const handleToggleCollection = async () => {
     if (!user) {
@@ -137,7 +138,7 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                     <DollarSign className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md w-full">
                   <DialogHeader>
                     <DialogTitle>{card.name}</DialogTitle>
                     <DialogDescription>
@@ -146,16 +147,37 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                   </DialogHeader>
                   
                   <div className="space-y-4">
-                    <div className="flex justify-center mb-4">
-                      <img 
-                        src={getHighResImage(card.image)} 
-                        alt={card.name} 
-                        className="h-64 object-contain" 
-                        onError={(e) => {
-                          // Fallback to standard image if high-res fails
-                          (e.target as HTMLImageElement).src = card.image;
-                        }}
-                      />
+                    <div className="flex justify-center mb-4 relative">
+                      <Dialog open={isFullSizeImage} onOpenChange={setIsFullSizeImage}>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group">
+                            <img 
+                              src={getHighResImage(card.image)} 
+                              alt={card.name} 
+                              className="h-64 md:h-72 object-contain" 
+                              onError={(e) => {
+                                // Fallback to standard image if high-res fails
+                                (e.target as HTMLImageElement).src = card.image;
+                              }}
+                            />
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button size="icon" variant="outline" className="h-8 w-8">
+                                <Maximize className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                          <img 
+                            src={getHighResImage(card.image)} 
+                            alt={card.name} 
+                            className="w-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = card.image;
+                            }}
+                          />
+                        </DialogContent>
+                      </Dialog>
                     </div>
                     
                     <Tabs defaultValue="tcgplayer" className="w-full">
