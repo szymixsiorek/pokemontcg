@@ -1,4 +1,3 @@
-
 // English-only translations for the Pokemon TCG Gallery
 const translations: { [key: string]: string } = {
   // Navigation
@@ -117,6 +116,14 @@ const translations: { [key: string]: string } = {
   "error": "An error occurred.",
   "try_again": "Try Again",
   "logo_not_available": "Logo not available",
+
+  // Card Sets Filtering and Sorting
+  "newest.first": "Newest First",
+  "oldest.first": "Oldest First",
+  "all.series": "All Series",
+  "all.years": "All Years",
+  "filter.by.year": "Filter by Year",
+  "filter.by.series": "Filter by Series",
 };
 
 export default translations;
