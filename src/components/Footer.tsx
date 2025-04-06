@@ -33,7 +33,7 @@ const Footer = () => {
   return (
     <footer className="bg-secondary/50 py-8 px-4 sm:px-6 theme-transition">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-lg font-medium mb-4">{t("site_links")}</h3>
             <ul className="space-y-2">
@@ -45,6 +45,11 @@ const Footer = () => {
               <li>
                 <Link to="/sets" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("sets")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t("donate")}
                 </Link>
               </li>
             </ul>
@@ -66,6 +71,17 @@ const Footer = () => {
               <li>
                 <Link to="/my-collection" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("my_collection")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-medium mb-4">{t("support")}</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t("donate")}
                 </Link>
               </li>
             </ul>

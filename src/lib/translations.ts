@@ -1,3 +1,4 @@
+
 // English-only translations for the Pokemon TCG Gallery
 const translations: { [key: string]: string } = {
   // Navigation
@@ -124,6 +125,20 @@ const translations: { [key: string]: string } = {
   "all.years": "All Years",
   "filter.by.year": "Filter by Year",
   "filter.by.series": "Filter by Series",
+  
+  // Donation Page
+  "donate": "Donate",
+  "support_project": "Support Pokémon TCG Gallery",
+  "donation_subtitle": "Help us keep this resource free and updated",
+  "donation_description": "Your donations help us pay for hosting, development, and adding new features to the Pokémon TCG Gallery. We're passionate about providing a great resource for collectors, and your support means we can continue to improve the site.",
+  "development": "Development",
+  "development_help": "Helps fund ongoing development and improvements to the site",
+  "hosting": "Hosting",
+  "hosting_help": "Covers the cost of servers and infrastructure to keep the site running smoothly",
+  "new_features": "New Features",
+  "features_help": "Enables us to add new functionality and expand the site's capabilities",
+  "donation_thanks": "Thank you for your support! Every contribution helps keep this project alive.",
+  "support": "Support"
 };
 
 export default translations;

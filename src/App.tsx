@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import CardSets from "./pages/CardSets";
 import CardSet from "./pages/CardSet";
 import MyCollection from "./pages/MyCollection";
 import AuthError from "./pages/AuthError";
+import Donate from "./pages/Donate";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +86,7 @@ const App = () => (
                 <Route path="/auth-error" element={<AuthError />} />
                 <Route path="/sets" element={<CardSets />} />
                 <Route path="/sets/:setId" element={<CardSet />} />
+                <Route path="/donate" element={<Donate />} />
                 <Route path="/my-collection" element={
                   <ProtectedRoute>
                     <MyCollection />
