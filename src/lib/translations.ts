@@ -119,12 +119,12 @@ const translations: { [key: string]: string } = {
   "logo_not_available": "Logo not available",
 
   // Card Sets Filtering and Sorting
-  "newest.first": "Newest First",
-  "oldest.first": "Oldest First",
-  "all.series": "All Series",
-  "all.years": "All Years",
-  "filter.by.year": "Filter by Year",
-  "filter.by.series": "Filter by Series",
+  "newest_first": "Newest First",
+  "oldest_first": "Oldest First",
+  "all_series": "All Series",
+  "all_years": "All Years",
+  "filter_by_year": "Filter by Year",
+  "filter_by_series": "Filter by Series",
   
   // Donation Page
   "donate": "Donate",
@@ -138,7 +138,20 @@ const translations: { [key: string]: string } = {
   "new_features": "New Features",
   "features_help": "Enables us to add new functionality and expand the site's capabilities",
   "donation_thanks": "Thank you for your support! Every contribution helps keep this project alive.",
-  "support": "Support"
+  "support": "Support",
+  
+  // Contact
+  "contact": "Contact",
+  "contact_me": "Send Me a Message",
+  "your_name": "Your Name",
+  "your_email": "Your Email",
+  "your_message": "Your Message",
+  "send_message": "Send Message",
+  "message_sent": "Message Sent",
+  "message_sent_description": "Thank you for your message! I'll get back to you soon.",
+  "search": "Search",
+  "search_results": "Search Results",
+  "no_results": "No results found"
 };
 
 export default translations;

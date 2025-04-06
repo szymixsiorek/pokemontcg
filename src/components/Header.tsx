@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, Heart } from "lucide-react";
 
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
@@ -51,6 +52,12 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
+          <Button variant="outline" size="sm" className="gap-1" asChild>
+            <Link to="/donate">
+              <Heart className="h-4 w-4 text-red-500" />
+              {t("donate")}
+            </Link>
+          </Button>
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
@@ -76,6 +83,11 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center">
+          <Button variant="outline" size="icon" className="mr-2" asChild>
+            <Link to="/donate">
+              <Heart className="h-4 w-4 text-red-500" />
+            </Link>
+          </Button>
           <ThemeSelector />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -110,6 +122,14 @@ const Header = () => {
                     {item.label}
                   </Link>
                 ))}
+                <Link
+                  to="/donate"
+                  className="text-foreground hover:text-primary transition-colors py-2 flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Heart className="h-4 w-4 mr-2 text-red-500" />
+                  {t("donate")}
+                </Link>
                 {user ? (
                   <>
                     <div className="flex items-center py-2">
