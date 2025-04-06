@@ -151,7 +151,8 @@ const translations: { [key: string]: string } = {
   "message_sent_description": "Thank you for your message! I'll get back to you soon.",
   "search": "Search",
   "search_results": "Search Results",
-  "no_results": "No results found"
+  "no_results": "No results found",
+  "get_in_touch": "Get in Touch"
 };
 
 export default translations;

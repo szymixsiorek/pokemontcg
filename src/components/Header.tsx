@@ -10,7 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Heart } from "lucide-react";
+import { Menu, User, LogOut, Heart, MessageSquare } from "lucide-react";
 
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
@@ -21,6 +21,7 @@ const Header = () => {
     { label: t("home"), href: "/" },
     { label: t("sets"), href: "/sets" },
     ...(user ? [{ label: t("my_collection"), href: "/my-collection" }] : []),
+    { label: t("contact"), href: "/contact" },
   ];
 
   return (
@@ -86,6 +87,11 @@ const Header = () => {
           <Button variant="outline" size="icon" className="mr-2" asChild>
             <Link to="/donate">
               <Heart className="h-4 w-4 text-red-500" />
+            </Link>
+          </Button>
+          <Button variant="outline" size="icon" className="mr-2" asChild>
+            <Link to="/contact">
+              <MessageSquare className="h-4 w-4" />
             </Link>
           </Button>
           <ThemeSelector />
