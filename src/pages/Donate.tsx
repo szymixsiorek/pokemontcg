@@ -24,9 +24,9 @@ const Donate = () => {
         // @ts-ignore - PayPal is loaded from external script
         window.PayPal.Donation.Button({
           env: 'production',
-          hosted_button_id: 'V7AZFU7U7WW4E',
+          hosted_button_id: 'V7AZFU7U7WW4E', // PayPal button ID
           image: {
-            src: 'https://pics.paypal.com/00/s/YWEzMjVhMWYtN2U1Ni00ZDUwLTliZWMtZmVmOTc0ZGY2MzRk/file.PNG',
+            src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
             alt: 'Donate with PayPal button',
             title: 'PayPal - The safer, easier way to pay online!',
           }
@@ -156,6 +156,13 @@ const Donate = () => {
                       <div id="donate-button"></div>
                     </div>
                   )}
+                  <div className="flex items-center justify-center w-full pt-2">
+                    <img 
+                      src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" 
+                      alt="PayPal" 
+                      className="h-8 object-contain" 
+                    />
+                  </div>
                 </TabsContent>
               </Tabs>
               
