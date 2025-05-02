@@ -11,38 +11,52 @@ import { toast } from '@/hooks/use-toast';
 const Donate = () => {
   const { t } = useLanguage();
   const [isStripeLoading, setIsStripeLoading] = useState(false);
-  const [isPayPalLoading, setIsPayPalLoading] = useState(false);
+  const [isPayPalLoading, setIsPayPalLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize PayPal donation button when component mounts
-    const script = document.createElement('script');
-    script.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
-    script.charset = 'UTF-8';
-    script.async = true;
-    
-    script.onload = () => {
-      // Short delay to ensure DOM is fully rendered
-      setTimeout(() => {
-        // @ts-ignore - PayPal is loaded from external script
-        if (window.PayPal && window.PayPal.Donation) {
-          // @ts-ignore - PayPal is loaded from external script
-          window.PayPal.Donation.Button({
-            env: 'production',
-            hosted_button_id: 'V7AZFU7U7WW4E', // PayPal button ID
-            image: {
-              src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
-              alt: 'Donate with PayPal button',
-              title: 'PayPal - The safer, easier way to pay online!',
-            }
-          }).render('#donate-button');
+    // Initialize PayPal donation button
+    const setupPayPal = () => {
+      // Clear any existing content in the button container
+      const container = document.getElementById('donate-button-container');
+      if (container) {
+        container.innerHTML = `
+          <div id="donate-button"></div>
+        `;
+
+        // Create and add PayPal script
+        const script = document.createElement('script');
+        script.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
+        script.charset = 'UTF-8';
+        script.async = true;
+        
+        script.onload = () => {
+          // Create and add the PayPal button initialization script
+          const buttonScript = document.createElement('script');
+          buttonScript.textContent = `
+            PayPal.Donation.Button({
+              env:'production',
+              hosted_button_id:'V7AZFU7U7WW4E',
+              image: {
+                src:'https://pics.paypal.com/00/s/YWEzMjVhMWYtN2U1Ni00ZDUwLTliZWMtZmVmOTc0ZGY2MzRk/file.PNG',
+                alt:'Donate with PayPal button',
+                title:'PayPal - The safer, easier way to pay online!',
+              }
+            }).render('#donate-button');
+          `;
+          
+          container.appendChild(buttonScript);
           setIsPayPalLoading(false);
-        }
-      }, 500);
+        };
+        
+        container.appendChild(script);
+      }
     };
     
-    document.body.appendChild(script);
-    setIsPayPalLoading(true);
-
+    // Add a small delay to ensure the DOM is fully rendered
+    const timer = setTimeout(() => {
+      setupPayPal();
+    }, 500);
+    
     // Initialize Stripe donation script - only load once
     if (!document.querySelector('script[src="https://js.stripe.com/v3/"]')) {
       const stripeScript = document.createElement('script');
@@ -53,7 +67,8 @@ const Donate = () => {
 
     return () => {
       // Clean up scripts when component unmounts
-      document.body.removeChild(script);
+      clearTimeout(timer);
+      
       // Only remove Stripe script if it was added by this component
       const stripeScript = document.querySelector('script[src="https://js.stripe.com/v3/"]');
       if (stripeScript && stripeScript.parentNode) {
@@ -168,7 +183,7 @@ const Donate = () => {
                     <div className="text-center py-4">{t("loading")}</div>
                   ) : (
                     <div className="w-full flex justify-center">
-                      <div id="donate-button" className="paypal-button-container"></div>
+                      <div id="donate-button-container" className="paypal-button-container"></div>
                     </div>
                   )}
                   <div className="flex items-center justify-center w-full pt-2">
