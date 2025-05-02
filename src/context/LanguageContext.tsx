@@ -14,6 +14,15 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   const t = (key: string): string => {
+    // For keys with dots, we need to fix them
+    // This will convert keys like "back.to.sets" to proper text "Back To Sets"
+    if (key.includes('.')) {
+      const parts = key.split('.');
+      return parts.map(part => 
+        part.charAt(0).toUpperCase() + part.slice(1)
+      ).join(' ');
+    }
+    
     return translations[key] || key;
   };
 

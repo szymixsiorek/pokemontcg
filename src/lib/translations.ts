@@ -1,4 +1,3 @@
-
 // English-only translations for the Pokemon TCG Gallery
 const translations: { [key: string]: string } = {
   // Navigation
@@ -37,6 +36,7 @@ const translations: { [key: string]: string } = {
   "all_years": "All Years",
   "filter_by_year": "Filter by Year",
   "filter_by_series": "Filter by Series",
+  "back_to_sets": "Back to Sets",
   
   // Card Details
   "card_number": "Card Number",
@@ -140,6 +140,10 @@ const translations: { [key: string]: string } = {
   "features_help": "Enables us to add new functionality and expand the site's capabilities",
   "donation_thanks": "Thank you for your support! Every contribution helps keep this project alive.",
   "support": "Support",
+  "donate_with_stripe": "Donate with Stripe",
+  "donate_with_paypal": "Donate with PayPal",
+  "donate_one_time": "One-time Donation",
+  "donate_monthly": "Monthly Support",
   
   // Contact
   "contact": "Contact",
