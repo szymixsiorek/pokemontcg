@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/hooks/use-toast';
 
 const Donate = () => {
   const { t } = useLanguage();
@@ -18,35 +19,46 @@ const Donate = () => {
     script.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
     script.charset = 'UTF-8';
     script.async = true;
+    
     script.onload = () => {
-      // @ts-ignore - PayPal is loaded from external script
-      if (window.PayPal && window.PayPal.Donation) {
+      // Short delay to ensure DOM is fully rendered
+      setTimeout(() => {
         // @ts-ignore - PayPal is loaded from external script
-        window.PayPal.Donation.Button({
-          env: 'production',
-          hosted_button_id: 'V7AZFU7U7WW4E', // PayPal button ID
-          image: {
-            src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
-            alt: 'Donate with PayPal button',
-            title: 'PayPal - The safer, easier way to pay online!',
-          }
-        }).render('#donate-button');
-        setIsPayPalLoading(false);
-      }
+        if (window.PayPal && window.PayPal.Donation) {
+          // @ts-ignore - PayPal is loaded from external script
+          window.PayPal.Donation.Button({
+            env: 'production',
+            hosted_button_id: 'V7AZFU7U7WW4E', // PayPal button ID
+            image: {
+              src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
+              alt: 'Donate with PayPal button',
+              title: 'PayPal - The safer, easier way to pay online!',
+            }
+          }).render('#donate-button');
+          setIsPayPalLoading(false);
+        }
+      }, 500);
     };
+    
     document.body.appendChild(script);
     setIsPayPalLoading(true);
 
-    // Initialize Stripe donation script
-    const stripeScript = document.createElement('script');
-    stripeScript.src = 'https://js.stripe.com/v3/';
-    stripeScript.async = true;
-    document.body.appendChild(stripeScript);
+    // Initialize Stripe donation script - only load once
+    if (!document.querySelector('script[src="https://js.stripe.com/v3/"]')) {
+      const stripeScript = document.createElement('script');
+      stripeScript.src = 'https://js.stripe.com/v3/';
+      stripeScript.async = true;
+      document.body.appendChild(stripeScript);
+    }
 
     return () => {
       // Clean up scripts when component unmounts
       document.body.removeChild(script);
-      document.body.removeChild(stripeScript);
+      // Only remove Stripe script if it was added by this component
+      const stripeScript = document.querySelector('script[src="https://js.stripe.com/v3/"]');
+      if (stripeScript && stripeScript.parentNode) {
+        stripeScript.parentNode.removeChild(stripeScript);
+      }
     };
   }, []);
 
@@ -94,12 +106,15 @@ const Donate = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      // Show success message or toast
-      alert('Thank you for your donation!');
+      // Show success message using toast instead of alert
+      toast({
+        title: t("donation_success"),
+        description: t("donation_thanks_message"),
+      });
       // Remove the success parameter from URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -152,8 +167,8 @@ const Donate = () => {
                   {isPayPalLoading ? (
                     <div className="text-center py-4">{t("loading")}</div>
                   ) : (
-                    <div id="donate-button-container" className="w-full flex justify-center">
-                      <div id="donate-button"></div>
+                    <div className="w-full flex justify-center">
+                      <div id="donate-button" className="paypal-button-container"></div>
                     </div>
                   )}
                   <div className="flex items-center justify-center w-full pt-2">

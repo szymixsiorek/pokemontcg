@@ -144,6 +144,8 @@ const translations: { [key: string]: string } = {
   "donate_with_paypal": "Donate with PayPal",
   "donate_one_time": "One-time Donation",
   "donate_monthly": "Monthly Support",
+  "donation_success": "Thank You for Your Donation!",
+  "donation_thanks_message": "Your support helps us maintain and improve the Pokémon TCG Gallery.",
   
   // Contact
   "contact": "Contact",
