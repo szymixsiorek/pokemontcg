@@ -31,11 +31,13 @@ const translations: { [key: string]: string } = {
   "search_sets": "Search sets...",
   "no_sets_found": "No sets found for your search",
   "clear_search": "Clear Search",
-  "english_sets": "English Sets",
-  "back_to_sets": "Back to Sets",
-  "set_not_found": "Set not found",
-  "series": "Series",
-
+  "newest_first": "Newest First",
+  "oldest_first": "Oldest First",
+  "all_series": "All Series",
+  "all_years": "All Years",
+  "filter_by_year": "Filter by Year",
+  "filter_by_series": "Filter by Series",
+  
   // Card Details
   "card_number": "Card Number",
   "card_rarity": "Rarity",
@@ -119,12 +121,11 @@ const translations: { [key: string]: string } = {
   "logo_not_available": "Logo not available",
 
   // Card Sets Filtering and Sorting
-  "newest_first": "Newest First",
-  "oldest_first": "Oldest First",
-  "all_series": "All Series",
-  "all_years": "All Years",
-  "filter_by_year": "Filter by Year",
-  "filter_by_series": "Filter by Series",
+  "active_filters": "Active filters",
+  "clear_all": "Clear all",
+  "clear_filters": "Clear filters",
+  "year": "Year",
+  "series": "Series",
   
   // Donation Page
   "donate": "Donate",

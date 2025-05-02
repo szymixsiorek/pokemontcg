@@ -165,7 +165,7 @@ const CardSets = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <SortAsc className="h-4 w-4 mr-2" />
-                  {sortOrder === "newest" ? t("newest.first") : t("oldest.first")}
+                  {sortOrder === "newest" ? t("newest_first") : t("oldest_first")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -173,11 +173,11 @@ const CardSets = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setSortOrder("newest")}>
                   <SortDesc className="h-4 w-4 mr-2" />
-                  {t("newest.first")}
+                  {t("newest_first")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSortOrder("oldest")}>
                   <SortAsc className="h-4 w-4 mr-2" />
-                  {t("oldest.first")}
+                  {t("oldest_first")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -199,10 +199,10 @@ const CardSets = () => {
           
           <Select value={selectedYear} onValueChange={setSelectedYear}>
             <SelectTrigger>
-              <SelectValue placeholder={t("filter.by.year")} />
+              <SelectValue placeholder={t("filter_by_year")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("all.years")}</SelectItem>
+              <SelectItem value="all">{t("all_years")}</SelectItem>
               {years.map(year => (
                 <SelectItem key={year} value={year}>{year}</SelectItem>
               ))}
@@ -211,10 +211,10 @@ const CardSets = () => {
           
           <Select value={selectedSeries} onValueChange={setSelectedSeries}>
             <SelectTrigger>
-              <SelectValue placeholder={t("filter.by.series")} />
+              <SelectValue placeholder={t("filter_by_series")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("all.series")}</SelectItem>
+              <SelectItem value="all">{t("all_series")}</SelectItem>
               {seriesList.map(series => (
                 <SelectItem key={series} value={series}>{series}</SelectItem>
               ))}

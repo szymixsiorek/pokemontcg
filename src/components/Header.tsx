@@ -10,7 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Heart, MessageSquare } from "lucide-react";
+import { Menu, User, LogOut, Heart, Home, MessageSquare } from "lucide-react";
 
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
@@ -18,10 +18,10 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { label: t("home"), href: "/" },
-    { label: t("sets"), href: "/sets" },
+    { label: t("home"), href: "/", icon: <Home className="h-4 w-4" /> },
+    { label: t("sets"), href: "/sets", icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg> },
     ...(user ? [{ label: t("my_collection"), href: "/my-collection" }] : []),
-    { label: t("contact"), href: "/contact" },
+    { label: t("contact"), href: "/contact", icon: <MessageSquare className="h-4 w-4" /> },
   ];
 
   return (
@@ -43,15 +43,14 @@ const Header = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-3">
           {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className="text-foreground hover:text-primary transition-colors"
-            >
-              {item.label}
-            </Link>
+            <Button key={item.href} variant="outline" size="sm" className="gap-1" asChild>
+              <Link to={item.href}>
+                {item.icon}
+                {item.label}
+              </Link>
+            </Button>
           ))}
           <Button variant="outline" size="sm" className="gap-1" asChild>
             <Link to="/donate">
