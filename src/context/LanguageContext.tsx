@@ -29,6 +29,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
           return "Take Photo";
         case "processing_image":
           return "Processing image...";
+        case "back_to_sets":
+          return "Back to Sets";
         default:
           return key;
       }

@@ -52,37 +52,41 @@ const ImageSearchModal = ({ isOpen, onClose, onSearchResults }: ImageSearchModal
       
       // Setup video
       video.srcObject = stream;
-      video.play();
       
-      // Take photo after a short delay
-      setTimeout(() => {
-        // Set canvas size to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+      // Wait for video to be ready
+      video.onloadedmetadata = () => {
+        video.play();
         
-        // Draw video frame to canvas
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(video, 0, 0);
+        // Take photo after a short delay to allow camera to adjust
+        setTimeout(() => {
+          // Set canvas size to match video
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
           
-          // Convert to file and process
-          canvas.toBlob((blob) => {
-            if (blob) {
-              // Stop the video stream
-              stream.getTracks().forEach(track => track.stop());
-              
-              // Create a File from the Blob
-              const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
-              
-              // Preview the image
-              setPreviewImage(canvas.toDataURL());
-              
-              // Process the search
-              processImageSearch(file);
-            }
-          }, 'image/jpeg');
-        }
-      }, 300);
+          // Draw video frame to canvas
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(video, 0, 0);
+            
+            // Convert to file and process
+            canvas.toBlob((blob) => {
+              if (blob) {
+                // Stop the video stream
+                stream.getTracks().forEach(track => track.stop());
+                
+                // Create a File from the Blob
+                const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                
+                // Preview the image
+                setPreviewImage(canvas.toDataURL());
+                
+                // Process the search
+                processImageSearch(file);
+              }
+            }, 'image/jpeg');
+          }
+        }, 500); // Slightly longer delay to ensure camera is ready
+      };
     } catch (error) {
       console.error("Error accessing camera:", error);
       toast.error("Failed to access camera. Please check your permissions.");
@@ -92,13 +96,19 @@ const ImageSearchModal = ({ isOpen, onClose, onSearchResults }: ImageSearchModal
   const processImageSearch = async (file: File) => {
     setIsLoading(true);
     try {
+      console.log("Processing image search...");
       const results = await searchCardsByImage(file);
-      onSearchResults(results);
-      handleClose();
+      console.log("Search results:", results);
+      if (results && results.length > 0) {
+        onSearchResults(results);
+        handleClose();
+      } else {
+        toast.error("No matching cards found. Try with a clearer image.");
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Error processing image search:", error);
       toast.error("Failed to process image search");
-    } finally {
       setIsLoading(false);
     }
   };
