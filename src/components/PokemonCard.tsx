@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Plus, Minus, DollarSign, ExternalLink, Maximize } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
+import { Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -277,6 +279,13 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
             <span>•</span>
             <span>{card.rarity}</span>
           </div>
+          {card.setId && card.setName && (
+            <div className="text-xs mt-1">
+              <Link to={`/sets/${card.setId}`} className="text-primary hover:underline">
+                {card.setName}
+              </Link>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

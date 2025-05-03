@@ -8,14 +8,16 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight, Search, Camera } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
+import ImageSearchModal from "@/components/ImageSearchModal";
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [imageSearchModalOpen, setImageSearchModalOpen] = useState(false);
   
   // Get card sets
   const { data: sets = [], isLoading } = useQuery({
@@ -43,6 +45,13 @@ const Index = () => {
     setIsSearching(false);
   };
   
+  const handleImageSearchResults = (results: any[]) => {
+    if (results && results.length > 0) {
+      // We have results, show them as search results
+      setIsSearching(true);
+    }
+  };
+  
   // The sets are already sorted by release date in the API
   const latestSets = sets.slice(0, 3);
   const popularSets = sets.slice(3, 6);
@@ -67,21 +76,33 @@ const Index = () => {
             </p>
             
             <form onSubmit={handleSearch} className="max-w-md mx-auto mb-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder={t("search_cards")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-20"
-                />
+              <div className="relative flex">
+                <div className="relative flex-grow">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder={t("search_cards")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-20"
+                  />
+                  <Button 
+                    type="submit" 
+                    size="sm" 
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8"
+                  >
+                    {t("search")}
+                  </Button>
+                </div>
                 <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8"
+                  type="button" 
+                  size="icon" 
+                  variant="outline"
+                  className="ml-2"
+                  onClick={() => setImageSearchModalOpen(true)}
+                  title={t("search_by_image")}
                 >
-                  {t("search")}
+                  <Camera className="h-4 w-4" />
                 </Button>
               </div>
             </form>
@@ -185,6 +206,13 @@ const Index = () => {
             </div>
           </section>
         )}
+        
+        {/* Image Search Modal */}
+        <ImageSearchModal 
+          isOpen={imageSearchModalOpen} 
+          onClose={() => setImageSearchModalOpen(false)}
+          onSearchResults={handleImageSearchResults}
+        />
       </main>
       
       <Footer />

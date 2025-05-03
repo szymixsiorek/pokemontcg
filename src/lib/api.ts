@@ -22,6 +22,8 @@ export interface Pokemon {
   number: string;
   rarity: string;
   type: string;
+  setId?: string;
+  setName?: string;
   prices?: {
     normal?: { low: number; mid: number; high: number; market: number; directLow: number };
     holofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
@@ -159,6 +161,8 @@ export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
       number: card.number,
       rarity: card.rarity || "Unknown",
       type: card.types ? card.types[0] : "Unknown",
+      setId: card.set.id,
+      setName: card.set.name,
       tcgplayer: card.tcgplayer,
       prices: card.tcgplayer?.prices,
       cardmarket: card.cardmarket
@@ -166,6 +170,38 @@ export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
   } catch (error) {
     console.error(`Error searching cards:`, error);
     toast.error("Failed to search cards");
+    return [];
+  }
+};
+
+// Search cards by image
+export const searchCardsByImage = async (imageFile: File): Promise<Pokemon[]> => {
+  try {
+    // Create form data for the image upload
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    
+    // Simulating API search with a delay
+    // In a real implementation, this would call an actual card recognition API
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // For now, let's return a sample result
+    // In a real implementation, we would process the API response
+    return [
+      {
+        id: "sample-card-1",
+        name: "Sample Card from Image Search",
+        image: URL.createObjectURL(imageFile),
+        number: "000",
+        rarity: "Common",
+        type: "Normal",
+        setId: "base1",
+        setName: "Base Set"
+      }
+    ];
+  } catch (error) {
+    console.error("Error searching cards by image:", error);
+    toast.error("Failed to search cards by image");
     return [];
   }
 };
@@ -249,6 +285,8 @@ export const getCardById = async (id: string): Promise<Pokemon | undefined> => {
       number: card.number,
       rarity: card.rarity || "Unknown",
       type: card.types ? card.types[0] : "Unknown",
+      setId: card.set.id,
+      setName: card.set.name,
       tcgplayer: card.tcgplayer,
       prices: card.tcgplayer?.prices,
       cardmarket: card.cardmarket
