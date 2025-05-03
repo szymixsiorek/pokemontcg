@@ -16,21 +16,23 @@ const Donate = () => {
   useEffect(() => {
     // Initialize PayPal donation button
     const setupPayPal = () => {
-      // Clear any existing content in the button container
-      const container = document.getElementById('donate-button-container');
-      if (container) {
-        container.innerHTML = `
-          <div id="donate-button"></div>
+      const paypalContainer = document.getElementById('paypal-button-container');
+      if (paypalContainer) {
+        // Clear any existing content in the container
+        paypalContainer.innerHTML = `
+          <div id="donate-button-container">
+            <div id="donate-button"></div>
+          </div>
         `;
-
-        // Create and add PayPal script
-        const script = document.createElement('script');
-        script.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
-        script.charset = 'UTF-8';
-        script.async = true;
         
-        script.onload = () => {
-          // Create and add the PayPal button initialization script
+        // Load PayPal SDK script
+        const paypalScript = document.createElement('script');
+        paypalScript.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
+        paypalScript.charset = 'UTF-8';
+        paypalScript.async = true;
+        
+        // When SDK is loaded, initialize the button
+        paypalScript.onload = () => {
           const buttonScript = document.createElement('script');
           buttonScript.textContent = `
             PayPal.Donation.Button({
@@ -44,11 +46,12 @@ const Donate = () => {
             }).render('#donate-button');
           `;
           
-          container.appendChild(buttonScript);
+          document.getElementById('donate-button-container')?.appendChild(buttonScript);
           setIsPayPalLoading(false);
         };
         
-        container.appendChild(script);
+        // Add the PayPal SDK script to the container
+        paypalContainer.appendChild(paypalScript);
       }
     };
     
@@ -183,7 +186,7 @@ const Donate = () => {
                     <div className="text-center py-4">{t("loading")}</div>
                   ) : (
                     <div className="w-full flex justify-center">
-                      <div id="donate-button-container" className="paypal-button-container"></div>
+                      <div id="paypal-button-container" className="paypal-button-container"></div>
                     </div>
                   )}
                   <div className="flex items-center justify-center w-full pt-2">
