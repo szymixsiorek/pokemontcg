@@ -8,16 +8,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
-import { ChevronRight, Search, Camera } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
-import ImageSearchModal from "@/components/ImageSearchModal";
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [imageSearchModalOpen, setImageSearchModalOpen] = useState(false);
   
   // Get card sets
   const { data: sets = [], isLoading } = useQuery({
@@ -43,13 +41,6 @@ const Index = () => {
   const clearSearch = () => {
     setSearchQuery("");
     setIsSearching(false);
-  };
-  
-  const handleImageSearchResults = (results: any[]) => {
-    if (results && results.length > 0) {
-      // We have results, show them as search results
-      setIsSearching(true);
-    }
   };
   
   // The sets are already sorted by release date in the API
@@ -94,16 +85,6 @@ const Index = () => {
                     {t("search")}
                   </Button>
                 </div>
-                <Button 
-                  type="button" 
-                  size="icon" 
-                  variant="outline"
-                  className="ml-2"
-                  onClick={() => setImageSearchModalOpen(true)}
-                  title={t("search_by_image")}
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
               </div>
             </form>
             
@@ -206,13 +187,6 @@ const Index = () => {
             </div>
           </section>
         )}
-        
-        {/* Image Search Modal */}
-        <ImageSearchModal 
-          isOpen={imageSearchModalOpen} 
-          onClose={() => setImageSearchModalOpen(false)}
-          onSearchResults={handleImageSearchResults}
-        />
       </main>
       
       <Footer />

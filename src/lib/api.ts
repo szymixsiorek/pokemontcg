@@ -1,3 +1,4 @@
+
 // Pokemon TCG API service
 // Documentation: https://docs.pokemontcg.io/
 
@@ -169,71 +170,6 @@ export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
   } catch (error) {
     console.error(`Error searching cards:`, error);
     toast.error("Failed to search cards");
-    return [];
-  }
-};
-
-// Search cards by image
-export const searchCardsByImage = async (imageFile: File): Promise<Pokemon[]> => {
-  try {
-    // Create form data for the image upload
-    const formData = new FormData();
-    formData.append('image', imageFile);
-    
-    // Extract dominant colors from the image to help with matching
-    const imageUrl = URL.createObjectURL(imageFile);
-    
-    // For demonstration, we'll use the Pokemon TCG API to search for cards
-    // In a real implementation, you might use a dedicated image recognition API
-    
-    // First, let's show a loading message
-    toast.info("Analyzing image and searching for matches...");
-    
-    // Simulating API search with a delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // For now, we'll search for a random popular Pokemon
-    const popularPokemon = ["pikachu", "charizard", "mewtwo", "blastoise", "venusaur", "gengar", "lugia"];
-    const randomPokemon = popularPokemon[Math.floor(Math.random() * popularPokemon.length)];
-    
-    // Search for the random Pokemon using the name search API
-    const response = await fetch(
-      `${BASE_URL}/cards?q=name:"${randomPokemon}"&pageSize=10`, 
-      { headers }
-    );
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // If we get results, transform them to match our Pokemon interface
-    const results = data.data.map((card: any) => ({
-      id: card.id,
-      name: card.name,
-      image: card.images.small,
-      number: card.number,
-      rarity: card.rarity || "Unknown",
-      type: card.types ? card.types[0] : "Unknown",
-      setId: card.set.id,
-      setName: card.set.name,
-      tcgplayer: card.tcgplayer,
-      prices: card.tcgplayer?.prices,
-      cardmarket: card.cardmarket
-    }));
-    
-    // Show success message
-    if (results.length > 0) {
-      toast.success(`Found ${results.length} similar cards!`);
-    } else {
-      toast.error("No matching cards found. Try with a clearer image.");
-    }
-    
-    return results;
-  } catch (error) {
-    console.error("Error searching cards by image:", error);
-    toast.error("Failed to search cards by image");
     return [];
   }
 };
