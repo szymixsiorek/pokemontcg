@@ -21,6 +21,24 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
       switch (key) {
         case "back_to_sets":
           return "Back to Sets";
+        case "about_us":
+          return "About Us";
+        case "site_creation":
+          return "Site Creation";
+        case "launch_date":
+          return "Launch Date";
+        case "created_by":
+          return "Created By";
+        case "days_online":
+          return "Days Online";
+        case "tech_stack":
+          return "Tech Stack";
+        case "our_story":
+          return "Our Story";
+        case "project_description":
+          return "Project Description";
+        case "project_purpose":
+          return "Project Purpose";
         default:
           return key;
       }

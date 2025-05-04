@@ -142,7 +142,13 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                   <DialogHeader>
                     <DialogTitle>{card.name}</DialogTitle>
                     <DialogDescription>
-                      {card.number} • {card.rarity}
+                      {card.number} • {card.rarity} {card.setName && (
+                        <>
+                          • <Link to={`/sets/${card.setId}`} className="text-primary hover:underline">
+                              {card.setName}
+                            </Link>
+                        </>
+                      )}
                     </DialogDescription>
                   </DialogHeader>
                   

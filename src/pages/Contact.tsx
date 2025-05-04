@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, MessageCircle, Send } from "lucide-react";
 import Layout from "@/components/Layout";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -16,21 +17,36 @@ const Contact = () => {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate email sending - in production, this would call a server endpoint
-    setTimeout(() => {
+    try {
+      // Call the Supabase Edge Function to send email
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: { name, email, message }
+      });
+      
+      if (error) throw error;
+      
       toast({
         title: t("message_sent"),
         description: t("message_sent_description"),
       });
+      
       setName("");
       setEmail("");
       setMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
