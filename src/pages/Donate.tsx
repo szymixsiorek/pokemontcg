@@ -4,12 +4,10 @@ import { useLanguage } from '@/context/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Donate = () => {
   const { t } = useLanguage();
   const paypalButtonContainerRef = useRef<HTMLDivElement>(null);
-  const stripeButtonContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // PayPal donation button
@@ -72,28 +70,25 @@ const Donate = () => {
             <CardContent className="flex flex-col items-center">
               <p className="text-center mb-8 text-muted-foreground">{t("donation_description")}</p>
               
-              <Tabs defaultValue="stripe" className="w-full max-w-md mb-8">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="stripe">Stripe</TabsTrigger>
-                  <TabsTrigger value="paypal">PayPal</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="stripe" className="flex justify-center pt-6">
-                  <div ref={stripeButtonContainerRef} className="w-full flex justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl mb-8">
+                <div className="flex flex-col items-center border p-6 rounded-md bg-white">
+                  <h3 className="text-xl font-semibold mb-4">Stripe</h3>
+                  <div className="w-full flex justify-center">
                     <stripe-buy-button
                       buy-button-id="buy_btn_1RKeYhCEmRGIM1ZIOGp8i4fK"
                       publishable-key="pk_live_51IVE1tCEmRGIM1ZIQCcBiNzVHBeaw89SEqF2q61v3xnN7IXwZrkb8yiAna73uWMTybqIkzQjXUU8geMwQRUI4O5y00nk54TyzJ"
                     >
                     </stripe-buy-button>
                   </div>
-                </TabsContent>
+                </div>
                 
-                <TabsContent value="paypal" className="flex justify-center pt-6">
+                <div className="flex flex-col items-center border p-6 rounded-md bg-gray-50">
+                  <h3 className="text-xl font-semibold mb-4">PayPal</h3>
                   <div ref={paypalButtonContainerRef} className="w-full flex justify-center">
                     <div id="donate-button"></div>
                   </div>
-                </TabsContent>
-              </Tabs>
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-6">
                 <Card className="border-primary/20">
