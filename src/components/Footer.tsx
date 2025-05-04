@@ -24,6 +24,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t("about_us")}
+                </Link>
+              </li>
+              <li>
                 <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors">
                   {t("donate")}
                 </Link>
