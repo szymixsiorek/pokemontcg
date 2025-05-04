@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,29 +8,45 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Donate = () => {
   const { t } = useLanguage();
+  const paypalBtnRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize PayPal donation button when component mounts
-    const paypalScript = document.createElement('script');
-    paypalScript.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
-    paypalScript.charset = 'UTF-8';
-    paypalScript.async = true;
-    paypalScript.onload = () => {
-      // @ts-ignore - PayPal is loaded from external script
-      if (window.PayPal && window.PayPal.Donation) {
-        // @ts-ignore - PayPal is loaded from external script
-        window.PayPal.Donation.Button({
-          env: 'production',
-          hosted_button_id: 'V7AZFU7U7WW4E',
-          image: {
-            src: 'https://pics.paypal.com/00/s/YWEzMjVhMWYtN2U1Ni00ZDUwLTliZWMtZmVmOTc0ZGY2MzRk/file.PNG',
-            alt: 'Donate with PayPal button',
-            title: 'PayPal - The safer, easier way to pay online!',
-          }
-        }).render('#donate-button');
+    // Initialize PayPal donation button when component mounts and container is available
+    const loadPayPalButton = () => {
+      if (paypalBtnRef.current && window.PayPal && window.PayPal.Donation) {
+        try {
+          window.PayPal.Donation.Button({
+            env: 'production',
+            hosted_button_id: 'V7AZFU7U7WW4E',
+            image: {
+              src: 'https://pics.paypal.com/00/s/YWEzMjVhMWYtN2U1Ni00ZDUwLTliZWMtZmVmOTc0ZGY2MzRk/file.PNG',
+              alt: 'Donate with PayPal button',
+              title: 'PayPal - The safer, easier way to pay online!',
+            }
+          }).render('#donate-button');
+        } catch (error) {
+          console.error("Error rendering PayPal button:", error);
+        }
       }
     };
-    document.body.appendChild(paypalScript);
+    
+    // Only load the script if it's not already loaded
+    if (!document.querySelector('script[src*="paypalobjects.com/donate"]')) {
+      const paypalScript = document.createElement('script');
+      paypalScript.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
+      paypalScript.charset = 'UTF-8';
+      paypalScript.async = true;
+      paypalScript.onload = loadPayPalButton;
+      document.body.appendChild(paypalScript);
+      
+      return () => {
+        // Cleanup script when component unmounts
+        document.body.removeChild(paypalScript);
+      };
+    } else {
+      // If script is already loaded, try rendering the button
+      loadPayPalButton();
+    }
     
     // Initialize Stripe donation button
     const stripeScript = document.createElement('script');
@@ -39,9 +55,10 @@ const Donate = () => {
     document.body.appendChild(stripeScript);
 
     return () => {
-      // Clean up scripts when component unmounts
-      document.body.removeChild(paypalScript);
-      document.body.removeChild(stripeScript);
+      // Clean up Stripe script when component unmounts
+      if (document.body.contains(stripeScript)) {
+        document.body.removeChild(stripeScript);
+      }
     };
   }, []);
 
@@ -75,7 +92,7 @@ const Donate = () => {
                 </TabsContent>
                 <TabsContent value="paypal" className="flex justify-center pt-4">
                   <div id="donate-button-container">
-                    <div id="donate-button"></div>
+                    <div id="donate-button" ref={paypalBtnRef}></div>
                   </div>
                 </TabsContent>
               </Tabs>
