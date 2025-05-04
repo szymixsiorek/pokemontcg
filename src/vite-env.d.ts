@@ -10,7 +10,7 @@ declare namespace JSX {
   }
 }
 
-// Add PayPal SDK type definitions
+// PayPal SDK type definitions
 interface PayPalDonationButtonOptions {
   env: 'production' | 'sandbox';
   hosted_button_id: string;

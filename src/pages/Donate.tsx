@@ -8,13 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Donate = () => {
   const { t } = useLanguage();
-  const paypalBtnRef = useRef<HTMLDivElement>(null);
+  const paypalButtonContainerRef = useRef<HTMLDivElement>(null);
+  const stripeButtonContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize PayPal donation button when component mounts and container is available
-    const loadPayPalButton = () => {
-      if (paypalBtnRef.current && window.PayPal && window.PayPal.Donation) {
-        try {
+    // PayPal donation button
+    if (!document.querySelector('script[src*="paypalobjects.com/donate"]')) {
+      const paypalScript = document.createElement('script');
+      paypalScript.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
+      paypalScript.charset = 'UTF-8';
+      
+      paypalScript.onload = () => {
+        if (window.PayPal && window.PayPal.Donation && paypalButtonContainerRef.current) {
           window.PayPal.Donation.Button({
             env: 'production',
             hosted_button_id: 'V7AZFU7U7WW4E',
@@ -24,42 +29,33 @@ const Donate = () => {
               title: 'PayPal - The safer, easier way to pay online!',
             }
           }).render('#donate-button');
-        } catch (error) {
-          console.error("Error rendering PayPal button:", error);
         }
-      }
-    };
-    
-    // Only load the script if it's not already loaded
-    if (!document.querySelector('script[src*="paypalobjects.com/donate"]')) {
-      const paypalScript = document.createElement('script');
-      paypalScript.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js';
-      paypalScript.charset = 'UTF-8';
-      paypalScript.async = true;
-      paypalScript.onload = loadPayPalButton;
+      };
+      
       document.body.appendChild(paypalScript);
       
       return () => {
-        // Cleanup script when component unmounts
-        document.body.removeChild(paypalScript);
+        if (document.body.contains(paypalScript)) {
+          document.body.removeChild(paypalScript);
+        }
       };
-    } else {
-      // If script is already loaded, try rendering the button
-      loadPayPalButton();
     }
-    
-    // Initialize Stripe donation button
-    const stripeScript = document.createElement('script');
-    stripeScript.src = 'https://js.stripe.com/v3/buy-button.js';
-    stripeScript.async = true;
-    document.body.appendChild(stripeScript);
-
-    return () => {
-      // Clean up Stripe script when component unmounts
-      if (document.body.contains(stripeScript)) {
-        document.body.removeChild(stripeScript);
-      }
-    };
+  }, []);
+  
+  useEffect(() => {
+    // Stripe donation button
+    if (!document.querySelector('script[src*="js.stripe.com/v3/buy-button.js"]')) {
+      const stripeScript = document.createElement('script');
+      stripeScript.src = 'https://js.stripe.com/v3/buy-button.js';
+      stripeScript.async = true;
+      document.body.appendChild(stripeScript);
+      
+      return () => {
+        if (document.body.contains(stripeScript)) {
+          document.body.removeChild(stripeScript);
+        }
+      };
+    }
   }, []);
 
   return (
@@ -81,8 +77,9 @@ const Donate = () => {
                   <TabsTrigger value="stripe">Stripe</TabsTrigger>
                   <TabsTrigger value="paypal">PayPal</TabsTrigger>
                 </TabsList>
-                <TabsContent value="stripe" className="flex justify-center pt-4">
-                  <div id="stripe-button-container" className="w-full flex justify-center">
+                
+                <TabsContent value="stripe" className="flex justify-center pt-6">
+                  <div ref={stripeButtonContainerRef} className="w-full flex justify-center">
                     <stripe-buy-button
                       buy-button-id="buy_btn_1RKeYhCEmRGIM1ZIOGp8i4fK"
                       publishable-key="pk_live_51IVE1tCEmRGIM1ZIQCcBiNzVHBeaw89SEqF2q61v3xnN7IXwZrkb8yiAna73uWMTybqIkzQjXUU8geMwQRUI4O5y00nk54TyzJ"
@@ -90,9 +87,10 @@ const Donate = () => {
                     </stripe-buy-button>
                   </div>
                 </TabsContent>
-                <TabsContent value="paypal" className="flex justify-center pt-4">
-                  <div id="donate-button-container">
-                    <div id="donate-button" ref={paypalBtnRef}></div>
+                
+                <TabsContent value="paypal" className="flex justify-center pt-6">
+                  <div ref={paypalButtonContainerRef} className="w-full flex justify-center">
+                    <div id="donate-button"></div>
                   </div>
                 </TabsContent>
               </Tabs>
