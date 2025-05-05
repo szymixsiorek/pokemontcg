@@ -5,19 +5,53 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 
 const AboutUs = () => {
   const { t } = useLanguage();
   const [daysOnline, setDaysOnline] = useState<number>(0);
+  const [hoursOnline, setHoursOnline] = useState<number>(0);
+  const [minutesOnline, setMinutesOnline] = useState<number>(0);
+  const [secondsOnline, setSecondsOnline] = useState<number>(0);
   
   useEffect(() => {
-    // Calculate days since launch (May 1, 2024)
-    const launchDate = new Date('2024-05-01');
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - launchDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    setDaysOnline(diffDays);
+    // Calculate time since launch (April 2, 2025)
+    const launchDate = new Date('2025-04-02');
+    
+    const updateCounter = () => {
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - launchDate.getTime());
+      
+      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+      
+      setDaysOnline(days);
+      setHoursOnline(hours);
+      setMinutesOnline(minutes);
+      setSecondsOnline(seconds);
+    };
+    
+    // Initial update
+    updateCounter();
+    
+    // Update counter every second
+    const interval = setInterval(updateCounter, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
+
+  // Function to convert number to padded string with leading zero
+  const formatNumber = (num: number): string => {
+    return num.toString().padStart(2, '0');
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -43,13 +77,39 @@ const AboutUs = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">{t("launch_date")}</span>
-                  <span className="font-medium">May 1, 2024</span>
+                  <span className="font-medium">April 2, 2025</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">{t("days_online")}</span>
-                  <Badge variant="outline" className="font-medium">
-                    {daysOnline}
-                  </Badge>
+                <div className="flex flex-col">
+                  <span className="text-muted-foreground mb-3">{t("days_online")}</span>
+                  <div className="flex justify-between gap-2">
+                    <div className="flex flex-col items-center">
+                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
+                        {formatNumber(daysOnline)}
+                      </div>
+                      <span className="text-xs mt-1">Days</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
+                        {formatNumber(hoursOnline)}
+                      </div>
+                      <span className="text-xs mt-1">Hours</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
+                        {formatNumber(minutesOnline)}
+                      </div>
+                      <span className="text-xs mt-1">Minutes</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
+                        {formatNumber(secondsOnline)}
+                      </div>
+                      <span className="text-xs mt-1">Seconds</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -85,7 +145,7 @@ const AboutUs = () => {
                 The Pokémon TCG Gallery project was born from a passion for Pokémon trading cards and a desire to create a helpful resource for collectors and players alike. As a collector myself, I wanted to build a platform that would make it easy to browse, search, and track cards in the ever-expanding Pokémon TCG universe.
               </p>
               <p>
-                What started as a personal project quickly grew into something larger, as I realized there was a need for a modern, user-friendly tool that could help people manage their collections and discover new cards. The site was officially launched in May 2024 and has been growing steadily since.
+                What started as a personal project quickly grew into something larger, as I realized there was a need for a modern, user-friendly tool that could help people manage their collections and discover new cards. The site was officially launched in April 2025 and has been growing steadily since.
               </p>
               <p>
                 The design philosophy behind Pokémon TCG Gallery is simplicity and functionality. I wanted to create an interface that would be intuitive for users of all ages, while still offering powerful features for serious collectors.
