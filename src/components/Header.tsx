@@ -9,7 +9,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Heart, Home, MessageSquare, Info, Collection } from "lucide-react";
+import { Menu, User, LogOut, Heart, Home, MessageSquare, Info, Library } from "lucide-react";
 
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
@@ -19,7 +19,7 @@ const Header = () => {
   const menuItems = [
     { label: t("home"), href: "/", icon: <Home className="h-4 w-4" /> },
     { label: t("sets"), href: "/sets", icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg> },
-    ...(user ? [{ label: t("my_collection"), href: "/my-collection", icon: <Collection className="h-4 w-4" /> }] : []),
+    ...(user ? [{ label: t("my_collection"), href: "/my-collection", icon: <Library className="h-4 w-4" /> }] : []),
     { label: t("about_us"), href: "/about", icon: <Info className="h-4 w-4" /> },
     { label: t("contact"), href: "/contact", icon: <MessageSquare className="h-4 w-4" /> },
   ];
@@ -86,7 +86,7 @@ const Header = () => {
           {user && (
             <Button variant="outline" size="icon" className="mr-2" asChild>
               <Link to="/my-collection">
-                <Collection className="h-4 w-4" />
+                <Library className="h-4 w-4" />
               </Link>
             </Button>
           )}

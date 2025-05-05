@@ -246,8 +246,9 @@ const AboutUs = () => {
       
       <Footer />
       
-      {/* CSS for flip animation */}
-      <style jsx global>{`
+      {/* CSS for flip animation - fixed to use proper style syntax */}
+      <style>
+        {`
         .flip-counter-container {
           perspective: 1000px;
         }
@@ -298,7 +299,8 @@ const AboutUs = () => {
           background: rgba(255, 255, 255, 0.2);
           top: 50%;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
