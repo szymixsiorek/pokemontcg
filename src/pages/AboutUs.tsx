@@ -20,6 +20,18 @@ const AboutUs = () => {
   const [minutesOnline, setMinutesOnline] = useState<number>(0);
   const [secondsOnline, setSecondsOnline] = useState<number>(0);
   
+  // For flip animation
+  const [prevDays, setPrevDays] = useState<number>(0);
+  const [prevHours, setPrevHours] = useState<number>(0);
+  const [prevMinutes, setPrevMinutes] = useState<number>(0);
+  const [prevSeconds, setPrevSeconds] = useState<number>(0);
+  const [flipping, setFlipping] = useState<{days: boolean, hours: boolean, minutes: boolean, seconds: boolean}>({
+    days: false,
+    hours: false,
+    minutes: false,
+    seconds: false
+  });
+  
   useEffect(() => {
     // Calculate time since launch (April 2, 2025)
     const launchDate = new Date('2025-04-02');
@@ -33,10 +45,38 @@ const AboutUs = () => {
       const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
       
+      // Store previous values for flip animation
+      setPrevDays(daysOnline);
+      setPrevHours(hoursOnline);
+      setPrevMinutes(minutesOnline);
+      setPrevSeconds(secondsOnline);
+      
+      // Set new values
       setDaysOnline(days);
       setHoursOnline(hours);
       setMinutesOnline(minutes);
       setSecondsOnline(seconds);
+      
+      // Trigger flip animations
+      if (seconds !== secondsOnline) {
+        setFlipping(prev => ({...prev, seconds: true}));
+        setTimeout(() => setFlipping(prev => ({...prev, seconds: false})), 600);
+      }
+      
+      if (minutes !== minutesOnline) {
+        setFlipping(prev => ({...prev, minutes: true}));
+        setTimeout(() => setFlipping(prev => ({...prev, minutes: false})), 600);
+      }
+      
+      if (hours !== hoursOnline) {
+        setFlipping(prev => ({...prev, hours: true}));
+        setTimeout(() => setFlipping(prev => ({...prev, hours: false})), 600);
+      }
+      
+      if (days !== daysOnline) {
+        setFlipping(prev => ({...prev, days: true}));
+        setTimeout(() => setFlipping(prev => ({...prev, days: false})), 600);
+      }
     };
     
     // Initial update
@@ -46,11 +86,30 @@ const AboutUs = () => {
     const interval = setInterval(updateCounter, 1000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [daysOnline, hoursOnline, minutesOnline, secondsOnline]);
 
   // Function to convert number to padded string with leading zero
   const formatNumber = (num: number): string => {
     return num.toString().padStart(2, '0');
+  };
+
+  // Flip card for counter display
+  const FlipCard = ({ value, label, isFlipping }: { value: string, label: string, isFlipping: boolean }) => {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="relative w-16 h-20">
+          <div className={`flip-card ${isFlipping ? 'flipping' : ''}`}>
+            <div className="flip-card-front bg-blue-600 text-white rounded-md w-16 h-16 flex items-center justify-center text-3xl font-bold shadow-lg">
+              {value}
+            </div>
+            <div className="flip-card-back bg-blue-700 text-white rounded-md w-16 h-16 flex items-center justify-center text-3xl font-bold shadow-lg">
+              {value}
+            </div>
+          </div>
+        </div>
+        <span className="text-xs mt-1">{label}</span>
+      </div>
+    );
   };
 
   return (
@@ -81,34 +140,30 @@ const AboutUs = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-muted-foreground mb-3">{t("days_online")}</span>
-                  <div className="flex justify-between gap-2">
-                    <div className="flex flex-col items-center">
-                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
-                        {formatNumber(daysOnline)}
-                      </div>
-                      <span className="text-xs mt-1">Days</span>
-                    </div>
+                  <div className="flip-counter-container flex justify-between gap-4">
+                    <FlipCard 
+                      value={formatNumber(daysOnline)} 
+                      label="Days" 
+                      isFlipping={flipping.days} 
+                    />
                     
-                    <div className="flex flex-col items-center">
-                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
-                        {formatNumber(hoursOnline)}
-                      </div>
-                      <span className="text-xs mt-1">Hours</span>
-                    </div>
+                    <FlipCard 
+                      value={formatNumber(hoursOnline)} 
+                      label="Hours" 
+                      isFlipping={flipping.hours} 
+                    />
                     
-                    <div className="flex flex-col items-center">
-                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
-                        {formatNumber(minutesOnline)}
-                      </div>
-                      <span className="text-xs mt-1">Minutes</span>
-                    </div>
+                    <FlipCard 
+                      value={formatNumber(minutesOnline)} 
+                      label="Minutes" 
+                      isFlipping={flipping.minutes} 
+                    />
                     
-                    <div className="flex flex-col items-center">
-                      <div className="bg-blue-600 text-white rounded-md p-2 w-16 h-16 flex items-center justify-center text-3xl font-bold">
-                        {formatNumber(secondsOnline)}
-                      </div>
-                      <span className="text-xs mt-1">Seconds</span>
-                    </div>
+                    <FlipCard 
+                      value={formatNumber(secondsOnline)} 
+                      label="Seconds" 
+                      isFlipping={flipping.seconds} 
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -190,6 +245,60 @@ const AboutUs = () => {
       </main>
       
       <Footer />
+      
+      {/* CSS for flip animation */}
+      <style jsx global>{`
+        .flip-counter-container {
+          perspective: 1000px;
+        }
+        
+        .flip-card {
+          position: relative;
+          transform-style: preserve-3d;
+          transition: transform 0.6s;
+          width: 100%;
+          height: 100%;
+        }
+        
+        .flip-card.flipping {
+          transform: rotateX(180deg);
+        }
+        
+        .flip-card-front,
+        .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        
+        .flip-card-front {
+          background: #2563eb;
+          transform: rotateX(0deg);
+        }
+        
+        .flip-card-back {
+          background: #1d4ed8;
+          transform: rotateX(180deg);
+        }
+        
+        .flip-card-front::before,
+        .flip-card-back::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.2);
+          top: 50%;
+        }
+      `}</style>
     </div>
   );
 };
