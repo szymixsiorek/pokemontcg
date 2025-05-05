@@ -22,12 +22,16 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      console.log("Sending contact form submission:", { name, email });
+      
       // Call the Supabase Edge Function to send email
       const { data, error } = await supabase.functions.invoke("send-contact-email", {
         body: { name, email, message }
       });
       
       if (error) throw error;
+      
+      console.log("Contact form submission successful:", data);
       
       toast({
         title: t("message_sent"),

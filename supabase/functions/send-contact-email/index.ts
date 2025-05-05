@@ -32,6 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
 
+    // Send notification email to the site owner
     const emailResponse = await resend.emails.send({
       from: "Pokemon TCG Gallery <no-reply@resend.dev>",
       to: ["szymek04sawicki@gmail.com"],
@@ -60,7 +61,8 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    // Send confirmation email to the user
+    // Send confirmation email to the user who submitted the form
+    console.log("Sending confirmation email to:", email);
     await resend.emails.send({
       from: "Pokemon TCG Gallery <no-reply@resend.dev>",
       to: [email],
