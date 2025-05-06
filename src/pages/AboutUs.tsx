@@ -5,13 +5,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "@/components/ui/carousel";
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -64,43 +57,57 @@ const AboutUs = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-muted-foreground mb-3">{t("days_online")}</span>
-                  {/* CommonNinja Countdown Timer Component with custom styling */}
+                  {/* CommonNinja Countdown Timer Component */}
                   <div className="commonninja_component pid-72159105-07e6-4d74-b025-832a33654cc5"></div>
                   
-                  {/* Custom CSS to make the timer appear in one line */}
+                  {/* Custom CSS to make the timer match the provided image */}
                   <style dangerouslySetInnerHTML={{
                     __html: `
                       /* Target the countdown timer container to display in a single row */
                       .commoninja_component .countdown-timer-widget .items {
                         display: flex !important;
                         flex-direction: row !important;
-                        gap: 10px !important;
+                        gap: 12px !important;
                         justify-content: center !important;
                       }
                       
-                      /* Adjust size of each timer unit */
+                      /* Adjust styling for each timer unit group */
                       .commoninja_component .countdown-timer-widget .item {
-                        margin: 0 5px !important;
+                        margin: 0 !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        align-items: center !important;
                       }
                       
-                      /* Make sure labels are visible */
+                      /* Style the labels */
                       .commoninja_component .countdown-timer-widget .label {
                         display: block !important;
                         text-align: center !important;
-                        margin-top: 2px !important;
-                        font-size: 0.7rem !important;
+                        margin-top: 8px !important;
+                        font-size: 0.85rem !important;
+                        color: #333 !important;
+                        font-weight: normal !important;
                       }
                       
-                      /* Adjust digit size slightly */
+                      /* Adjust digit container */
                       .commoninja_component .countdown-timer-widget .digits {
                         display: flex !important;
                         gap: 2px !important;
                       }
                       
-                      /* Reduce the size of individual digit containers */
+                      /* Style individual digit boxes to match the image */
                       .commoninja_component .countdown-timer-widget .digit {
-                        width: 25px !important;
-                        height: 40px !important;
+                        width: 40px !important;
+                        height: 50px !important;
+                        background-color: #f0f0f0 !important;
+                        border-radius: 6px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+                        color: #1E88E5 !important;
+                        font-weight: bold !important;
+                        font-size: 24px !important;
                       }
                     `
                   }} />
