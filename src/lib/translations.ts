@@ -20,6 +20,7 @@ const translations: { [key: string]: string } = {
   "explore_sets": "Explore Sets",
   "latest_sets": "Latest Sets",
   "popular_sets": "Popular Sets",
+  "sets_of_the_day": "Sets Of The Day",
   "view_all": "View All",
   "choose_theme": "Choose Theme",
 
