@@ -7,7 +7,7 @@ import SetCard from "@/components/SetCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
@@ -30,6 +30,32 @@ const Index = () => {
     enabled: false
   });
   
+  // Generate daily sets selection based on current date
+  const setsOfTheDay = useMemo(() => {
+    if (sets.length === 0) return [];
+    
+    // Use the current date as a seed for "randomness"
+    const today = new Date();
+    const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    
+    // Use the date seed to select 3 different sets
+    const selectedSets = [];
+    let availableSets = [...sets];
+    
+    for (let i = 0; i < 3; i++) {
+      if (availableSets.length === 0) break;
+      
+      // Use the date seed and the current iteration to get a deterministic "random" index
+      const index = (dateSeed + i * 100) % availableSets.length;
+      selectedSets.push(availableSets[index]);
+      
+      // Remove the selected set from available sets to prevent duplicates
+      availableSets = [...availableSets.slice(0, index), ...availableSets.slice(index + 1)];
+    }
+    
+    return selectedSets;
+  }, [sets]);
+  
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -45,7 +71,6 @@ const Index = () => {
   
   // The sets are already sorted by release date in the API
   const latestSets = sets.slice(0, 3);
-  const popularSets = sets.slice(3, 6);
   
   return (
     <div className="flex flex-col min-h-screen theme-transition">
@@ -158,12 +183,12 @@ const Index = () => {
           </section>
         )}
         
-        {/* Popular sets section - only show if not searching */}
+        {/* Sets of the Day section - updated from Popular sets */}
         {!isSearching && (
           <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted">
             <div className="container mx-auto">
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold">{t("popular_sets")}</h2>
+                <h2 className="text-2xl font-bold">{t("sets_of_the_day")}</h2>
                 <Button variant="ghost" asChild>
                   <Link to="/sets">
                     {t("view_all")}
@@ -179,11 +204,15 @@ const Index = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {popularSets.map(set => (
+                  {setsOfTheDay.map(set => (
                     <SetCard key={set.id} set={set} />
                   ))}
                 </div>
               )}
+              
+              <div className="text-center mt-8 text-sm text-muted-foreground">
+                <p>New sets featured daily. Check back tomorrow for new recommendations!</p>
+              </div>
             </div>
           </section>
         )}

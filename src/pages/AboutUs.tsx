@@ -64,8 +64,46 @@ const AboutUs = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-muted-foreground mb-3">{t("days_online")}</span>
-                  {/* CommonNinja Countdown Timer Component */}
+                  {/* CommonNinja Countdown Timer Component with custom styling */}
                   <div className="commonninja_component pid-72159105-07e6-4d74-b025-832a33654cc5"></div>
+                  
+                  {/* Custom CSS to make the timer appear in one line */}
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                      /* Target the countdown timer container to display in a single row */
+                      .commoninja_component .countdown-timer-widget .items {
+                        display: flex !important;
+                        flex-direction: row !important;
+                        gap: 10px !important;
+                        justify-content: center !important;
+                      }
+                      
+                      /* Adjust size of each timer unit */
+                      .commoninja_component .countdown-timer-widget .item {
+                        margin: 0 5px !important;
+                      }
+                      
+                      /* Make sure labels are visible */
+                      .commoninja_component .countdown-timer-widget .label {
+                        display: block !important;
+                        text-align: center !important;
+                        margin-top: 2px !important;
+                        font-size: 0.7rem !important;
+                      }
+                      
+                      /* Adjust digit size slightly */
+                      .commoninja_component .countdown-timer-widget .digits {
+                        display: flex !important;
+                        gap: 2px !important;
+                      }
+                      
+                      /* Reduce the size of individual digit containers */
+                      .commoninja_component .countdown-timer-widget .digit {
+                        width: 25px !important;
+                        height: 40px !important;
+                      }
+                    `
+                  }} />
                 </div>
               </CardContent>
             </Card>
