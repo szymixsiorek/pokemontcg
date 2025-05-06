@@ -1,32 +1,21 @@
-
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
+import { differenceInDays } from 'date-fns';
 
 const AboutUs = () => {
   const { t } = useLanguage();
+  const [daysOnline, setDaysOnline] = useState<number>(0);
   
   useEffect(() => {
-    // Load CommonNinja script
-    const script = document.createElement('script');
-    script.src = 'https://cdn.commoninja.com/sdk/latest/commonninja.js';
-    script.defer = true;
-    
-    // Check if script already exists to avoid duplicates
-    if (!document.querySelector('script[src="https://cdn.commoninja.com/sdk/latest/commonninja.js"]')) {
-      document.body.appendChild(script);
-    }
-    
-    return () => {
-      // Clean up script when component unmounts if we added it
-      const existingScript = document.querySelector('script[src="https://cdn.commoninja.com/sdk/latest/commonninja.js"]');
-      if (existingScript && existingScript !== script) {
-        document.body.removeChild(existingScript);
-      }
-    };
+    // Calculate days online since launch date (April 2, 2025)
+    const launchDate = new Date(2025, 3, 2); // Note: months are 0-indexed in JS Date
+    const today = new Date();
+    const daysDifference = differenceInDays(today, launchDate);
+    setDaysOnline(daysDifference > 0 ? daysDifference : 0);
   }, []);
 
   return (
@@ -55,62 +44,14 @@ const AboutUs = () => {
                   <span className="text-muted-foreground">{t("launch_date")}</span>
                   <span className="font-medium">April 2, 2025</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground mb-3">{t("days_online")}</span>
-                  {/* CommonNinja Countdown Timer Component */}
-                  <div className="commonninja_component pid-72159105-07e6-4d74-b025-832a33654cc5"></div>
-                  
-                  {/* Custom CSS to make the timer smaller and fit in one row */}
-                  <style dangerouslySetInnerHTML={{
-                    __html: `
-                      /* Target the countdown timer container to display in a single row */
-                      .commoninja_component .countdown-timer-widget .items {
-                        display: flex !important;
-                        flex-direction: row !important;
-                        gap: 5px !important;
-                        justify-content: center !important;
-                      }
-                      
-                      /* Adjust styling for each timer unit group */
-                      .commoninja_component .countdown-timer-widget .item {
-                        margin: 0 !important;
-                        display: flex !important;
-                        flex-direction: column !important;
-                        align-items: center !important;
-                      }
-                      
-                      /* Style the labels */
-                      .commoninja_component .countdown-timer-widget .label {
-                        display: block !important;
-                        text-align: center !important;
-                        margin-top: 4px !important;
-                        font-size: 0.75rem !important;
-                        color: #333 !important;
-                        font-weight: normal !important;
-                      }
-                      
-                      /* Adjust digit container */
-                      .commoninja_component .countdown-timer-widget .digits {
-                        display: flex !important;
-                        gap: 1px !important;
-                      }
-                      
-                      /* Style individual digit boxes to make them smaller */
-                      .commoninja_component .countdown-timer-widget .digit {
-                        width: 28px !important;
-                        height: 35px !important;
-                        background-color: #f0f0f0 !important;
-                        border-radius: 4px !important;
-                        display: flex !important;
-                        align-items: center !important;
-                        justify-content: center !important;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-                        color: #1E88E5 !important;
-                        font-weight: bold !important;
-                        font-size: 18px !important;
-                      }
-                    `
-                  }} />
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">{t("days_online")}</span>
+                  <div className="flex items-center">
+                    <div className="bg-gray-100 px-4 py-2 rounded text-blue-600 font-bold">
+                      {daysOnline}
+                    </div>
+                    <span className="ml-2 text-muted-foreground">{t("days")}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

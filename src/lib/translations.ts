@@ -154,7 +154,19 @@ const translations: { [key: string]: string } = {
   "search": "Search",
   "search_results": "Search Results",
   "no_results": "No results found",
-  "get_in_touch": "Get in Touch"
+  "get_in_touch": "Get in Touch",
+  
+  // About Us Page
+  "about_us": "About Us",
+  "site_creation": "Site Creation",
+  "launch_date": "Launch Date",
+  "created_by": "Created By",
+  "days_online": "Days Online",
+  "days": "days",
+  "tech_stack": "Tech Stack",
+  "our_story": "Our Story",
+  "project_description": "Project Description",
+  "project_purpose": "Project Purpose"
 };
 
 export default translations;
