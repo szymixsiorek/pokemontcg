@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, getUserCollection } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { useLanguage } from "@/context/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
@@ -22,7 +21,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MyCollection = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"all" | "bySet">("all");
@@ -97,12 +95,17 @@ const MyCollection = () => {
     return null; // Redirect handled by useEffect
   }
   
+  // Debug logs to help diagnose the issue
+  console.log("Collection card IDs:", collectionCardIds);
+  console.log("All cards count:", allCards.length);
+  console.log("Filtered collection cards:", filteredCollectionCards);
+  
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold mb-6">{t("my_collection")}</h1>
+        <h1 className="text-3xl font-bold mb-6">My Collection</h1>
         
         {/* Search and filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 items-start sm:items-center">
@@ -110,7 +113,7 @@ const MyCollection = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               type="text"
-              placeholder={t("search_cards")}
+              placeholder="Search cards"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -130,13 +133,13 @@ const MyCollection = () => {
             className="w-full sm:w-auto"
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="all">{t("all_cards")}</TabsTrigger>
-              <TabsTrigger value="bySet">{t("by_set")}</TabsTrigger>
+              <TabsTrigger value="all">All Cards</TabsTrigger>
+              <TabsTrigger value="bySet">By Set</TabsTrigger>
             </TabsList>
           </Tabs>
           
           <div className="text-sm text-muted-foreground ml-auto">
-            {filteredCollectionCards.length} {t("cards_collected")}
+            {filteredCollectionCards.length} cards collected
           </div>
         </div>
         
@@ -149,12 +152,12 @@ const MyCollection = () => {
               disabled={setsWithCards.length === 0}
             >
               <SelectTrigger className="w-full sm:w-[300px]">
-                <SelectValue placeholder={t("select_set")} />
+                <SelectValue placeholder="Select a set" />
               </SelectTrigger>
               <SelectContent>
                 {setsWithCards.map(set => (
                   <SelectItem key={set.id} value={set.id}>
-                    {set.name} ({collectionBySet[set.id]?.cards.length || 0} {t("cards")})
+                    {set.name} ({collectionBySet[set.id]?.cards.length || 0} cards)
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -165,23 +168,23 @@ const MyCollection = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="pokeball-button animate-spin mx-auto mb-4" />
-            <p>{t("loading")}</p>
+            <p>Loading...</p>
           </div>
         ) : filteredCollectionCards.length === 0 ? (
           <div className="text-center py-12">
             <p className="mb-4">
               {searchQuery 
-                ? t("no_matching_cards") 
-                : t("no_cards_in_collection")}
+                ? "No cards match your search" 
+                : "You don't have any cards in your collection yet"}
             </p>
             {searchQuery && (
               <Button onClick={() => setSearchQuery("")}>
-                {t("clear_search")}
+                Clear search
               </Button>
             )}
             {!searchQuery && (
               <Button asChild>
-                <a href="/sets">{t("browse_sets")}</a>
+                <a href="/sets">Browse sets</a>
               </Button>
             )}
           </div>
