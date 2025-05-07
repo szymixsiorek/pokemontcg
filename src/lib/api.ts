@@ -271,6 +271,8 @@ export const getUserCollection = async (userId: string): Promise<string[]> => {
   try {
     if (!userId) return [];
     
+    console.log("Fetching collection for user ID:", userId);
+    
     const { data, error } = await supabase
       .from('user_collections')
       .select('card_id')
@@ -282,10 +284,58 @@ export const getUserCollection = async (userId: string): Promise<string[]> => {
       return [];
     }
     
-    return data.map(item => item.card_id);
+    const cardIds = data.map(item => item.card_id);
+    console.log("Collection fetched, card IDs:", cardIds);
+    return cardIds;
   } catch (error) {
     console.error("Error fetching collection:", error);
     toast.error("Failed to load your collection");
+    return [];
+  }
+};
+
+// Get cards by IDs
+export const getCardsByIds = async (cardIds: string[]): Promise<Pokemon[]> => {
+  try {
+    if (!cardIds.length) return [];
+    
+    console.log("Fetching cards with IDs:", cardIds);
+    
+    // The Pokemon TCG API supports fetching multiple cards by ID in a single request
+    // We'll use the q parameter to filter by id
+    const idQuery = `id:${cardIds.join(" OR id:")}`;
+    
+    const response = await fetch(
+      `${BASE_URL}/cards?q=${encodeURIComponent(idQuery)}`, 
+      { headers }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform API data to match our Pokemon interface
+    const cards = data.data.map((card: any) => ({
+      id: card.id,
+      name: card.name,
+      image: card.images.small,
+      number: card.number,
+      rarity: card.rarity || "Unknown",
+      type: card.types ? card.types[0] : "Unknown",
+      setId: card.set.id,
+      setName: card.set.name,
+      tcgplayer: card.tcgplayer,
+      prices: card.tcgplayer?.prices,
+      cardmarket: card.cardmarket
+    }));
+    
+    console.log(`Successfully fetched ${cards.length} cards`);
+    return cards;
+  } catch (error) {
+    console.error("Error fetching cards by IDs:", error);
+    toast.error("Failed to load card details");
     return [];
   }
 };

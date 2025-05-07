@@ -1,8 +1,8 @@
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCardSets, getUserCollection } from "@/lib/api";
+import { getCardSets, getUserCollection, getCardsByIds } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -32,64 +32,61 @@ const MyCollection = () => {
     }
   }, [user, navigate]);
   
-  const { data: collectionCardIds = [], isLoading: isLoadingCollection, refetch: refetchCollection } = useQuery({
-    queryKey: ['collection', user?.id],
+  // First, fetch the IDs of cards in the user's collection
+  const { data: collectionCardIds = [], isLoading: isLoadingIds, refetch: refetchCollection } = useQuery({
+    queryKey: ['collection-ids', user?.id],
     queryFn: () => getUserCollection(user?.id || ''),
     enabled: !!user,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
   
+  // Then, fetch the actual card data for those IDs
+  const { data: collectionCards = [], isLoading: isLoadingCards } = useQuery({
+    queryKey: ['collection-cards', collectionCardIds],
+    queryFn: () => getCardsByIds(collectionCardIds),
+    enabled: collectionCardIds.length > 0,
+    refetchOnMount: true,
+  });
+  
+  // Fetch all sets for grouping by set
   const { data: allSets = [], isLoading: isLoadingSets } = useQuery({
     queryKey: ['cardSets'],
     queryFn: () => getCardSets(),
     enabled: !!user
   });
   
-  // Collect all cards from all sets
-  const allCards = useMemo(() => {
-    return allSets.flatMap(set => set.cards);
-  }, [allSets]);
+  // Filter collection cards based on search and selected set
+  const filteredCollectionCards = collectionCards.filter(card => 
+    card.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (viewMode !== "bySet" || !selectedSet || card.setId === selectedSet)
+  );
   
   // Group collection cards by set
-  const collectionBySet = useMemo(() => {
-    const bySet: Record<string, { set: typeof allSets[0], cards: typeof allCards }> = {};
-    
-    // First, establish all sets that have cards in the collection
-    for (const set of allSets) {
-      const setCards = set.cards.filter(card => collectionCardIds.includes(card.id));
-      if (setCards.length > 0) {
-        bySet[set.id] = {
+  const collectionBySet = collectionCards.reduce((acc, card) => {
+    if (!acc[card.setId]) {
+      const set = allSets.find(s => s.id === card.setId);
+      if (set) {
+        acc[card.setId] = { 
           set,
-          cards: setCards
+          cards: []
         };
       }
     }
     
-    return bySet;
-  }, [allSets, allCards, collectionCardIds]);
-  
-  // Filter collection cards based on search and selected set
-  const filteredCollectionCards = useMemo(() => {
-    let filtered = allCards.filter(card => 
-      collectionCardIds.includes(card.id) && 
-      card.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    
-    if (viewMode === "bySet" && selectedSet) {
-      filtered = filtered.filter(card => card.setId === selectedSet);
+    if (acc[card.setId]) {
+      acc[card.setId].cards.push(card);
     }
     
-    return filtered;
-  }, [allCards, collectionCardIds, searchQuery, viewMode, selectedSet]);
+    return acc;
+  }, {} as Record<string, { set: typeof allSets[0], cards: typeof collectionCards }>);
   
-  const setsWithCards = useMemo(() => {
-    return Object.values(collectionBySet)
-      .map(({ set }) => set)
-      .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
-  }, [collectionBySet]);
+  // Get sets that have cards in the collection
+  const setsWithCards = Object.values(collectionBySet)
+    .map(({ set }) => set)
+    .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
   
-  const isLoading = isLoadingCollection || isLoadingSets;
+  const isLoading = isLoadingIds || isLoadingCards || isLoadingSets;
   
   if (!user) {
     return null; // Redirect handled by useEffect
@@ -97,8 +94,9 @@ const MyCollection = () => {
   
   // Debug logs to help diagnose the issue
   console.log("Collection card IDs:", collectionCardIds);
-  console.log("All cards count:", allCards.length);
+  console.log("Collection cards data:", collectionCards);
   console.log("Filtered collection cards:", filteredCollectionCards);
+  console.log("Collection by set:", collectionBySet);
   
   return (
     <div className="flex flex-col min-h-screen">
