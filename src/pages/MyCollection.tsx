@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, getUserCollection } from "@/lib/api";
@@ -10,12 +11,22 @@ import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Library } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MyCollection = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"all" | "bySet">("all");
+  const [selectedSet, setSelectedSet] = useState<string | null>(null);
   
   useEffect(() => {
     if (!user) {
@@ -38,13 +49,47 @@ const MyCollection = () => {
   });
   
   // Collect all cards from all sets
-  const allCards = allSets.flatMap(set => set.cards);
+  const allCards = useMemo(() => {
+    return allSets.flatMap(set => set.cards);
+  }, [allSets]);
   
-  // Filter collection cards
-  const collectionCards = allCards.filter(card => 
-    collectionCardIds.includes(card.id) && 
-    (card.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Group collection cards by set
+  const collectionBySet = useMemo(() => {
+    const bySet: Record<string, { set: typeof allSets[0], cards: typeof allCards }> = {};
+    
+    // First, establish all sets that have cards in the collection
+    for (const set of allSets) {
+      const setCards = set.cards.filter(card => collectionCardIds.includes(card.id));
+      if (setCards.length > 0) {
+        bySet[set.id] = {
+          set,
+          cards: setCards
+        };
+      }
+    }
+    
+    return bySet;
+  }, [allSets, allCards, collectionCardIds]);
+  
+  // Filter collection cards based on search and selected set
+  const filteredCollectionCards = useMemo(() => {
+    let filtered = allCards.filter(card => 
+      collectionCardIds.includes(card.id) && 
+      card.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    if (viewMode === "bySet" && selectedSet) {
+      filtered = filtered.filter(card => card.setId === selectedSet);
+    }
+    
+    return filtered;
+  }, [allCards, collectionCardIds, searchQuery, viewMode, selectedSet]);
+  
+  const setsWithCards = useMemo(() => {
+    return Object.values(collectionBySet)
+      .map(({ set }) => set)
+      .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+  }, [collectionBySet]);
   
   const isLoading = isLoadingCollection || isLoadingSets;
   
@@ -71,17 +116,58 @@ const MyCollection = () => {
               className="pl-10"
             />
           </div>
-          <div className="text-sm text-muted-foreground">
-            {collectionCards.length} {t("cards_collected")}
+          
+          <Tabs 
+            value={viewMode} 
+            onValueChange={(value) => {
+              setViewMode(value as "all" | "bySet");
+              if (value === "all") {
+                setSelectedSet(null);
+              } else if (setsWithCards.length > 0 && !selectedSet) {
+                setSelectedSet(setsWithCards[0].id);
+              }
+            }}
+            className="w-full sm:w-auto"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="all">{t("all_cards")}</TabsTrigger>
+              <TabsTrigger value="bySet">{t("by_set")}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="text-sm text-muted-foreground ml-auto">
+            {filteredCollectionCards.length} {t("cards_collected")}
           </div>
         </div>
+        
+        {/* Set selector (only shown when in "bySet" view) */}
+        {viewMode === "bySet" && (
+          <div className="mb-6">
+            <Select 
+              value={selectedSet || ''} 
+              onValueChange={setSelectedSet}
+              disabled={setsWithCards.length === 0}
+            >
+              <SelectTrigger className="w-full sm:w-[300px]">
+                <SelectValue placeholder={t("select_set")} />
+              </SelectTrigger>
+              <SelectContent>
+                {setsWithCards.map(set => (
+                  <SelectItem key={set.id} value={set.id}>
+                    {set.name} ({collectionBySet[set.id]?.cards.length || 0} {t("cards")})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         
         {isLoading ? (
           <div className="text-center py-12">
             <div className="pokeball-button animate-spin mx-auto mb-4" />
             <p>{t("loading")}</p>
           </div>
-        ) : collectionCards.length === 0 ? (
+        ) : filteredCollectionCards.length === 0 ? (
           <div className="text-center py-12">
             <p className="mb-4">
               {searchQuery 
@@ -101,7 +187,7 @@ const MyCollection = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {collectionCards.map(card => (
+            {filteredCollectionCards.map(card => (
               <PokemonCard 
                 key={card.id} 
                 card={card} 

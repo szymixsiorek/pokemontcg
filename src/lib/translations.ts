@@ -1,4 +1,5 @@
 
+
 // English-only translations for the Pokemon TCG Gallery
 const translations: { [key: string]: string } = {
   // Navigation
@@ -86,6 +87,10 @@ const translations: { [key: string]: string } = {
   "no_cards_in_collection": "No cards in your collection",
   "browse_sets": "Browse Sets",
   "search_cards": "Search cards...",
+  "all_cards": "All Cards",
+  "by_set": "By Set",
+  "select_set": "Select a Set",
+  "cards": "Cards",
   
   // Themes
   "theme_light": "Light",

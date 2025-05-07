@@ -1,8 +1,8 @@
-
 // Pokemon TCG API service
 // Documentation: https://docs.pokemontcg.io/
 
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 // API key for Pokemon TCG API
 const API_KEY = "783dd1e4-d581-4f0a-9ed0-9112094116a4";
@@ -266,62 +266,84 @@ export const getCardById = async (id: string): Promise<Pokemon | undefined> => {
   }
 };
 
-// User collection service using Supabase storage
-let userCollection: Record<string, string[]> = {};
-
-// Get user's collection
+// Get user's collection from Supabase
 export const getUserCollection = async (userId: string): Promise<string[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return userCollection[userId] || [];
-};
-
-// Add card to collection
-export const addCardToCollection = async (userId: string, cardId: string): Promise<void> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  if (!userCollection[userId]) {
-    userCollection[userId] = [];
-  }
-  
-  if (!userCollection[userId].includes(cardId)) {
-    userCollection[userId].push(cardId);
-    // Store the collection locally to maintain between refreshes
-    localStorage.setItem(`pokemon_tcg_collection_${userId}`, JSON.stringify(userCollection[userId]));
-  }
-};
-
-// Remove card from collection
-export const removeCardFromCollection = async (userId: string, cardId: string): Promise<void> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  if (userCollection[userId]) {
-    userCollection[userId] = userCollection[userId].filter(id => id !== cardId);
-    // Update the local storage
-    localStorage.setItem(`pokemon_tcg_collection_${userId}`, JSON.stringify(userCollection[userId]));
-  }
-};
-
-// Load collection from localStorage on startup
-export const initializeCollections = (): void => {
   try {
-    // Check all localStorage keys for collection data
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('pokemon_tcg_collection_')) {
-        const userId = key.replace('pokemon_tcg_collection_', '');
-        const data = localStorage.getItem(key);
-        if (data) {
-          userCollection[userId] = JSON.parse(data);
-        }
+    if (!userId) return [];
+    
+    const { data, error } = await supabase
+      .from('user_collections')
+      .select('card_id')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error("Error fetching collection:", error);
+      toast.error("Failed to load your collection");
+      return [];
+    }
+    
+    return data.map(item => item.card_id);
+  } catch (error) {
+    console.error("Error fetching collection:", error);
+    toast.error("Failed to load your collection");
+    return [];
+  }
+};
+
+// Add card to collection in Supabase
+export const addCardToCollection = async (userId: string, cardId: string): Promise<void> => {
+  try {
+    if (!userId) throw new Error("User not authenticated");
+    
+    // Get the set ID from the card ID (format: <set-id>-<card-number>)
+    const setId = cardId.split('-')[0];
+    
+    const { error } = await supabase
+      .from('user_collections')
+      .insert({
+        user_id: userId,
+        card_id: cardId,
+        set_id: setId
+      });
+    
+    if (error) {
+      if (error.code === '23505') { // Unique constraint violation
+        console.log("Card already in collection");
+      } else {
+        throw error;
       }
     }
-    console.log("Collections initialized from localStorage");
   } catch (error) {
-    console.error("Error initializing collections:", error);
+    console.error("Error adding card to collection:", error);
+    throw error;
   }
+};
+
+// Remove card from collection in Supabase
+export const removeCardFromCollection = async (userId: string, cardId: string): Promise<void> => {
+  try {
+    if (!userId) throw new Error("User not authenticated");
+    
+    const { error } = await supabase
+      .from('user_collections')
+      .delete()
+      .eq('user_id', userId)
+      .eq('card_id', cardId);
+    
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error removing card from collection:", error);
+    throw error;
+  }
+};
+
+// Deprecated - for backward compatibility during transition
+const userCollection: Record<string, string[]> = {};
+export const initializeCollections = (): void => {
+  // This function is kept for backward compatibility but no longer needed
+  console.log("Collection storage moved to Supabase");
 };
 
 // Initialize collections when the module loads
