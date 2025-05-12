@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
@@ -15,7 +13,6 @@ import { Progress } from "@/components/ui/progress";
 
 const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
-  const { t } = useLanguage();
   const { user } = useAuth();
   const { getSeriesColors } = useTheme();
   const [logoError, setLogoError] = useState(false);
@@ -78,14 +75,14 @@ const CardSet = () => {
         <Button variant="ghost" className="mb-6" asChild>
           <Link to="/sets">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            {t("back_to_sets")}
+            Back to Sets
           </Link>
         </Button>
         
         {isLoading ? (
           <div className="text-center py-12">
             <div className="pokeball-loader mx-auto mb-4" />
-            <p>{t("loading")}</p>
+            <p>Loading...</p>
           </div>
         ) : set ? (
           <>
@@ -95,10 +92,10 @@ const CardSet = () => {
                   {set.name}
                 </h1>
                 <p className="text-muted-foreground">
-                  {set.cardCount} {t("cards_in_set")} • {t("release_date")}: {set.releaseDate}
+                  {set.cardCount} cards in set • Release Date: {set.releaseDate}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t("series")}: <span className="dark:text-white text-black">{set.series}</span>
+                  Series: <span className="dark:text-white text-black">{set.series}</span>
                 </p>
               </div>
               <div className="h-16 flex items-center justify-center md:justify-end">
@@ -111,7 +108,7 @@ const CardSet = () => {
                   />
                 ) : (
                   <div className="text-muted-foreground text-sm">
-                    {t("logo_not_available")}
+                    Logo not available
                   </div>
                 )}
               </div>
@@ -121,7 +118,7 @@ const CardSet = () => {
               <div className="mb-6 bg-card p-4 rounded-lg border">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium">
-                    {t("collection_progress")}
+                    Collection Progress
                   </span>
                   <span className="text-sm">
                     {collectedCardsCount} / {totalCardsCount} ({collectionPercentage}%)
@@ -144,10 +141,10 @@ const CardSet = () => {
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-destructive mb-4">{t("set_not_found")}</p>
+            <p className="text-destructive mb-4">Set not found</p>
             <Button asChild>
               <Link to="/sets">
-                {t("back_to_sets")}
+                Back to Sets
               </Link>
             </Button>
           </div>

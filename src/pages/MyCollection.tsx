@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library, TrendingUp } from "lucide-react";
+import { Search, Library, TrendingUp, Award } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -65,18 +65,18 @@ const MyCollection = () => {
   
   // Group collection cards by set
   const collectionBySet = collectionCards.reduce((acc, card) => {
-    if (!acc[card.setId]) {
+    if (!acc[card.setId!]) {
       const set = allSets.find(s => s.id === card.setId);
       if (set) {
-        acc[card.setId] = { 
+        acc[card.setId!] = { 
           set,
           cards: []
         };
       }
     }
     
-    if (acc[card.setId]) {
-      acc[card.setId].cards.push(card);
+    if (acc[card.setId!]) {
+      acc[card.setId!].cards.push(card);
     }
     
     return acc;
@@ -86,6 +86,12 @@ const MyCollection = () => {
   const setsWithCards = Object.values(collectionBySet)
     .map(({ set }) => set)
     .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+  
+  // Calculate number of completed sets (100%)
+  const completedSets = Object.values(collectionBySet).filter(({ set, cards }) => {
+    // A set is complete if the number of collected cards equals the card count in the set
+    return cards.length === set.cardCount;
+  }).length;
   
   // Calculate total collection value based on Cardmarket trend prices
   const calculateTotalValue = () => {
@@ -139,12 +145,13 @@ const MyCollection = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Sets Collected</p>
-                  <h3 className="text-2xl font-bold">{setsWithCards.length}</h3>
+                  <p className="text-sm text-muted-foreground">Completed Sets</p>
+                  <h3 className="text-2xl font-bold">{completedSets}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Out of {setsWithCards.length} sets with cards
+                  </p>
                 </div>
-                <div className="h-8 w-8 grid place-items-center text-muted-foreground opacity-70">
-                  <span className="text-xl font-bold">#</span>
-                </div>
+                <Award className="h-8 w-8 text-muted-foreground opacity-70" />
               </div>
             </CardContent>
           </Card>
@@ -156,7 +163,10 @@ const MyCollection = () => {
                   <p className="text-sm text-muted-foreground">Collection Value</p>
                   <h3 className="text-2xl font-bold">€{collectionValue.totalValue}</h3>
                   <p className="text-xs text-muted-foreground">
-                    Based on {collectionValue.countedCards} of {collectionValue.totalCards} cards with price data
+                    {collectionValue.countedCards === collectionValue.totalCards 
+                      ? `Based on all ${collectionValue.totalCards} cards` 
+                      : `Based on ${collectionValue.countedCards} of ${collectionValue.totalCards} cards with price data`
+                    }
                   </p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-muted-foreground opacity-70" />
