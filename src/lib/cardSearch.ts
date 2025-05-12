@@ -1,3 +1,4 @@
+
 import { searchCardsByName } from "./api";
 
 // Define the shape of the card suggestion returned from the search
@@ -44,7 +45,7 @@ export const searchPokemonNames = async (query: string): Promise<CardSuggestion[
     
     const data: PokemonListResponse = await response.json();
     
-    // Filter Pokemon names that match the query
+    // Filter Pokemon names that match the query (case-insensitive)
     const filteredResults = data.results
       .filter(pokemon => pokemon.name.toLowerCase().includes(query.toLowerCase()))
       .slice(0, 10); // Limit to 10 suggestions

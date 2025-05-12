@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, searchCardsByName } from "@/lib/api";
@@ -12,23 +11,22 @@ import { ChevronRight } from "lucide-react";
 import PokemonCard from "@/components/PokemonCard";
 import CardNameTypeahead from "@/components/CardNameTypeahead";
 import { toast } from "sonner";
+import { useCardSearch } from "@/hooks/useCardSearch";
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
+  
+  // Use our custom hook for card search functionality
+  const { searchCardsByPokemon } = useCardSearch();
   
   // Get card sets
   const { data: sets = [], isLoading } = useQuery({
     queryKey: ['cardSets'],
     queryFn: () => getCardSets()
-  });
-  
-  // Search results query
-  const { data: searchResults = [], isLoading: isLoadingSearch, refetch: refetchSearch } = useQuery({
-    queryKey: ['searchCards', searchQuery],
-    queryFn: () => searchCardsByName(searchQuery),
-    enabled: false
   });
   
   // Generate daily sets selection based on current date
@@ -67,15 +65,36 @@ const Index = () => {
   const clearSearch = () => {
     setSearchQuery("");
     setIsSearching(false);
+    setSearchResults([]);
   };
   
   // Updated to handle Pokemon name selection
   const handleCardSelect = async (card: { id: string; name: string }) => {
-    // Just set the name as the search query
+    // Set the name as the search query
     setSearchQuery(card.name);
     setIsSearching(true);
-    await refetchSearch();
-    toast.success(`Searching for ${card.name} cards`);
+    setIsLoadingResults(true);
+    
+    try {
+      // Use our custom hook to search for cards
+      console.log(`Searching for cards of Pokémon: ${card.name}`);
+      const results = await searchCardsByPokemon(card.name);
+      
+      console.log(`Found ${results.length} results for ${card.name}`);
+      setSearchResults(results);
+      
+      if (results.length > 0) {
+        toast.success(`Found ${results.length} cards for ${card.name}`);
+      } else {
+        toast.info(`No cards found for ${card.name}`);
+      }
+    } catch (error) {
+      console.error("Error searching for cards:", error);
+      toast.error(`Error searching for ${card.name} cards`);
+      setSearchResults([]);
+    } finally {
+      setIsLoadingResults(false);
+    }
   };
   
   // The sets are already sorted by release date in the API
@@ -127,7 +146,7 @@ const Index = () => {
                 </Button>
               </div>
               
-              {isLoadingSearch ? (
+              {isLoadingResults ? (
                 <div className="text-center py-12">
                   <div className="pokeball-loader mx-auto mb-4" />
                   <p>{t("loading")}</p>

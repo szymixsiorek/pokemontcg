@@ -40,7 +40,14 @@ export const useCardSearch = () => {
     if (!pokemonName.trim()) return [];
     
     try {
-      const results = await searchCardsByName(pokemonName);
+      // Ensure we're using the Pokémon name in a format that will work with the API
+      // Some APIs need exact capitalization or formatting
+      const formattedName = pokemonName.trim().toLowerCase();
+      console.log(`Searching for cards with Pokémon name: ${formattedName}`);
+      
+      // Use the existing API function to search for cards
+      const results = await searchCardsByName(formattedName);
+      console.log(`Found ${results.length} cards for ${formattedName}`);
       return results;
     } catch (err) {
       console.error('Card search error:', err);

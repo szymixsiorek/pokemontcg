@@ -15,14 +15,18 @@ window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
     const params = new URL(url, window.location.origin).searchParams;
     const query = params.get('query') || '';
     
+    console.log(`Mock API: Searching Pokémon with query "${query}"`);
+    
     // Get Pokémon name suggestions with artwork
     try {
       const suggestions = await searchPokemonNames(query);
+      console.log(`Mock API: Found ${suggestions.length} Pokémon matches`);
       return new Response(JSON.stringify(suggestions), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
     } catch (error) {
+      console.error("Mock API error:", error);
       return new Response(JSON.stringify({ error: 'Failed to fetch suggestions' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
