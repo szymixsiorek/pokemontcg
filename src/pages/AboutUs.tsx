@@ -1,7 +1,7 @@
+
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Layout from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
 import { differenceInDays } from 'date-fns';
@@ -19,10 +19,8 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      
-      <main className="flex-grow container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <Layout>
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-2 text-center">{t("about_us")}</h1>
           <p className="text-center mb-12 text-muted-foreground">
@@ -129,10 +127,8 @@ const AboutUs = () => {
             </Card>
           </div>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

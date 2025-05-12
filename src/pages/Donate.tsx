@@ -1,8 +1,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Layout from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Donate = () => {
@@ -57,10 +56,8 @@ const Donate = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      
-      <main className="flex-grow container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <Layout>
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <Card className="border-primary/20">
             <CardHeader className="text-center">
@@ -125,10 +122,8 @@ const Donate = () => {
             </CardContent>
           </Card>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 
