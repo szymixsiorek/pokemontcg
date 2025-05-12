@@ -52,46 +52,94 @@ export const useCardSearch = () => {
       // Use the existing API function to search for cards
       const results = await searchCardsByName(rawName);
       
-      // Improved sorting logic to handle set order correctly
+      // Enhanced sorting logic with more reliable set ordering
       const sortedResults = [...results].sort((a, b) => {
         // Extract set IDs from card IDs (format is usually setid-number)
         const setIdA = a.id.split('-')[0];
         const setIdB = b.id.split('-')[0];
         
-        // For more reliable sorting, we'll add some special handling for known set ID patterns
-        
-        // First, try to extract series number if available (like "swsh" vs "sv")
-        const seriesA = setIdA.replace(/[0-9]/g, '');
-        const seriesB = setIdB.replace(/[0-9]/g, '');
-        
-        // If they're from different series, sort by series first
-        if (seriesA !== seriesB) {
-          // Known series order from oldest to newest
-          const seriesOrder = [
-            'base', 'jungle', 'fossil', 'base2', 'team', 'gym', 'neo',
-            'legendary', 'expedition', 'aquapolis', 'skyridge', 'ex', 'np', 'dp',
-            'pl', 'hgss', 'col', 'bw', 'xy', 'sm', 'swsh', 'sv'
-          ];
+        // More comprehensive series ordering
+        // This defines the exact order of all known Pokémon TCG series from oldest to newest
+        const seriesOrder = [
+          // Base sets and early expansions
+          'base', 'jungle', 'fossil', 'base2', 'team', 'gym', 
           
-          const seriesAIndex = seriesOrder.findIndex(s => seriesA.includes(s));
-          const seriesBIndex = seriesOrder.findIndex(s => seriesB.includes(s));
+          // Neo series
+          'neo', 
           
-          // If both series are recognized, sort by their known order
-          if (seriesAIndex !== -1 && seriesBIndex !== -1) {
+          // e-Card series
+          'legendary', 'expedition', 'aquapolis', 'skyridge', 
+          
+          // EX series
+          'ex', 'ruby', 'sapphire', 'sandstorm', 'dragon', 'magma', 'hidden', 'firered', 
+          'leafgreen', 'team', 'deoxys', 'emerald', 'unseen', 'holon', 'crystal', 'delta',
+          'legend', 'maker', 'pop', 
+          
+          // Diamond & Pearl series
+          'np', 'dp', 'mysterious', 'secret', 'great', 'majestic', 'pop', 'platinum',
+          'rising', 'supreme', 'arceus', 
+          
+          // HeartGold SoulSilver series
+          'pl', 'hgss', 'hs', 'unleashed', 'undaunted', 'triumphant', 
+          
+          // Call of Legends
+          'col', 
+          
+          // Black & White series
+          'bw', 'emerging', 'noble', 'next', 'dark', 'dragon', 'boundaries', 'plasma',
+          'freeze', 'blast', 'legendary',
+          
+          // XY series
+          'xy', 'flashfire', 'furious', 'phantom', 'primal', 'roaring', 'ancient', 'breakthrough',
+          'breakpoint', 'generations', 'fates', 'steam', 'evolutions', 
+          
+          // Sun & Moon series
+          'sm', 'guardians', 'burning', 'shining', 'crimson', 'ultra', 'forbidden', 'celestial',
+          'dragon', 'unified', 'unbroken', 'cosmic', 'hidden', 'detective', 'shiny',
+          
+          // Sword & Shield series
+          'swsh', 'rebel', 'darkness', 'champion', 'vivid', 'battle', 'shining', 'chilling',
+          'evolving', 'fusion', 'brilliant', 'astral', 'lost', 'silver', 'crown',
+          
+          // Scarlet & Violet series 
+          'sv', 'paldea', 'obsidian', 'paradox', 'temporal', 'pitt', 'mask', 'twilight'
+        ];
+        
+        // Match each set ID to its series
+        let seriesA = '';
+        let seriesB = '';
+        
+        for (const series of seriesOrder) {
+          if (setIdA.startsWith(series) || setIdA.includes(series)) {
+            seriesA = series;
+          }
+          if (setIdB.startsWith(series) || setIdB.includes(series)) {
+            seriesB = series;
+          }
+        }
+        
+        // If we found matching series for both cards
+        if (seriesA && seriesB) {
+          const seriesAIndex = seriesOrder.indexOf(seriesA);
+          const seriesBIndex = seriesOrder.indexOf(seriesB);
+          
+          // If they're from different series, sort by series first
+          if (seriesAIndex !== seriesBIndex) {
             return seriesAIndex - seriesBIndex;
           }
         }
         
-        // Second pass - check if the IDs have numbers that can be compared
+        // If same series or series not found, try to use numbers in the set ID
+        // Extract numbers from the set IDs 
         const numA = parseInt(setIdA.replace(/[^0-9]/g, '') || '0');
         const numB = parseInt(setIdB.replace(/[^0-9]/g, '') || '0');
         
-        // If they're in the same series, compare their numbers
-        if (seriesA === seriesB && !isNaN(numA) && !isNaN(numB)) {
+        // If both have numbers and they're in the same series, compare numbers
+        if (!isNaN(numA) && !isNaN(numB)) {
           return numA - numB;
         }
         
-        // Fallback to basic string comparison if other methods don't work
+        // Last resort: alphabetical comparison of the set IDs
         return setIdA.localeCompare(setIdB);
       });
       
