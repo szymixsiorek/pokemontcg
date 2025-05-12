@@ -91,6 +91,8 @@ const translations: { [key: string]: string } = {
   "by_set": "By Set",
   "select_set": "Select a Set",
   "cards": "Cards",
+  "display": "Display Option",
+  "filter_by_set": "Filter By Set",
   
   // Themes
   "theme_light": "Light",
