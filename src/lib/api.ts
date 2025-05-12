@@ -1,3 +1,4 @@
+
 // Pokemon TCG API service
 // Documentation: https://docs.pokemontcg.io/
 
@@ -170,6 +171,34 @@ export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
   } catch (error) {
     console.error(`Error searching cards:`, error);
     toast.error("Failed to search cards");
+    return [];
+  }
+};
+
+// API endpoint for typeahead suggestions - this emulates a server-side API endpoint
+export const getCardSuggestions = async (query: string): Promise<any[]> => {
+  try {
+    if (!query || query.length < 2) return [];
+    
+    const response = await fetch(
+      `${BASE_URL}/cards?q=name:"${query}*"&orderBy=name&page=1&pageSize=10`, 
+      { headers }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Extract just what we need for autocomplete suggestions
+    return data.data.map((card: any) => ({
+      id: card.id,
+      name: card.name,
+      imageUrl: card.images.small
+    }));
+  } catch (error) {
+    console.error(`Error getting card suggestions:`, error);
     return [];
   }
 };

@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, searchCardsByName } from "@/lib/api";
@@ -8,9 +7,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useMemo } from "react";
-import { ChevronRight, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { ChevronRight } from "lucide-react";
 import PokemonCard from "@/components/PokemonCard";
+import CardNameTypeahead from "@/components/CardNameTypeahead";
+import { searchCards } from "@/lib/cardSearch";
+import { toast } from "sonner";
 
 const Index = () => {
   const { t } = useLanguage();
@@ -56,8 +57,7 @@ const Index = () => {
     return selectedSets;
   }, [sets]);
   
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = async () => {
     if (searchQuery.trim()) {
       setIsSearching(true);
       await refetchSearch();
@@ -67,6 +67,13 @@ const Index = () => {
   const clearSearch = () => {
     setSearchQuery("");
     setIsSearching(false);
+  };
+  
+  const handleCardSelect = async (card: { id: string; name: string }) => {
+    setSearchQuery(card.name);
+    setIsSearching(true);
+    await refetchSearch();
+    toast.success(`Searching for ${card.name}`);
   };
   
   // The sets are already sorted by release date in the API
@@ -91,27 +98,12 @@ const Index = () => {
               {t("welcome_subtitle")}
             </p>
             
-            <form onSubmit={handleSearch} className="max-w-md mx-auto mb-8">
-              <div className="relative flex">
-                <div className="relative flex-grow">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder={t("search_cards")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-20"
-                  />
-                  <Button 
-                    type="submit" 
-                    size="sm" 
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8"
-                  >
-                    {t("search")}
-                  </Button>
-                </div>
-              </div>
-            </form>
+            <div className="max-w-md mx-auto mb-8">
+              <CardNameTypeahead 
+                onSelect={handleCardSelect}
+                placeholder={t("search_cards")}
+              />
+            </div>
             
             <Button asChild size="lg">
               <Link to="/sets">
