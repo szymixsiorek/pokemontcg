@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -9,6 +8,7 @@ export interface CardSuggestion {
   id: string;
   name: string;
   imageUrl?: string; // Optional image URL for the card
+  displayName?: string; // Added this property to fix the TypeScript error
 }
 
 interface CardNameTypeaheadProps {

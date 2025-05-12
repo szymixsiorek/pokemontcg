@@ -1,4 +1,3 @@
-
 import { searchCardsByName } from "./api";
 
 // Define the shape of the card suggestion returned from the search
@@ -6,7 +5,7 @@ export interface CardSuggestion {
   id: string;
   name: string;
   imageUrl?: string;
-  displayName?: string;
+  displayName?: string; // Added this property to be consistent with the interface in CardNameTypeahead.tsx
 }
 
 // Pokemon API data structure
