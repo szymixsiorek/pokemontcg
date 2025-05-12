@@ -13,6 +13,7 @@ import PokemonCard from "@/components/PokemonCard";
 import CardNameTypeahead from "@/components/CardNameTypeahead";
 import { toast } from "sonner";
 import { useCardSearch, CardGroup } from "@/hooks/useCardSearch";
+import CardDisplayOptions, { DisplayMode, SortOrder } from "@/components/CardDisplayOptions";
 
 const Index = () => {
   const { t } = useLanguage();
@@ -20,6 +21,11 @@ const Index = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<CardGroup[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
+  
+  // Display and sorting options
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("grouped");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("oldest-first");
+  const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   
   // Use our custom hook for card search functionality
   const { searchCardsByPokemon, formatPokemonName } = useCardSearch();
@@ -56,6 +62,37 @@ const Index = () => {
     return selectedSets;
   }, [sets]);
   
+  // Extract available sets from search results for filtering
+  const availableSets = useMemo(() => {
+    return searchResults.map(group => ({
+      id: group.set.id,
+      name: group.set.name
+    }));
+  }, [searchResults]);
+  
+  // Process search results based on display mode, sort order, and filters
+  const processedResults = useMemo(() => {
+    if (searchResults.length === 0) return { groupedResults: [], allCards: [] };
+    
+    // Apply set filter if needed
+    let filteredGroups = searchResults;
+    if (selectedSetId) {
+      filteredGroups = searchResults.filter(group => group.set.id === selectedSetId);
+    }
+    
+    // Apply sort order
+    let sortedGroups = [...filteredGroups];
+    if (sortOrder === "newest-first") {
+      // Reverse the order (since they're already sorted oldest-first)
+      sortedGroups = sortedGroups.reverse();
+    }
+    
+    // Extract all cards for "all cards" view
+    const allCards = sortedGroups.flatMap(group => group.cards);
+    
+    return { groupedResults: sortedGroups, allCards };
+  }, [searchResults, sortOrder, selectedSetId]);
+  
   const handleSearch = async () => {
     if (searchQuery.trim()) {
       setIsSearching(true);
@@ -69,6 +106,9 @@ const Index = () => {
         // Search for cards using the searchCardsByPokemon function
         const { groupedCards } = await searchCardsByPokemon(searchName);
         setSearchResults(groupedCards);
+        
+        // Reset filtering and sorting options
+        setSelectedSetId(null);
         
         // Calculate total cards across all groups
         const totalCards = groupedCards.reduce((sum, group) => sum + group.cards.length, 0);
@@ -167,7 +207,7 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Search Results - Updated to display cards grouped by set */}
+        {/* Search Results - Updated to support different display modes */}
         {isSearching && (
           <section className="py-16 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto">
@@ -188,28 +228,60 @@ const Index = () => {
                   <p>{t("no_results")}</p>
                 </div>
               ) : (
-                <div className="space-y-12">
-                  {searchResults.map(group => (
-                    <div key={group.set.id} className="border-t pt-6">
-                      <div className="mb-4">
-                        <h3 className="text-xl font-bold">
-                          <Link to={`/sets/${group.set.id}`} className="hover:underline text-primary">
-                            {group.set.name}
-                          </Link>
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {group.cards.length} {group.cards.length === 1 ? 'card' : 'cards'}
-                        </p>
-                      </div>
-                      
+                <>
+                  {/* Display and sorting options */}
+                  <div className="mb-8 p-4 border rounded-md bg-card">
+                    <CardDisplayOptions 
+                      displayMode={displayMode}
+                      setDisplayMode={setDisplayMode}
+                      sortOrder={sortOrder}
+                      setSortOrder={setSortOrder}
+                      availableSets={availableSets}
+                      selectedSetId={selectedSetId}
+                      setSelectedSetId={setSelectedSetId}
+                    />
+                  </div>
+                  
+                  {/* Render cards based on display mode */}
+                  {displayMode === "grouped" ? (
+                    // Grouped by set mode
+                    <div className="space-y-12">
+                      {processedResults.groupedResults.map(group => (
+                        <div key={group.set.id} className="border-t pt-6">
+                          <div className="mb-4">
+                            <h3 className="text-xl font-bold">
+                              <Link to={`/sets/${group.set.id}`} className="hover:underline text-primary">
+                                {group.set.name}
+                              </Link>
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {group.cards.length} {group.cards.length === 1 ? 'card' : 'cards'}
+                              {group.set.releaseDate && ` • ${group.set.releaseDate}`}
+                            </p>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {group.cards.map(card => (
+                              <PokemonCard key={card.id} card={card} />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // All cards mode
+                    <div>
+                      <p className="mb-4 text-sm text-muted-foreground">
+                        {processedResults.allCards.length} {processedResults.allCards.length === 1 ? 'card' : 'cards'} found
+                      </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {group.cards.map(card => (
+                        {processedResults.allCards.map(card => (
                           <PokemonCard key={card.id} card={card} />
                         ))}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
           </section>
