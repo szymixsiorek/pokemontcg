@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { getCardSuggestions } from './lib/api.ts'
+import { searchPokemonNames } from './lib/cardSearch.ts'
 
 // Add a fetch interceptor for our mock API endpoint
 const originalFetch = window.fetch;
@@ -15,9 +16,9 @@ window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
     const params = new URL(url, window.location.origin).searchParams;
     const query = params.get('query') || '';
     
-    // Get suggestions using our actual API function
+    // Get unique Pokémon name suggestions
     try {
-      const suggestions = await getCardSuggestions(query);
+      const suggestions = await searchPokemonNames(query);
       return new Response(JSON.stringify(suggestions), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }

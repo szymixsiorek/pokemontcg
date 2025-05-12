@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, searchCardsByName } from "@/lib/api";
@@ -10,7 +11,6 @@ import { useState, useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import PokemonCard from "@/components/PokemonCard";
 import CardNameTypeahead from "@/components/CardNameTypeahead";
-import { searchCards } from "@/lib/cardSearch";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -69,11 +69,13 @@ const Index = () => {
     setIsSearching(false);
   };
   
+  // Updated to handle Pokemon name selection
   const handleCardSelect = async (card: { id: string; name: string }) => {
+    // Just set the name as the search query
     setSearchQuery(card.name);
     setIsSearching(true);
     await refetchSearch();
-    toast.success(`Searching for ${card.name}`);
+    toast.success(`Searching for ${card.name} cards`);
   };
   
   // The sets are already sorted by release date in the API
@@ -101,7 +103,7 @@ const Index = () => {
             <div className="max-w-md mx-auto mb-8">
               <CardNameTypeahead 
                 onSelect={handleCardSelect}
-                placeholder={t("search_cards")}
+                placeholder={t("search_pokemon_names")}
               />
             </div>
             
