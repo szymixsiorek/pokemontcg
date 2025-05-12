@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { searchCardsByName } from '@/lib/api';
 import { CardSuggestion } from '@/components/CardNameTypeahead';
@@ -51,13 +52,47 @@ export const useCardSearch = () => {
       // Use the existing API function to search for cards
       const results = await searchCardsByName(rawName);
       
-      // Sort results by set release date (oldest first)
-      // We use the card ID pattern which typically follows set-number format
+      // Improved sorting logic to handle set order correctly
       const sortedResults = [...results].sort((a, b) => {
         // Extract set IDs from card IDs (format is usually setid-number)
         const setIdA = a.id.split('-')[0];
         const setIdB = b.id.split('-')[0];
-        return setIdA.localeCompare(setIdB); // Oldest sets first
+        
+        // For more reliable sorting, we'll add some special handling for known set ID patterns
+        
+        // First, try to extract series number if available (like "swsh" vs "sv")
+        const seriesA = setIdA.replace(/[0-9]/g, '');
+        const seriesB = setIdB.replace(/[0-9]/g, '');
+        
+        // If they're from different series, sort by series first
+        if (seriesA !== seriesB) {
+          // Known series order from oldest to newest
+          const seriesOrder = [
+            'base', 'jungle', 'fossil', 'base2', 'team', 'gym', 'neo',
+            'legendary', 'expedition', 'aquapolis', 'skyridge', 'ex', 'np', 'dp',
+            'pl', 'hgss', 'col', 'bw', 'xy', 'sm', 'swsh', 'sv'
+          ];
+          
+          const seriesAIndex = seriesOrder.findIndex(s => seriesA.includes(s));
+          const seriesBIndex = seriesOrder.findIndex(s => seriesB.includes(s));
+          
+          // If both series are recognized, sort by their known order
+          if (seriesAIndex !== -1 && seriesBIndex !== -1) {
+            return seriesAIndex - seriesBIndex;
+          }
+        }
+        
+        // Second pass - check if the IDs have numbers that can be compared
+        const numA = parseInt(setIdA.replace(/[^0-9]/g, '') || '0');
+        const numB = parseInt(setIdB.replace(/[^0-9]/g, '') || '0');
+        
+        // If they're in the same series, compare their numbers
+        if (seriesA === seriesB && !isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+        }
+        
+        // Fallback to basic string comparison if other methods don't work
+        return setIdA.localeCompare(setIdB);
       });
       
       console.log(`Found ${sortedResults.length} cards for ${rawName}, sorted oldest to newest`);
