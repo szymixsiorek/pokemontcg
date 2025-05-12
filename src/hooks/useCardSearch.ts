@@ -3,6 +3,155 @@ import { useState, useCallback } from 'react';
 import { searchCardsByName } from '@/lib/api';
 import { CardSuggestion } from '@/components/CardNameTypeahead';
 import { searchPokemonNames, formatPokemonName } from '@/lib/cardSearch';
+import { Pokemon } from '@/lib/api';
+
+/**
+ * Represents a group of cards from the same set
+ */
+export interface CardGroup {
+  set: {
+    id: string;
+    name: string;
+    releaseDate: string;
+  };
+  cards: Pokemon[];
+}
+
+/**
+ * Groups an array of cards by set, then sorts:
+ *  1) Sets from oldest to newest by releaseDate
+ *  2) Cards within each set by numeric part of their number
+ */
+function groupAndSortCards(cards: Pokemon[]): CardGroup[] {
+  // 1) Group cards by set ID
+  const map: Record<string, CardGroup> = {};
+  
+  cards.forEach(card => {
+    // Skip cards without proper set info
+    if (!card.setId) return;
+    
+    const key = card.setId;
+    
+    if (!map[key]) {
+      map[key] = {
+        set: {
+          id: card.setId,
+          name: card.setName || 'Unknown Set',
+          // Default to an old date if not provided, to push these to the top
+          releaseDate: '1990-01-01',
+        },
+        cards: []
+      };
+    }
+    
+    map[key].cards.push(card);
+  });
+
+  // 2) Convert to array and sort sets by release date ascending (oldest first)
+  const groups = Object.values(map).sort((a, b) => {
+    // Use set ID as a fallback for sorting when no explicit dates available
+    // This relies on the series ordering logic from the original code
+    return compareSetIds(a.set.id, b.set.id);
+  });
+
+  // 3) Sort cards in each set by their number (numeric-aware)
+  groups.forEach(group => {
+    group.cards.sort((a, b) =>
+      a.number.localeCompare(b.number, undefined, { numeric: true })
+    );
+  });
+
+  return groups;
+}
+
+/**
+ * Compare two set IDs to determine their chronological order
+ * This function preserves the sophisticated series ordering from the original code
+ */
+function compareSetIds(setIdA: string, setIdB: string): number {
+  // This defines the exact order of all known Pokémon TCG series from oldest to newest
+  const seriesOrder = [
+    // Base sets and early expansions
+    'base', 'jungle', 'fossil', 'base2', 'team', 'gym', 
+    
+    // Neo series
+    'neo', 
+    
+    // e-Card series
+    'legendary', 'expedition', 'aquapolis', 'skyridge', 
+    
+    // EX series
+    'ex', 'ruby', 'sapphire', 'sandstorm', 'dragon', 'magma', 'hidden', 'firered', 
+    'leafgreen', 'team', 'deoxys', 'emerald', 'unseen', 'holon', 'crystal', 'delta',
+    'legend', 'maker', 'pop', 
+    
+    // Diamond & Pearl series
+    'np', 'dp', 'mysterious', 'secret', 'great', 'majestic', 'pop', 'platinum',
+    'rising', 'supreme', 'arceus', 
+    
+    // HeartGold SoulSilver series
+    'pl', 'hgss', 'hs', 'unleashed', 'undaunted', 'triumphant', 
+    
+    // Call of Legends
+    'col', 
+    
+    // Black & White series
+    'bw', 'emerging', 'noble', 'next', 'dark', 'dragon', 'boundaries', 'plasma',
+    'freeze', 'blast', 'legendary',
+    
+    // XY series
+    'xy', 'flashfire', 'furious', 'phantom', 'primal', 'roaring', 'ancient', 'breakthrough',
+    'breakpoint', 'generations', 'fates', 'steam', 'evolutions', 
+    
+    // Sun & Moon series
+    'sm', 'guardians', 'burning', 'shining', 'crimson', 'ultra', 'forbidden', 'celestial',
+    'dragon', 'unified', 'unbroken', 'cosmic', 'hidden', 'detective', 'shiny',
+    
+    // Sword & Shield series
+    'swsh', 'rebel', 'darkness', 'champion', 'vivid', 'battle', 'shining', 'chilling',
+    'evolving', 'fusion', 'brilliant', 'astral', 'lost', 'silver', 'crown',
+    
+    // Scarlet & Violet series 
+    'sv', 'paldea', 'obsidian', 'paradox', 'temporal', 'pitt', 'mask', 'twilight'
+  ];
+  
+  // Match each set ID to its series
+  let seriesA = '';
+  let seriesB = '';
+  
+  for (const series of seriesOrder) {
+    if (setIdA.toLowerCase().startsWith(series) || setIdA.toLowerCase().includes(series)) {
+      seriesA = series;
+    }
+    if (setIdB.toLowerCase().startsWith(series) || setIdB.toLowerCase().includes(series)) {
+      seriesB = series;
+    }
+  }
+  
+  // If we found matching series for both cards
+  if (seriesA && seriesB) {
+    const seriesAIndex = seriesOrder.indexOf(seriesA);
+    const seriesBIndex = seriesOrder.indexOf(seriesB);
+    
+    // If they're from different series, sort by series first
+    if (seriesAIndex !== seriesBIndex) {
+      return seriesAIndex - seriesBIndex;
+    }
+  }
+  
+  // If same series or series not found, try to use numbers in the set ID
+  // Extract numbers from the set IDs 
+  const numA = parseInt(setIdA.replace(/[^0-9]/g, '') || '0');
+  const numB = parseInt(setIdB.replace(/[^0-9]/g, '') || '0');
+  
+  // If both have numbers and they're in the same series, compare numbers
+  if (!isNaN(numA) && !isNaN(numB)) {
+    return numA - numB;
+  }
+  
+  // Last resort: alphabetical comparison of the set IDs
+  return setIdA.localeCompare(setIdB);
+}
 
 /**
  * Custom hook for card name search functionality
@@ -37,7 +186,7 @@ export const useCardSearch = () => {
 
   // Function to search for all cards of a specific Pokémon
   const searchCardsByPokemon = useCallback(async (pokemonName: string) => {
-    if (!pokemonName.trim()) return [];
+    if (!pokemonName.trim()) return { cards: [], groupedCards: [] };
     
     try {
       // Format the Pokémon name properly for search
@@ -50,104 +199,20 @@ export const useCardSearch = () => {
       console.log(`Searching for cards with Pokémon name: ${rawName}`);
       
       // Use the existing API function to search for cards
-      const results = await searchCardsByName(rawName);
+      const cards = await searchCardsByName(rawName);
+      console.log(`Found ${cards.length} cards for ${rawName}, sorted oldest to newest`);
       
-      // Enhanced sorting logic with more reliable set ordering
-      const sortedResults = [...results].sort((a, b) => {
-        // Extract set IDs from card IDs (format is usually setid-number)
-        const setIdA = a.id.split('-')[0];
-        const setIdB = b.id.split('-')[0];
-        
-        // More comprehensive series ordering
-        // This defines the exact order of all known Pokémon TCG series from oldest to newest
-        const seriesOrder = [
-          // Base sets and early expansions
-          'base', 'jungle', 'fossil', 'base2', 'team', 'gym', 
-          
-          // Neo series
-          'neo', 
-          
-          // e-Card series
-          'legendary', 'expedition', 'aquapolis', 'skyridge', 
-          
-          // EX series
-          'ex', 'ruby', 'sapphire', 'sandstorm', 'dragon', 'magma', 'hidden', 'firered', 
-          'leafgreen', 'team', 'deoxys', 'emerald', 'unseen', 'holon', 'crystal', 'delta',
-          'legend', 'maker', 'pop', 
-          
-          // Diamond & Pearl series
-          'np', 'dp', 'mysterious', 'secret', 'great', 'majestic', 'pop', 'platinum',
-          'rising', 'supreme', 'arceus', 
-          
-          // HeartGold SoulSilver series
-          'pl', 'hgss', 'hs', 'unleashed', 'undaunted', 'triumphant', 
-          
-          // Call of Legends
-          'col', 
-          
-          // Black & White series
-          'bw', 'emerging', 'noble', 'next', 'dark', 'dragon', 'boundaries', 'plasma',
-          'freeze', 'blast', 'legendary',
-          
-          // XY series
-          'xy', 'flashfire', 'furious', 'phantom', 'primal', 'roaring', 'ancient', 'breakthrough',
-          'breakpoint', 'generations', 'fates', 'steam', 'evolutions', 
-          
-          // Sun & Moon series
-          'sm', 'guardians', 'burning', 'shining', 'crimson', 'ultra', 'forbidden', 'celestial',
-          'dragon', 'unified', 'unbroken', 'cosmic', 'hidden', 'detective', 'shiny',
-          
-          // Sword & Shield series
-          'swsh', 'rebel', 'darkness', 'champion', 'vivid', 'battle', 'shining', 'chilling',
-          'evolving', 'fusion', 'brilliant', 'astral', 'lost', 'silver', 'crown',
-          
-          // Scarlet & Violet series 
-          'sv', 'paldea', 'obsidian', 'paradox', 'temporal', 'pitt', 'mask', 'twilight'
-        ];
-        
-        // Match each set ID to its series
-        let seriesA = '';
-        let seriesB = '';
-        
-        for (const series of seriesOrder) {
-          if (setIdA.startsWith(series) || setIdA.includes(series)) {
-            seriesA = series;
-          }
-          if (setIdB.startsWith(series) || setIdB.includes(series)) {
-            seriesB = series;
-          }
-        }
-        
-        // If we found matching series for both cards
-        if (seriesA && seriesB) {
-          const seriesAIndex = seriesOrder.indexOf(seriesA);
-          const seriesBIndex = seriesOrder.indexOf(seriesB);
-          
-          // If they're from different series, sort by series first
-          if (seriesAIndex !== seriesBIndex) {
-            return seriesAIndex - seriesBIndex;
-          }
-        }
-        
-        // If same series or series not found, try to use numbers in the set ID
-        // Extract numbers from the set IDs 
-        const numA = parseInt(setIdA.replace(/[^0-9]/g, '') || '0');
-        const numB = parseInt(setIdB.replace(/[^0-9]/g, '') || '0');
-        
-        // If both have numbers and they're in the same series, compare numbers
-        if (!isNaN(numA) && !isNaN(numB)) {
-          return numA - numB;
-        }
-        
-        // Last resort: alphabetical comparison of the set IDs
-        return setIdA.localeCompare(setIdB);
-      });
+      // Group and sort the cards
+      const groupedCards = groupAndSortCards(cards);
+      console.log(`Grouped into ${groupedCards.length} sets`);
       
-      console.log(`Found ${sortedResults.length} cards for ${rawName}, sorted oldest to newest`);
-      return sortedResults;
+      return { 
+        cards, // Original flat list of cards for backward compatibility
+        groupedCards // New grouped and sorted structure
+      };
     } catch (err) {
       console.error('Card search error:', err);
-      return [];
+      return { cards: [], groupedCards: [] };
     }
   }, []);
 

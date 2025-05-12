@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets } from "@/lib/api";
@@ -11,13 +12,13 @@ import { ChevronRight } from "lucide-react";
 import PokemonCard from "@/components/PokemonCard";
 import CardNameTypeahead from "@/components/CardNameTypeahead";
 import { toast } from "sonner";
-import { useCardSearch } from "@/hooks/useCardSearch";
+import { useCardSearch, CardGroup } from "@/hooks/useCardSearch";
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<CardGroup[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   
   // Use our custom hook for card search functionality
@@ -66,11 +67,14 @@ const Index = () => {
         console.log(`Searching for cards with name: ${searchName}`);
         
         // Search for cards using the searchCardsByPokemon function
-        const results = await searchCardsByPokemon(searchName);
-        setSearchResults(results);
+        const { groupedCards } = await searchCardsByPokemon(searchName);
+        setSearchResults(groupedCards);
         
-        if (results.length > 0) {
-          toast.success(`Found ${results.length} cards for ${formatPokemonName(searchName)}`);
+        // Calculate total cards across all groups
+        const totalCards = groupedCards.reduce((sum, group) => sum + group.cards.length, 0);
+        
+        if (totalCards > 0) {
+          toast.success(`Found ${totalCards} cards for ${formatPokemonName(searchName)}`);
         } else {
           toast.info(`No cards found for ${formatPokemonName(searchName)}`);
         }
@@ -103,13 +107,16 @@ const Index = () => {
     
     try {
       console.log(`Searching for cards of Pokémon: ${rawName} (display: ${displayName})`);
-      const results = await searchCardsByPokemon(rawName);
+      const { groupedCards } = await searchCardsByPokemon(rawName);
       
-      console.log(`Found ${results.length} results for ${displayName}`);
-      setSearchResults(results);
+      // Calculate total cards across all groups
+      const totalCards = groupedCards.reduce((sum, group) => sum + group.cards.length, 0);
+      console.log(`Found ${totalCards} results for ${displayName} across ${groupedCards.length} sets`);
       
-      if (results.length > 0) {
-        toast.success(`Found ${results.length} cards for ${displayName}`);
+      setSearchResults(groupedCards);
+      
+      if (totalCards > 0) {
+        toast.success(`Found ${totalCards} cards for ${displayName}`);
       } else {
         toast.info(`No cards found for ${displayName}`);
       }
@@ -160,7 +167,7 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Search Results */}
+        {/* Search Results - Updated to display cards grouped by set */}
         {isSearching && (
           <section className="py-16 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto">
@@ -181,9 +188,26 @@ const Index = () => {
                   <p>{t("no_results")}</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {searchResults.map(card => (
-                    <PokemonCard key={card.id} card={card} />
+                <div className="space-y-12">
+                  {searchResults.map(group => (
+                    <div key={group.set.id} className="border-t pt-6">
+                      <div className="mb-4">
+                        <h3 className="text-xl font-bold">
+                          <Link to={`/sets/${group.set.id}`} className="hover:underline text-primary">
+                            {group.set.name}
+                          </Link>
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {group.cards.length} {group.cards.length === 1 ? 'card' : 'cards'}
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {group.cards.map(card => (
+                          <PokemonCard key={card.id} card={card} />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
