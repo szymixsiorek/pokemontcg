@@ -1,11 +1,9 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import SetCard from "@/components/SetCard";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Layout from "@/components/Layout";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useMemo } from "react";
 import { ChevronRight } from "lucide-react";
@@ -173,10 +171,8 @@ const Index = () => {
   const latestSets = sets.slice(0, 3);
   
   return (
-    <div className="flex flex-col min-h-screen theme-transition">
-      <Header />
-      
-      <main className="flex-grow">
+    <Layout>
+      <div className="flex-grow">
         {/* Hero section with search */}
         <section className={`py-16 px-4 sm:px-6 lg:px-8 bg-primary/10`}>
           <div className="container mx-auto text-center">
@@ -350,10 +346,8 @@ const Index = () => {
             </div>
           </section>
         )}
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 
