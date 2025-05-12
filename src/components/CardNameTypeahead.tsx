@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -193,7 +194,7 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => inputValue && setSuggestions.length > 0 && setShowSuggestions(true)}
-          placeholder={placeholder || t("search_pokemon_names")}
+          placeholder={placeholder || t("search_pokemon_cards")}
           className="pl-10 pr-4"
         />
         {loading && (

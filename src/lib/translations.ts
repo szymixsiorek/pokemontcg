@@ -1,5 +1,3 @@
-
-
 // English-only translations for the Pokemon TCG Gallery
 const translations: { [key: string]: string } = {
   // Navigation
@@ -24,6 +22,8 @@ const translations: { [key: string]: string } = {
   "sets_of_the_day": "Sets Of The Day",
   "view_all": "View All",
   "choose_theme": "Choose Theme",
+  "search_pokemon_cards": "Search for Pokémon Cards",
+  "search_pokemon_names": "Search for Pokémon Cards",
 
   // Card Sets
   "all_sets": "All Card Sets",

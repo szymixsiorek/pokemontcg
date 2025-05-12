@@ -147,7 +147,7 @@ const Index = () => {
             <div className="max-w-md mx-auto mb-8">
               <CardNameTypeahead 
                 onSelect={handleCardSelect}
-                placeholder={t("search_pokemon_names")}
+                placeholder={t("search_pokemon_cards")}
               />
             </div>
             

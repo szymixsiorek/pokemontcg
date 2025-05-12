@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { searchCardsByName } from '@/lib/api';
 import { CardSuggestion } from '@/components/CardNameTypeahead';
@@ -53,8 +52,7 @@ export const useCardSearch = () => {
       const results = await searchCardsByName(rawName);
       
       // Sort results by set release date (oldest first)
-      // Card IDs typically start with the set ID, which are chronological
-      // But we'll sort explicitly to be safe
+      // We use the card ID pattern which typically follows set-number format
       const sortedResults = [...results].sort((a, b) => {
         // Extract set IDs from card IDs (format is usually setid-number)
         const setIdA = a.id.split('-')[0];
