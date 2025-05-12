@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="py-4 px-4 sm:px-6 border-b theme-transition">
+    <header className="py-4 px-4 sm:px-6 border-b theme-transition fixed top-0 left-0 right-0 bg-background z-50 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
