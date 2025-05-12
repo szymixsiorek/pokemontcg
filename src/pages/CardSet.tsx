@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import { Progress } from "@/components/ui/progress";
 
 const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
@@ -38,6 +40,16 @@ const CardSet = () => {
 
   // Get series colors if set is available
   const seriesColors = set ? getSeriesColors(set.series) : { primary: "", secondary: "" };
+  
+  // Calculate collection progress
+  const collectedCardsCount = set?.cards 
+    ? set.cards.filter(card => collectionCards.includes(card.id)).length
+    : 0;
+  
+  const totalCardsCount = set?.cardCount || 0;
+  const collectionPercentage = totalCardsCount > 0 
+    ? Math.round((collectedCardsCount / totalCardsCount) * 100)
+    : 0;
   
   // Sort cards by card number
   const sortedCards = set?.cards 
@@ -104,6 +116,20 @@ const CardSet = () => {
                 )}
               </div>
             </div>
+            
+            {user && (
+              <div className="mb-6 bg-card p-4 rounded-lg border">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">
+                    {t("collection_progress")}
+                  </span>
+                  <span className="text-sm">
+                    {collectedCardsCount} / {totalCardsCount} ({collectionPercentage}%)
+                  </span>
+                </div>
+                <Progress value={collectionPercentage} className="h-2" />
+              </div>
+            )}
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {sortedCards.map(card => (

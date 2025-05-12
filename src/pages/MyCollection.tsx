@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library } from "lucide-react";
+import { Search, Library, TrendingUp } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 
 const MyCollection = () => {
   const { user } = useAuth();
@@ -86,17 +87,32 @@ const MyCollection = () => {
     .map(({ set }) => set)
     .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
   
+  // Calculate total collection value based on Cardmarket trend prices
+  const calculateTotalValue = () => {
+    let totalValue = 0;
+    let countedCards = 0;
+    
+    collectionCards.forEach(card => {
+      if (card.cardmarket?.prices?.trendPrice) {
+        totalValue += card.cardmarket.prices.trendPrice;
+        countedCards++;
+      }
+    });
+    
+    return {
+      totalValue: totalValue.toFixed(2),
+      countedCards,
+      totalCards: collectionCards.length
+    };
+  };
+  
+  const collectionValue = calculateTotalValue();
+  
   const isLoading = isLoadingIds || isLoadingCards || isLoadingSets;
   
   if (!user) {
     return null; // Redirect handled by useEffect
   }
-  
-  // Debug logs to help diagnose the issue
-  console.log("Collection card IDs:", collectionCardIds);
-  console.log("Collection cards data:", collectionCards);
-  console.log("Filtered collection cards:", filteredCollectionCards);
-  console.log("Collection by set:", collectionBySet);
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -104,6 +120,50 @@ const MyCollection = () => {
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold mb-6">My Collection</h1>
+        
+        {/* Collection stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Cards</p>
+                  <h3 className="text-2xl font-bold">{collectionCards.length}</h3>
+                </div>
+                <Library className="h-8 w-8 text-muted-foreground opacity-70" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Sets Collected</p>
+                  <h3 className="text-2xl font-bold">{setsWithCards.length}</h3>
+                </div>
+                <div className="h-8 w-8 grid place-items-center text-muted-foreground opacity-70">
+                  <span className="text-xl font-bold">#</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Collection Value</p>
+                  <h3 className="text-2xl font-bold">€{collectionValue.totalValue}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Based on {collectionValue.countedCards} of {collectionValue.totalCards} cards with price data
+                  </p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-muted-foreground opacity-70" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         
         {/* Search and filter */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 items-start sm:items-center">
