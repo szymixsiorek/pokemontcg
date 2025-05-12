@@ -77,14 +77,14 @@ const CardDisplayOptions = ({
         <div className="flex items-center gap-2">
           <Label className="text-sm font-medium">{t("filter_by_set")}:</Label>
           <Select 
-            value={selectedSetId || ""} 
-            onValueChange={(value) => setSelectedSetId(value === "" ? null : value)}
+            value={selectedSetId || "all"} 
+            onValueChange={(value) => setSelectedSetId(value === "all" ? null : value)}
           >
             <SelectTrigger className="w-[240px]">
               <SelectValue placeholder={t("all_sets")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{t("all_sets")}</SelectItem>
+              <SelectItem value="all">{t("all_sets")}</SelectItem>
               {availableSets.map(set => (
                 <SelectItem key={set.id} value={set.id}>{set.name}</SelectItem>
               ))}
