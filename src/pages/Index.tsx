@@ -58,7 +58,25 @@ const Index = () => {
   const handleSearch = async () => {
     if (searchQuery.trim()) {
       setIsSearching(true);
-      await refetchSearch();
+      setIsLoadingResults(true);
+      
+      try {
+        // Search for cards using the searchCardsByPokemon function
+        const results = await searchCardsByPokemon(searchQuery);
+        setSearchResults(results);
+        
+        if (results.length > 0) {
+          toast.success(`Found ${results.length} cards for ${searchQuery}`);
+        } else {
+          toast.info(`No cards found for ${searchQuery}`);
+        }
+      } catch (error) {
+        console.error("Error searching for cards:", error);
+        toast.error(`Error searching for ${searchQuery} cards`);
+        setSearchResults([]);
+      } finally {
+        setIsLoadingResults(false);
+      }
     }
   };
   
