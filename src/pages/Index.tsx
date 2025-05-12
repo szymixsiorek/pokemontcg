@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets, searchCardsByName } from "@/lib/api";
@@ -10,7 +11,6 @@ import { useState, useMemo } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PokemonCard from "@/components/PokemonCard";
-import CardSearchExample from "@/components/CardSearchExample";
 
 const Index = () => {
   const { t } = useLanguage();
@@ -77,7 +77,7 @@ const Index = () => {
       <Header />
       
       <main className="flex-grow">
-        {/* Hero section with typeahead search */}
+        {/* Hero section with search */}
         <section className={`py-16 px-4 sm:px-6 lg:px-8 bg-primary/10`}>
           <div className="container mx-auto text-center">
             <div className="flex justify-center mb-6">
@@ -91,10 +91,27 @@ const Index = () => {
               {t("welcome_subtitle")}
             </p>
             
-            {/* Card Search Example with Typeahead */}
-            <div className="max-w-md mx-auto mb-8">
-              <CardSearchExample />
-            </div>
+            <form onSubmit={handleSearch} className="max-w-md mx-auto mb-8">
+              <div className="relative flex">
+                <div className="relative flex-grow">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder={t("search_cards")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-20"
+                  />
+                  <Button 
+                    type="submit" 
+                    size="sm" 
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8"
+                  >
+                    {t("search")}
+                  </Button>
+                </div>
+              </div>
+            </form>
             
             <Button asChild size="lg">
               <Link to="/sets">
