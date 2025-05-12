@@ -34,6 +34,15 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
   const suggestionListRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Function to format and capitalize Pokémon name for display
+  const formatPokemonName = (name: string): string => {
+    // Replace hyphens with spaces and capitalize each word
+    return name
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   // Function to fetch suggestions based on search text
   const fetchSuggestions = async (searchText: string) => {
     if (!searchText.trim()) {
@@ -53,8 +62,13 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
       
       const data = await response.json();
       
-      // Limit to 10 suggestions
-      setSuggestions(data.slice(0, 10));
+      // Format Pokémon names for display and limit to 10 suggestions
+      const formattedData = data.map((item: any) => ({
+        ...item,
+        displayName: formatPokemonName(item.name)
+      })).slice(0, 10);
+      
+      setSuggestions(formattedData);
       setShowSuggestions(true);
     } catch (error) {
       console.error("Error fetching Pokemon suggestions:", error);
@@ -83,10 +97,14 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
 
   // Function to handle suggestion selection
   const handleSelectSuggestion = (suggestion: CardSuggestion) => {
-    setInputValue(suggestion.name);
+    const displayName = formatPokemonName(suggestion.name);
+    setInputValue(displayName);
     setSuggestions([]);
     setShowSuggestions(false);
-    onSelect(suggestion);
+    onSelect({
+      ...suggestion,
+      name: suggestion.name // Pass the original name for API consistency
+    });
   };
 
   // Handle keyboard navigation
@@ -207,7 +225,9 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
                     className="h-10 w-10 object-contain rounded"
                   />
                 )}
-                <span className="flex-1">{highlightMatch(suggestion.name, inputValue)}</span>
+                <span className="flex-1">
+                  {highlightMatch(suggestion.displayName || formatPokemonName(suggestion.name), inputValue)}
+                </span>
               </li>
             ))}
           </ul>

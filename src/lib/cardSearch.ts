@@ -6,6 +6,7 @@ export interface CardSuggestion {
   id: string;
   name: string;
   imageUrl?: string;
+  displayName?: string;
 }
 
 // Pokemon API data structure
@@ -30,6 +31,14 @@ interface PokemonDetails {
     };
   };
 }
+
+// Format Pokémon name for display (capitalize and replace hyphens with spaces)
+export const formatPokemonName = (name: string): string => {
+  return name
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
 
 // Get Pokemon names and images from PokeAPI for typeahead suggestions
 export const searchPokemonNames = async (query: string): Promise<CardSuggestion[]> => {
@@ -61,6 +70,7 @@ export const searchPokemonNames = async (query: string): Promise<CardSuggestion[
     return pokemonDetails.map(pokemon => ({
       id: pokemon.id.toString(),
       name: pokemon.name,
+      displayName: formatPokemonName(pokemon.name),
       imageUrl: pokemon.sprites.other["official-artwork"].front_default
     }));
   } catch (error) {
@@ -69,7 +79,7 @@ export const searchPokemonNames = async (query: string): Promise<CardSuggestion[
   }
 };
 
-// Keep the original function for searching all cards of a specific Pokémon
+// Search all cards of a specific Pokémon, sorted by set release date (oldest first)
 export const searchCards = async (query: string): Promise<CardSuggestion[]> => {
   if (!query || query.length < 2) return [];
   
@@ -81,6 +91,7 @@ export const searchCards = async (query: string): Promise<CardSuggestion[]> => {
     return results.map(card => ({
       id: card.id,
       name: card.name,
+      displayName: formatPokemonName(card.name),
       imageUrl: card.image
     }));
   } catch (error) {

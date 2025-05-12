@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getCardSets, searchCardsByName } from "@/lib/api";
+import { getCardSets } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import SetCard from "@/components/SetCard";
 import Header from "@/components/Header";
@@ -21,7 +21,7 @@ const Index = () => {
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   
   // Use our custom hook for card search functionality
-  const { searchCardsByPokemon } = useCardSearch();
+  const { searchCardsByPokemon, formatPokemonName } = useCardSearch();
   
   // Get card sets
   const { data: sets = [], isLoading } = useQuery({
@@ -61,14 +61,18 @@ const Index = () => {
       setIsLoadingResults(true);
       
       try {
+        // Clean up the name for searching - remove display formatting
+        const searchName = searchQuery.toLowerCase().replace(/\s+/g, '-');
+        console.log(`Searching for cards with name: ${searchName}`);
+        
         // Search for cards using the searchCardsByPokemon function
-        const results = await searchCardsByPokemon(searchQuery);
+        const results = await searchCardsByPokemon(searchName);
         setSearchResults(results);
         
         if (results.length > 0) {
-          toast.success(`Found ${results.length} cards for ${searchQuery}`);
+          toast.success(`Found ${results.length} cards for ${formatPokemonName(searchName)}`);
         } else {
-          toast.info(`No cards found for ${searchQuery}`);
+          toast.info(`No cards found for ${formatPokemonName(searchName)}`);
         }
       } catch (error) {
         console.error("Error searching for cards:", error);
@@ -86,29 +90,32 @@ const Index = () => {
     setSearchResults([]);
   };
   
-  // Updated to handle Pokemon name selection
+  // Updated to handle Pokemon name selection with proper formatting
   const handleCardSelect = async (card: { id: string; name: string }) => {
-    // Set the name as the search query
-    setSearchQuery(card.name);
+    // Use the raw name for API search but formatted name for display
+    const rawName = card.name;
+    const displayName = formatPokemonName(rawName);
+    
+    // Set the formatted name as the search query for better user experience
+    setSearchQuery(displayName);
     setIsSearching(true);
     setIsLoadingResults(true);
     
     try {
-      // Use our custom hook to search for cards
-      console.log(`Searching for cards of Pokémon: ${card.name}`);
-      const results = await searchCardsByPokemon(card.name);
+      console.log(`Searching for cards of Pokémon: ${rawName} (display: ${displayName})`);
+      const results = await searchCardsByPokemon(rawName);
       
-      console.log(`Found ${results.length} results for ${card.name}`);
+      console.log(`Found ${results.length} results for ${displayName}`);
       setSearchResults(results);
       
       if (results.length > 0) {
-        toast.success(`Found ${results.length} cards for ${card.name}`);
+        toast.success(`Found ${results.length} cards for ${displayName}`);
       } else {
-        toast.info(`No cards found for ${card.name}`);
+        toast.info(`No cards found for ${displayName}`);
       }
     } catch (error) {
       console.error("Error searching for cards:", error);
-      toast.error(`Error searching for ${card.name} cards`);
+      toast.error(`Error searching for ${displayName} cards`);
       setSearchResults([]);
     } finally {
       setIsLoadingResults(false);
@@ -214,7 +221,7 @@ const Index = () => {
           </section>
         )}
         
-        {/* Sets of the Day section - updated from Popular sets */}
+        {/* Sets of the Day section */}
         {!isSearching && (
           <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted">
             <div className="container mx-auto">
