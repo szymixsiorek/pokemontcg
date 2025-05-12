@@ -11,8 +11,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      {/* Adjusted padding to prevent double line appearance */}
-      <main className="flex-grow pt-16 md:pt-20">
+      {/* Further reduced padding to eliminate white line */}
+      <main className="flex-grow pt-16">
         {children}
       </main>
       <Footer />

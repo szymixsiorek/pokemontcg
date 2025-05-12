@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets } from "@/lib/api";
@@ -172,10 +173,10 @@ const Index = () => {
   
   return (
     <Layout>
-      {/* Hero section with search - removed py-16 padding from the top */}
+      {/* Hero section with search - removed padding from the top completely */}
       <section className="px-4 sm:px-6 lg:px-8 bg-primary/10">
         <div className="container mx-auto text-center">
-          <div className="flex justify-center mb-6 pt-8">
+          <div className="flex justify-center mb-6 pt-4">
             <img 
               src="https://i.postimg.cc/xjWWBNCG/Projekt-bez-nazwy-1.png" 
               alt="Pokémon TCG Gallery"
