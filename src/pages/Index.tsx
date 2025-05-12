@@ -176,7 +176,7 @@ const Index = () => {
       {/* Hero section with search - adjusted with balanced spacing */}
       <section className="px-4 sm:px-6 lg:px-8 bg-primary/10">
         <div className="container mx-auto text-center">
-          <div className="flex justify-center mb-6 pt-12">
+          <div className="flex justify-center mb-6 pt-14">
             <img 
               src="https://i.postimg.cc/xjWWBNCG/Projekt-bez-nazwy-1.png" 
               alt="Pokémon TCG Gallery"
