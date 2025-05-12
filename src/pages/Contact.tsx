@@ -189,6 +189,10 @@ const Contact = () => {
             </form>
           </div>
         </div>
+
+        <div className="mt-12 text-center text-xs text-muted-foreground">
+          <p>Powered by <a href="https://pokemontcg.io/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">pokemontcg.io API</a> and <a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">pokeapi.co</a></p>
+        </div>
       </div>
     </Layout>
   );
