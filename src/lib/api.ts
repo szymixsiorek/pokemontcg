@@ -25,6 +25,7 @@ export interface Pokemon {
   type: string;
   setId?: string;
   setName?: string;
+  releaseDate?: string; // Added releaseDate property to fix TypeScript error
   prices?: {
     normal?: { low: number; mid: number; high: number; market: number; directLow: number };
     holofoil?: { low: number; mid: number; high: number; market: number; directLow: number };
@@ -164,6 +165,7 @@ export const searchCardsByName = async (query: string): Promise<Pokemon[]> => {
       type: card.types ? card.types[0] : "Unknown",
       setId: card.set.id,
       setName: card.set.name,
+      releaseDate: card.set.releaseDate, // Extract the releaseDate from the card data
       tcgplayer: card.tcgplayer,
       prices: card.tcgplayer?.prices,
       cardmarket: card.cardmarket
