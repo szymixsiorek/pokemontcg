@@ -22,8 +22,8 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<CardGroup[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   
-  // Display and sorting options
-  const [displayMode, setDisplayMode] = useState<DisplayMode>("grouped");
+  // Display and sorting options - changed default displayMode to "all" instead of "grouped"
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("oldest-first");
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   
