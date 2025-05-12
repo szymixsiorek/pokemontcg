@@ -11,7 +11,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow">
+      {/* Add padding-top to account for fixed header height */}
+      <main className="flex-grow pt-20 md:pt-24">
         {children}
       </main>
       <Footer />

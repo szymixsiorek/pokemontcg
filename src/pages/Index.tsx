@@ -172,16 +172,17 @@ const Index = () => {
   
   return (
     <Layout>
-      {/* Hero section with search */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-primary/10">
+      {/* Hero section with search - removed py-16 padding from the top */}
+      <section className="px-4 sm:px-6 lg:px-8 bg-primary/10">
         <div className="container mx-auto text-center">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6 pt-8">
             <img 
               src="https://i.postimg.cc/xjWWBNCG/Projekt-bez-nazwy-1.png" 
               alt="Pokémon TCG Gallery"
               className="max-w-md w-full h-auto object-contain" 
             />
           </div>
+          
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             {t("welcome_subtitle")}
           </p>
