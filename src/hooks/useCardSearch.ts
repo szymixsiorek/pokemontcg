@@ -37,8 +37,8 @@ function groupAndSortCards(cards: Pokemon[]): CardGroup[] {
         set: {
           id: card.setId,
           name: card.setName || 'Unknown Set',
-          // Default to an old date if not provided, to push these to the top
-          releaseDate: '1990-01-01',
+          // Use actual release date from the card data
+          releaseDate: card.releaseDate || '1990-01-01', // Default to an old date if not provided
         },
         cards: []
       };
@@ -47,10 +47,19 @@ function groupAndSortCards(cards: Pokemon[]): CardGroup[] {
     map[key].cards.push(card);
   });
 
-  // 2) Convert to array and sort sets by release date ascending (oldest first)
+  // 2) Convert to array and sort sets by explicit release date ascending (oldest first)
   const groups = Object.values(map).sort((a, b) => {
-    // Use set ID as a fallback for sorting when no explicit dates available
-    // This relies on the series ordering logic from the original code
+    // If we have explicit release dates, use them first (oldest first)
+    if (a.set.releaseDate && b.set.releaseDate) {
+      const dateA = new Date(a.set.releaseDate.replace(/\//g, '-')).getTime();
+      const dateB = new Date(b.set.releaseDate.replace(/\//g, '-')).getTime();
+      
+      if (!isNaN(dateA) && !isNaN(dateB)) {
+        return dateA - dateB;
+      }
+    }
+    
+    // Fall back to set ID comparison if dates are not available or invalid
     return compareSetIds(a.set.id, b.set.id);
   });
 
