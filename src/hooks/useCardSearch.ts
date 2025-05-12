@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { getCardSuggestions, searchCardsByName } from '@/lib/api';
+import { searchCardsByName } from '@/lib/api';
 import { CardSuggestion } from '@/components/CardNameTypeahead';
 import { searchPokemonNames } from '@/lib/cardSearch';
 
@@ -12,7 +12,7 @@ export const useCardSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to fetch unique Pokémon name suggestions
+  // Function to fetch Pokémon name suggestions with artwork
   const searchPokemon = useCallback(async (query: string) => {
     if (!query || query.length < 2) {
       setSuggestions([]);
@@ -23,7 +23,7 @@ export const useCardSearch = () => {
     setError(null);
 
     try {
-      // Use our new function that returns unique Pokémon names
+      // Use our new function that returns Pokémon names with artwork
       const results = await searchPokemonNames(query);
       setSuggestions(results);
     } catch (err) {

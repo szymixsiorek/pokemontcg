@@ -44,7 +44,7 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
 
     setLoading(true);
     try {
-      // Use the Pokemon TCG API endpoint through our API service
+      // Use the Pokemon API endpoint through our API service
       const response = await fetch(`${searchEndpoint}?query=${encodeURIComponent(searchText)}`);
       
       if (!response.ok) {
@@ -57,7 +57,7 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
       setSuggestions(data.slice(0, 10));
       setShowSuggestions(true);
     } catch (error) {
-      console.error("Error fetching card suggestions:", error);
+      console.error("Error fetching Pokemon suggestions:", error);
       setSuggestions([]);
     } finally {
       setLoading(false);
@@ -175,7 +175,7 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => inputValue && setSuggestions.length > 0 && setShowSuggestions(true)}
-          placeholder={placeholder || t("search_cards")}
+          placeholder={placeholder || t("search_pokemon_names")}
           className="pl-10 pr-4"
         />
         {loading && (
@@ -196,7 +196,7 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
                 key={suggestion.id}
                 onClick={() => handleSelectSuggestion(suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`px-4 py-2 text-sm cursor-pointer flex items-center gap-2 hover:bg-muted ${
+                className={`px-4 py-2 text-sm cursor-pointer flex items-center gap-3 hover:bg-muted ${
                   index === selectedIndex ? "bg-muted" : ""
                 }`}
               >
@@ -204,10 +204,10 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
                   <img 
                     src={suggestion.imageUrl} 
                     alt={suggestion.name}
-                    className="h-6 w-6 object-cover rounded"
+                    className="h-10 w-10 object-contain rounded"
                   />
                 )}
-                <span>{highlightMatch(suggestion.name, inputValue)}</span>
+                <span className="flex-1">{highlightMatch(suggestion.name, inputValue)}</span>
               </li>
             ))}
           </ul>

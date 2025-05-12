@@ -7,30 +7,61 @@ export interface CardSuggestion {
   imageUrl?: string;
 }
 
-// Get unique Pokémon names for typeahead suggestions
+// Pokemon API data structure
+interface PokemonListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: {
+    name: string;
+    url: string;
+  }[];
+}
+
+interface PokemonDetails {
+  id: number;
+  name: string;
+  sprites: {
+    other: {
+      "official-artwork": {
+        front_default: string;
+      };
+    };
+  };
+}
+
+// Get Pokemon names and images from PokeAPI for typeahead suggestions
 export const searchPokemonNames = async (query: string): Promise<CardSuggestion[]> => {
   if (!query || query.length < 2) return [];
   
   try {
-    // Use the existing searchCardsByName function from api.ts
-    const results = await searchCardsByName(query);
+    // First get a list of Pokemon that match the query
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000`);
     
-    // Create a Map to track unique Pokémon names
-    const uniqueNames = new Map<string, CardSuggestion>();
+    if (!response.ok) {
+      throw new Error(`Pokemon API request failed with status ${response.status}`);
+    }
     
-    results.forEach(card => {
-      // Only add each Pokémon name once
-      if (!uniqueNames.has(card.name)) {
-        uniqueNames.set(card.name, {
-          id: card.id, // Use the first card's ID
-          name: card.name,
-          imageUrl: card.image
-        });
-      }
-    });
+    const data: PokemonListResponse = await response.json();
     
-    // Convert Map values to array and limit to 10 suggestions
-    return Array.from(uniqueNames.values()).slice(0, 10);
+    // Filter Pokemon names that match the query
+    const filteredResults = data.results
+      .filter(pokemon => pokemon.name.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 10); // Limit to 10 suggestions
+    
+    // Get details for each matching Pokemon to retrieve the official artwork
+    const pokemonDetailsPromises = filteredResults.map(pokemon => 
+      fetch(pokemon.url).then(res => res.json())
+    );
+    
+    const pokemonDetails: PokemonDetails[] = await Promise.all(pokemonDetailsPromises);
+    
+    // Transform the results to match our CardSuggestion interface
+    return pokemonDetails.map(pokemon => ({
+      id: pokemon.id.toString(),
+      name: pokemon.name,
+      imageUrl: pokemon.sprites.other["official-artwork"].front_default
+    }));
   } catch (error) {
     console.error("Error searching Pokémon names:", error);
     return [];
