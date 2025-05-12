@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -182,7 +181,7 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                             (e.target as HTMLImageElement).src = card.image;
                           }}
                         />
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             onClick={() => setIsFullSizeImage(true)}
                             variant="outline"
@@ -190,14 +189,6 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                             className="bg-background/80 rounded-full"
                           >
                             <Maximize className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            onClick={handleDownloadImage}
-                            variant="outline"
-                            size="icon"
-                            className="bg-background/80 rounded-full"
-                          >
-                            <Download className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
