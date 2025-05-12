@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets } from "@/lib/api";
@@ -173,10 +172,10 @@ const Index = () => {
   
   return (
     <Layout>
-      {/* Hero section with search - removed padding from the top completely */}
-      <section className="px-4 sm:px-6 lg:px-8 bg-primary/10">
+      {/* Hero section with search - adjusted padding */}
+      <section className="px-4 sm:px-6 lg:px-8 bg-primary/10 pb-16">
         <div className="container mx-auto text-center">
-          <div className="flex justify-center mb-6 pt-4">
+          <div className="flex justify-center mb-6 pt-12">
             <img 
               src="https://i.postimg.cc/xjWWBNCG/Projekt-bez-nazwy-1.png" 
               alt="Pokémon TCG Gallery"
@@ -195,7 +194,7 @@ const Index = () => {
             />
           </div>
           
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="mb-8">
             <Link to="/sets">
               {t("explore_sets")}
               <ChevronRight className="ml-2 h-4 w-4" />
