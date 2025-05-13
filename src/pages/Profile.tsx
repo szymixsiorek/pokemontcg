@@ -55,9 +55,9 @@ const Profile = () => {
     try {
       if (!user) return;
       
-      // Using type assertion to bypass TypeScript error until types are regenerated
-      const { data: profile, error } = await supabase
-        .from('profiles' as any)
+      // Fetch the profile data from the new profiles table
+      const { data, error } = await supabase
+        .from('profiles')
         .select('avatar_url')
         .eq('id', user.id)
         .single();
@@ -67,12 +67,13 @@ const Profile = () => {
         return;
       }
 
-      if (profile?.avatar_url) {
-        const { data } = await supabase.storage
+      // If profile has an avatar_url, get the public URL
+      if (data && data.avatar_url) {
+        const { data: publicUrlData } = await supabase.storage
           .from('avatars')
-          .getPublicUrl(profile.avatar_url);
+          .getPublicUrl(data.avatar_url);
           
-        setAvatarUrl(data.publicUrl);
+        setAvatarUrl(publicUrlData.publicUrl);
       }
     } catch (error) {
       console.log("Error loading avatar: ", error);
@@ -131,13 +132,12 @@ const Profile = () => {
         .getPublicUrl(filePath);
       
       // Update profile with avatar URL
-      // Using type assertion to bypass TypeScript error until types are regenerated
       const { error: updateError } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .upsert({ 
           id: user?.id, 
           avatar_url: filePath 
-        } as any);
+        });
         
       if (updateError) {
         throw updateError;
