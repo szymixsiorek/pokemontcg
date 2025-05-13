@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -19,12 +20,10 @@ import { Label } from "@/components/ui/label";
 import { User, Link as LinkIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ProfilePictureSelector } from "@/components/ProfilePictureSelector";
-import { Profile } from "@/types/database.types";
 
 const ProfilePage = () => {
-  const { user, displayName, updateDisplayName } = useAuth();
-  const [name, setName] = useState(displayName);
-  const [username, setUsername] = useState<string>("");
+  const { user, username, updateUsername } = useAuth();
+  const [newUsername, setNewUsername] = useState(username);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +49,11 @@ const ProfilePage = () => {
     getUserStats();
   }, [user, navigate]);
 
+  // Update newUsername when username from context changes
+  useEffect(() => {
+    setNewUsername(username);
+  }, [username]);
+
   const getProfile = async () => {
     try {
       if (!user) return;
@@ -58,7 +62,7 @@ const ProfilePage = () => {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('avatar_url, username')
+        .select('avatar_url')
         .eq('id', user.id)
         .single();
 
@@ -75,10 +79,9 @@ const ProfilePage = () => {
         setAvatarUrl(data.avatar_url as string);
       }
       
-      // If profile has a username, set it
-      if (data && 'username' in data && data.username) {
-        setUsername(data.username as string);
-        setPublicProfileUrl(`${window.location.origin}/user/${data.username as string}`);
+      // Set public profile URL based on username
+      if (username) {
+        setPublicProfileUrl(`${window.location.origin}/user/${username}`);
       }
       
     } catch (error) {
@@ -161,6 +164,13 @@ const ProfilePage = () => {
       return;
     }
     
+    // If username hasn't changed, it's available
+    if (value === username) {
+      setUsernameError(null);
+      setUsernameAvailable(true);
+      return;
+    }
+    
     // Check username format (letters, numbers, underscores only)
     if (!value.match(/^[a-zA-Z0-9_]+$/)) {
       setUsernameError("Username can only contain letters, numbers and underscores");
@@ -169,7 +179,8 @@ const ProfilePage = () => {
     }
     
     try {
-      const { data, error } = await supabase
+      // Using the 'any' cast approach to avoid TS errors
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('id')
         .eq('username', value)
@@ -201,13 +212,13 @@ const ProfilePage = () => {
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setUsername(value);
+    setNewUsername(value);
     setUsernameAvailable(null);
   };
 
   const handleUsernameBlur = () => {
-    if (username) {
-      checkUsernameAvailability(username);
+    if (newUsername) {
+      checkUsernameAvailability(newUsername);
     }
   };
 
@@ -216,27 +227,27 @@ const ProfilePage = () => {
     try {
       let updateSuccess = true;
       
-      // Update display name if changed
-      if (name !== displayName) {
-        updateSuccess = await updateDisplayName(name);
-      }
-      
       // Update username if changed and available
-      if (username && usernameAvailable) {
-        const { error: usernameError } = await supabase
-          .from('profiles')
-          .update({ 
-            username: username,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user?.id);
-          
-        if (usernameError) {
-          throw new Error("Failed to update username");
-        }
+      if (newUsername && newUsername !== username && usernameAvailable) {
+        updateSuccess = await updateUsername(newUsername);
         
-        // Update the public profile URL
-        setPublicProfileUrl(`${window.location.origin}/user/${username}`);
+        // Update the profiles table with the new username
+        if (updateSuccess) {
+          const { error: usernameError } = await supabase
+            .from('profiles')
+            .update({ 
+              username: newUsername,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user?.id);
+            
+          if (usernameError) {
+            throw new Error("Failed to update username in profiles table");
+          }
+          
+          // Update the public profile URL
+          setPublicProfileUrl(`${window.location.origin}/user/${newUsername}`);
+        }
       }
       
       if (updateSuccess) {
@@ -292,12 +303,12 @@ const ProfilePage = () => {
                   <Avatar className="h-24 w-24">
                     <AvatarImage src={avatarUrl || undefined} />
                     <AvatarFallback className="text-3xl">
-                      {displayName ? displayName.charAt(0).toUpperCase() : <User />}
+                      {username ? username.charAt(0).toUpperCase() : <User />}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-lg font-medium">{displayName || user?.email}</h3>
+                  <h3 className="text-lg font-medium">{username || user?.email}</h3>
                   <p className="text-muted-foreground">{user?.email}</p>
                   {loading && <p className="text-sm text-muted-foreground mt-2">Processing...</p>}
                   <ProfilePictureSelector 
@@ -306,22 +317,13 @@ const ProfilePage = () => {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <Input 
-                  id="displayName" 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                />
-              </div>
               
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <div className="relative">
                   <Input 
                     id="username" 
-                    value={username} 
+                    value={newUsername} 
                     onChange={handleUsernameChange}
                     onBlur={handleUsernameBlur}
                     placeholder="Choose a unique username"
@@ -358,7 +360,7 @@ const ProfilePage = () => {
               )}
             </CardContent>
             <CardFooter>
-              <Button onClick={handleUpdateProfile} disabled={loading || (usernameError !== null && username !== "")}>
+              <Button onClick={handleUpdateProfile} disabled={loading || (usernameError !== null && newUsername !== username)}>
                 {loading ? "Saving..." : "Save Changes"}
               </Button>
             </CardFooter>

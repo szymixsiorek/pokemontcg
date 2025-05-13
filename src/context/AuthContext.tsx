@@ -4,18 +4,19 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { usernameFromEmail } from "@/lib/utils";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  displayName: string;
+  username: string;
   signIn: (email: string, password: string) => Promise<boolean>;
   signInWithGoogle: () => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<boolean>;
+  signUp: (email: string, password: string, username: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<boolean>;
-  updateDisplayName: (name: string) => Promise<boolean>;
+  updateUsername: (username: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,9 +25,61 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [displayName, setDisplayName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Handle setup of username for Google sign-ins
+  const setupGoogleUser = async (user: User) => {
+    // Only proceed if this is a Google login and username isn't set
+    if (!user.user_metadata?.username && user.app_metadata?.provider === 'google') {
+      try {
+        console.log("Setting up username for Google user");
+        
+        // Generate username from email
+        const email = user.email || '';
+        const generatedUsername = usernameFromEmail(email);
+        
+        if (generatedUsername) {
+          // Check if username exists
+          const { data: existingUser } = await (supabase as any)
+            .from('profiles')
+            .select('id')
+            .eq('username', generatedUsername)
+            .limit(1);
+            
+          // If username is taken, add a random number
+          let finalUsername = generatedUsername;
+          if (existingUser && existingUser.length > 0) {
+            finalUsername = `${generatedUsername}${Math.floor(Math.random() * 1000)}`;
+          }
+          
+          // Update user metadata with username
+          const { error: updateError } = await supabase.auth.updateUser({
+            data: { username: finalUsername }
+          });
+          
+          if (updateError) {
+            console.error("Error setting username for Google user:", updateError);
+          } else {
+            // Update username in profiles table
+            await supabase
+              .from('profiles')
+              .upsert({ 
+                id: user.id, 
+                username: finalUsername,
+                updated_at: new Date().toISOString()
+              });
+              
+            setUsername(finalUsername);
+            console.log("Username set for Google user:", finalUsername);
+          }
+        }
+      } catch (error) {
+        console.error("Error in setupGoogleUser:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -36,9 +89,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Set display name from metadata
-          const userName = session.user.user_metadata?.name || "";
-          setDisplayName(userName);
+          // Set username from metadata
+          const userUsername = session.user.user_metadata?.username || "";
+          setUsername(userUsername);
+          
+          // If this is a new Google sign-in, setup username
+          if (event === 'SIGNED_IN' && session.user.app_metadata?.provider === 'google') {
+            // Use setTimeout to prevent deadlocks in the auth callback
+            setTimeout(() => {
+              setupGoogleUser(session.user);
+            }, 0);
+          }
         }
       }
     );
@@ -49,9 +110,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Set display name from metadata
-        const userName = session.user.user_metadata?.name || "";
-        setDisplayName(userName);
+        // Set username from metadata
+        const userUsername = session.user.user_metadata?.username || "";
+        setUsername(userUsername);
+        
+        // Check if we need to setup a username for Google user
+        if (!userUsername && session.user.app_metadata?.provider === 'google') {
+          setupGoogleUser(session.user);
+        }
       }
       
       setIsLoading(false);
@@ -121,7 +187,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string): Promise<boolean> => {
+  const signUp = async (email: string, password: string, username: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
@@ -129,7 +195,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password,
         options: {
           data: {
-            name: name // Store display name in user metadata
+            username: username // Store username in user metadata
           },
           emailRedirectTo: window.location.origin
         }
@@ -213,10 +279,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateDisplayName = async (name: string): Promise<boolean> => {
+  const updateUsername = async (newUsername: string): Promise<boolean> => {
     try {
       const { error } = await supabase.auth.updateUser({
-        data: { name }
+        data: { username: newUsername }
       });
       
       if (error) {
@@ -228,14 +294,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return false;
       }
       
-      setDisplayName(name);
+      setUsername(newUsername);
       toast({
         title: "Profile updated",
-        description: "Your display name has been updated.",
+        description: "Your username has been updated.",
       });
       return true;
     } catch (error) {
-      console.error("Error updating display name:", error);
+      console.error("Error updating username:", error);
       toast({
         title: "Update failed",
         description: "An unexpected error occurred",
@@ -250,13 +316,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user, 
       session, 
       isLoading, 
-      displayName,
+      username,
       signIn, 
       signInWithGoogle,
       signUp, 
       signOut, 
       resetPassword,
-      updateDisplayName
+      updateUsername
     }}>
       {children}
     </AuthContext.Provider>

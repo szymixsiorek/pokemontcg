@@ -21,7 +21,6 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -94,7 +93,7 @@ const SignUp = () => {
     }
     
     setPasswordError("");
-    const success = await signUp(email, password, displayName);
+    const success = await signUp(email, password, username);
     if (success) {
       navigate("/");
     }
@@ -116,17 +115,6 @@ const SignUp = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="displayName">{t("display_name")}</Label>
-                <Input 
-                  id="displayName" 
-                  type="text" 
-                  placeholder="Your Name" 
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <Input 
