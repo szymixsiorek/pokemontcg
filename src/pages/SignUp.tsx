@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -39,20 +40,21 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Avoid the deep type instantiation by using a simpler approach
+      // Fix the deep type instantiation error by using a more direct approach
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
-        .eq('username', value);
+        .eq('username', value)
+        .limit(1);
         
       if (error) {
         console.error("Error checking username:", error);
         setUsernameError("Error checking username availability");
       } else if (data && data.length > 0) {
-        // If we found any profiles with this username
+        // Username exists if we found any matches
         setUsernameError("Username already taken");
       } else {
-        // No rows returned, username is available
+        // No matches found, username is available
         setUsernameError(null);
       }
     } catch (error) {
