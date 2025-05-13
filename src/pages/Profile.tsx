@@ -72,13 +72,13 @@ const ProfilePage = () => {
       // If profile has an avatar_url, set it
       if (data && 'avatar_url' in data && data.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
-        setAvatarUrl(data.avatar_url);
+        setAvatarUrl(data.avatar_url as string);
       }
       
       // If profile has a username, set it
       if (data && 'username' in data && data.username) {
         setUsername(data.username as string);
-        setPublicProfileUrl(`${window.location.origin}/user/${data.username}`);
+        setPublicProfileUrl(`${window.location.origin}/user/${data.username as string}`);
       }
       
     } catch (error) {

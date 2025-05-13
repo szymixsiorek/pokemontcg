@@ -82,18 +82,22 @@ const UserProfilePage = () => {
         const { count: collectionCount } = await supabase
           .from('user_collections')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', data.id);
+          .eq('user_id', data.id as string);
 
         const profileWithCount: PublicProfile = {
-          ...data as any,
+          id: data.id as string,
+          username: data.username as string,
+          display_name: data.display_name as string | null,
+          avatar_url: data.avatar_url as string | null,
+          updated_at: data.updated_at as string | null,
           collection_count: collectionCount || 0
         };
 
         setProfile(profileWithCount);
         
         // Fetch the user's collection
-        if (data?.id) {
-          await fetchUserCollection(data.id);
+        if (data.id) {
+          await fetchUserCollection(data.id as string);
         }
         
       } catch (error) {
