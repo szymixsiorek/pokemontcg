@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Minus, DollarSign, ExternalLink, Maximize, Download } from "lucide-react";
+import { Plus, Minus, DollarSign, ExternalLink, Maximize, Download, X } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
 import { Link } from "react-router-dom";
@@ -210,22 +211,32 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                                 (e.target as HTMLImageElement).src = card.image;
                               }}
                             />
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    onClick={handleDownloadImage}
-                                    className="absolute top-3 right-3 bg-primary hover:bg-primary/90 text-primary-foreground"
-                                    size="icon"
-                                  >
-                                    <Download className="h-5 w-5" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Download card image</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <div className="absolute top-3 right-3 flex items-center gap-2">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      onClick={handleDownloadImage}
+                                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                                      size="icon"
+                                    >
+                                      <Download className="h-5 w-5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Download card image</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <Button
+                                onClick={() => setIsFullSizeImage(false)}
+                                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                                size="icon"
+                              >
+                                <X className="h-5 w-5" />
+                              </Button>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -345,3 +356,4 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
 };
 
 export default PokemonCard;
+
