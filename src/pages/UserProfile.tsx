@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Calendar, LayoutGrid } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PokemonCard } from "@/components/PokemonCard";
+import PokemonCard from "@/components/PokemonCard";
 
 type PublicProfile = {
   id: string;
@@ -47,8 +46,8 @@ const UserProfilePage = () => {
         
         // Fetch the public profile by username
         const { data, error } = await supabase
-          .from('public_profiles')
-          .select('*')
+          .from('profiles')  
+          .select('id, username, display_name, avatar_url, updated_at')
           .eq('username', username)
           .single();
 
@@ -58,7 +57,23 @@ const UserProfilePage = () => {
           return;
         }
 
-        setProfile(data as PublicProfile);
+        if (!data) {
+          setError("Profile not found");
+          return;
+        }
+
+        // Get collection count
+        const { count: collectionCount } = await supabase
+          .from('user_collections')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', data.id);
+
+        const profileWithCount: PublicProfile = {
+          ...data,
+          collection_count: collectionCount || 0
+        };
+
+        setProfile(profileWithCount);
         
         // Fetch the user's collection
         if (data?.id) {

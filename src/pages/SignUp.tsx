@@ -39,8 +39,8 @@ const SignUp = () => {
     
     try {
       setCheckingUsername(true);
-      const { data } = await supabase
-        .from('public_profiles')
+      const { data, error } = await supabase
+        .from('profiles')
         .select('id')
         .eq('username', value)
         .single();
@@ -48,12 +48,16 @@ const SignUp = () => {
       // If we found a profile with this username
       if (data) {
         setUsernameError("Username already taken");
-      } else {
+      } else if (error && error.code === 'PGRST116') {
+        // No rows returned, username is available
         setUsernameError(null);
+      } else {
+        console.error("Error checking username:", error);
+        setUsernameError("Error checking username availability");
       }
     } catch (error) {
-      // If no rows were returned, the username is available
-      setUsernameError(null);
+      console.error("Error in checkUsernameAvailability:", error);
+      setUsernameError("Error checking username availability");
     } finally {
       setCheckingUsername(false);
     }

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -71,13 +70,13 @@ const ProfilePage = () => {
       console.log("Profile data received:", data);
 
       // If profile has an avatar_url, set it
-      if (data?.avatar_url) {
+      if (data && data.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
         setAvatarUrl(data.avatar_url);
       }
       
       // If profile has a username, set it
-      if (data?.username) {
+      if (data && data.username) {
         setUsername(data.username);
         setPublicProfileUrl(`${window.location.origin}/user/${data.username}`);
       }
@@ -170,8 +169,8 @@ const ProfilePage = () => {
     }
     
     try {
-      const { data } = await supabase
-        .from('public_profiles')
+      const { data, error } = await supabase
+        .from('profiles')
         .select('id')
         .eq('username', value)
         .single();
@@ -180,14 +179,23 @@ const ProfilePage = () => {
       if (data && data.id !== user?.id) {
         setUsernameError("Username already taken");
         setUsernameAvailable(false);
+      } else if (error && error.code === 'PGRST116') {
+        // No rows returned, username is available
+        setUsernameError(null);
+        setUsernameAvailable(true);
+      } else if (error) {
+        console.error("Error checking username:", error);
+        setUsernameError("Error checking username availability");
+        setUsernameAvailable(null);
       } else {
+        // This is the user's current username
         setUsernameError(null);
         setUsernameAvailable(true);
       }
     } catch (error) {
-      // If no rows were returned, the username is available
-      setUsernameError(null);
-      setUsernameAvailable(true);
+      console.error("Error in checkUsernameAvailability:", error);
+      setUsernameError("Error checking username availability");
+      setUsernameAvailable(null);
     }
   };
 
