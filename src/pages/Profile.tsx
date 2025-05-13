@@ -115,14 +115,14 @@ const ProfilePage = () => {
 
       console.log("Selected predefined avatar:", imageUrl);
       
-      // Update or insert profile with avatar URL
+      // Update or insert profile with avatar URL - fixed by removing invalid 'returning' option
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id, 
           avatar_url: imageUrl,
           updated_at: new Date().toISOString()
-        }, { returning: 'minimal' });
+        });
         
       if (upsertError) {
         console.error("Profile update error:", upsertError);
