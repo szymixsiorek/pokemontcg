@@ -47,16 +47,21 @@ const Profile = () => {
     try {
       if (!user) return;
       
-      const { data: avatar, error } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('avatar_url')
         .eq('id', user.id)
         .single();
 
-      if (avatar?.avatar_url) {
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return;
+      }
+
+      if (profile?.avatar_url) {
         const { data } = await supabase.storage
           .from('avatars')
-          .getPublicUrl(avatar.avatar_url);
+          .getPublicUrl(profile.avatar_url);
           
         setAvatarUrl(data.publicUrl);
       }
@@ -100,7 +105,7 @@ const Profile = () => {
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
       const fileName = `${user?.id}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = fileName;
       
       // Upload image to storage
       const { error: uploadError } = await supabase.storage
