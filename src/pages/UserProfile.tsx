@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,6 +72,7 @@ const UserProfilePage = () => {
           return;
         }
 
+        // Explicitly check for required fields and use type assertions
         if (!('id' in data)) {
           setError("Invalid profile data");
           return;
@@ -84,9 +84,10 @@ const UserProfilePage = () => {
           .select('*', { count: 'exact', head: true })
           .eq('user_id', data.id as string);
 
+        // Create a profile object with proper type safety
         const profileWithCount: PublicProfile = {
           id: data.id as string,
-          username: data.username as string,
+          username: data.username as string || username, // Fallback to URL parameter
           display_name: data.display_name as string | null,
           avatar_url: data.avatar_url as string | null,
           updated_at: data.updated_at as string | null,

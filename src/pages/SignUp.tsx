@@ -39,22 +39,23 @@ const SignUp = () => {
     
     try {
       setCheckingUsername(true);
-      // Use type assertion to avoid deep instantiation error
+      
+      // Simplify the query to avoid deep instantiation error
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
-        .single();
+        .limit(1);
         
       // If we found a profile with this username
-      if (data) {
+      if (data && data.length > 0) {
         setUsernameError("Username already taken");
-      } else if (error && error.code === 'PGRST116') {
-        // No rows returned, username is available
-        setUsernameError(null);
-      } else {
+      } else if (error) {
         console.error("Error checking username:", error);
         setUsernameError("Error checking username availability");
+      } else {
+        // No rows returned, username is available
+        setUsernameError(null);
       }
     } catch (error) {
       console.error("Error in checkUsernameAvailability:", error);
