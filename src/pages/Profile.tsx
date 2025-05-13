@@ -59,12 +59,12 @@ const Profile = () => {
       
       console.log("Fetching profile for user ID:", user.id);
       
-      // Fetch the profile data from the profiles table
+      // Use type assertion to work with the profiles table
       const { data, error } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('avatar_url')
         .eq('id', user.id)
-        .single();
+        .single() as unknown as { data: Profile | null; error: Error | null };
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -168,14 +168,14 @@ const Profile = () => {
       
       console.log("Public URL retrieved:", data);
       
-      // Update or insert profile with avatar URL
+      // Update or insert profile with avatar URL using type assertion
       const { error: upsertError } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .upsert({ 
           id: user.id, 
           avatar_url: filePath,
           updated_at: new Date().toISOString()
-        });
+        } as any);
         
       if (upsertError) {
         console.error("Profile update error:", upsertError);
