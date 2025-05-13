@@ -13,11 +13,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Separator } from "@/components/ui/separator";
 
-// Simple interface to avoid deep type instantiation
-interface SimpleProfile {
-  id: string;
-  username?: string | null;
-}
+// Define a more specific response type to avoid deep instantiation
+type UsernameCheckResponse = {
+  data: { id: string }[] | null;
+  error: any;
+};
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -46,12 +46,15 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Use type assertion to prevent excessive type instantiation
-      const { data, error } = await supabase
+      // Use a more direct type assertion to prevent recursive type inference
+      const response = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
-        .limit(1) as { data: SimpleProfile[] | null, error: any };
+        .limit(1);
+        
+      // Cast the response to our simplified type
+      const { data, error } = response as UsernameCheckResponse;
         
       if (error) {
         console.error("Error checking username:", error);
