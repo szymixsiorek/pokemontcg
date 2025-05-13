@@ -27,6 +27,12 @@ type Profile = {
   updated_at?: string;
 };
 
+// Define type for Supabase data response to help with type assertions
+type ProfileResponse = {
+  data: Profile | null;
+  error: Error | null;
+};
+
 const Profile = () => {
   const { user, displayName, updateDisplayName } = useAuth();
   const [name, setName] = useState(displayName);
@@ -61,7 +67,7 @@ const Profile = () => {
         .from('profiles' as any)
         .select('avatar_url')
         .eq('id', user.id)
-        .single();
+        .single() as unknown as ProfileResponse;
 
       if (error) {
         console.error("Error fetching profile:", error);
