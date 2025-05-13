@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -66,7 +67,7 @@ const ProfilePage = () => {
 
       console.log("Profile data received:", data);
 
-      // If profile has an avatar_url, set it directly
+      // If profile has an avatar_url, set it
       if (data && data.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
         setAvatarUrl(data.avatar_url);
@@ -114,7 +115,7 @@ const ProfilePage = () => {
 
       console.log("Selected predefined avatar:", imageUrl);
       
-      // Update or insert profile with avatar URL using proper typing
+      // Update or insert profile with avatar URL
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert({ 
