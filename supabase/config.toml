@@ -1,1 +1,5 @@
+
 project_id = "zlqzvvptrknyjexqzlpx"
+
+[storage.buckets.avatars]
+public = true

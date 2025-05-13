@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, User } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Define types for profile data until Supabase types are regenerated
 type Profile = {
@@ -40,6 +41,7 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [joinDate, setJoinDate] = useState<string>("");
   const [collectionCount, setCollectionCount] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -61,6 +63,8 @@ const Profile = () => {
     try {
       if (!user) return;
       
+      console.log("Fetching profile for user ID:", user.id);
+      
       // Fetch the profile data from the new profiles table
       // Use type assertion to work around TypeScript error until types are regenerated
       const { data, error } = await supabase
@@ -74,16 +78,23 @@ const Profile = () => {
         return;
       }
 
+      console.log("Profile data received:", data);
+
       // If profile has an avatar_url, get the public URL
       if (data && data.avatar_url) {
+        console.log("Avatar URL from database:", data.avatar_url);
+        
         const { data: publicUrlData } = await supabase.storage
           .from('avatars')
           .getPublicUrl(data.avatar_url);
           
+        console.log("Public URL data:", publicUrlData);
         setAvatarUrl(publicUrlData.publicUrl);
+      } else {
+        console.log("No avatar URL found in profile data");
       }
     } catch (error) {
-      console.log("Error loading avatar: ", error);
+      console.error("Error in getProfile function:", error);
     }
   };
 
@@ -114,22 +125,49 @@ const Profile = () => {
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
+      setUploadError(null);
       
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error("You must select an image to upload.");
       }
       
+      if (!user) {
+        throw new Error("User must be logged in to upload avatar.");
+      }
+
       const file = event.target.files[0];
+      console.log("Selected file:", file.name, "Size:", file.size, "Type:", file.type);
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        throw new Error("File must be an image.");
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error("Image size must be less than 5MB.");
+      }
+      
       const fileExt = file.name.split('.').pop();
       
       // Create a file path with user ID as first segment to match our RLS policy
-      // The policy expects: {userId}/filename.ext
-      const filePath = `${user?.id}/${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
       
       console.log("Uploading to path:", filePath);
       
+      // Check if avatars bucket exists
+      const { data: bucketData, error: bucketError } = await supabase.storage
+        .getBucket('avatars');
+        
+      if (bucketError) {
+        console.error("Bucket error:", bucketError);
+        throw new Error("Storage bucket not available.");
+      }
+      
+      console.log("Bucket exists:", bucketData);
+      
       // Upload image to storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
         
@@ -138,17 +176,21 @@ const Profile = () => {
         throw uploadError;
       }
       
+      console.log("Upload successful:", uploadData);
+      
       // Get the public URL
       const { data } = await supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
+      
+      console.log("Public URL retrieved:", data);
       
       // Update profile with avatar URL
       // Use type assertion to work around TypeScript error until types are regenerated
       const { error: updateError } = await supabase
         .from('profiles' as any)
         .upsert({ 
-          id: user?.id, 
+          id: user.id, 
           avatar_url: filePath 
         } as any);
         
@@ -156,6 +198,8 @@ const Profile = () => {
         console.error("Profile update error:", updateError);
         throw updateError;
       }
+      
+      console.log("Profile updated with new avatar URL");
       
       setAvatarUrl(data.publicUrl);
       
@@ -165,6 +209,7 @@ const Profile = () => {
       });
     } catch (error: any) {
       console.error("Error in uploadAvatar:", error);
+      setUploadError(error.message || "Upload failed for unknown reason");
       
       toast({
         title: "Upload failed",
@@ -200,6 +245,14 @@ const Profile = () => {
               <CardDescription>Update your profile information and how others see you on the site.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {uploadError && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {uploadError}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <div className="flex flex-col sm:flex-row sm:items-center gap-6">
                 <div className="relative">
                   <Avatar className="h-24 w-24">
@@ -227,6 +280,7 @@ const Profile = () => {
                 <div className="flex-1">
                   <h3 className="text-lg font-medium">{displayName || user?.email}</h3>
                   <p className="text-muted-foreground">{user?.email}</p>
+                  {uploading && <p className="text-sm text-muted-foreground mt-2">Uploading...</p>}
                 </div>
               </div>
 
