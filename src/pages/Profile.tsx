@@ -148,18 +148,21 @@ const Profile = () => {
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
       
       console.log("Uploading to path:", filePath);
+      console.log("Bucket name:", 'avatars');
       
       // Upload image to storage
-      const { error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
         
       if (uploadError) {
-        console.error("Upload error:", uploadError);
+        console.error("Supabase storage.upload error:", uploadError);
+        console.error("Error details:", JSON.stringify(uploadError, null, 2));
+        alert(`Upload failed: ${uploadError.message}`);
         throw uploadError;
       }
       
-      console.log("Upload successful");
+      console.log("Upload successful, result:", uploadData);
       
       // Get the public URL
       const { data } = await supabase.storage
@@ -179,6 +182,7 @@ const Profile = () => {
         
       if (upsertError) {
         console.error("Profile update error:", upsertError);
+        console.error("Error details:", JSON.stringify(upsertError, null, 2));
         throw upsertError;
       }
       
@@ -193,6 +197,7 @@ const Profile = () => {
       });
     } catch (error: any) {
       console.error("Error in uploadAvatar:", error);
+      console.error("Error stack:", error.stack);
       setUploadError(error.message || "Upload failed for unknown reason");
       
       toast({
