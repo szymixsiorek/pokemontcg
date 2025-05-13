@@ -17,6 +17,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PokemonCardProps {
   card: Pokemon;
@@ -204,14 +210,22 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                                 (e.target as HTMLImageElement).src = card.image;
                               }}
                             />
-                            <Button
-                              onClick={handleDownloadImage}
-                              className="absolute top-2 right-2 bg-background/80"
-                              size="sm"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Download
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    onClick={handleDownloadImage}
+                                    className="absolute top-3 right-3 bg-primary hover:bg-primary/90 text-primary-foreground"
+                                    size="icon"
+                                  >
+                                    <Download className="h-5 w-5" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Download card image</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </DialogContent>
                       </Dialog>
