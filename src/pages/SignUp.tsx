@@ -40,12 +40,15 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Fix the deep type instantiation error by using a more direct approach
+      // Use a type assertion to explicitly tell TypeScript what we expect
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
-        .limit(1);
+        .limit(1) as { 
+          data: Array<{ id: string }> | null; 
+          error: Error | null;
+        };
         
       if (error) {
         console.error("Error checking username:", error);
