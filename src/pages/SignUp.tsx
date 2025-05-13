@@ -45,8 +45,8 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Using a more compatible approach with current Supabase types
-      const { data, error } = await supabase
+      // Using two generics approach to avoid type instantiation errors
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('id')
         .eq('username', value)
