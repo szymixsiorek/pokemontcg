@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -20,16 +19,9 @@ import { Label } from "@/components/ui/label";
 import { User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ProfilePictureSelector } from "@/components/ProfilePictureSelector";
+import { Profile } from "@/types/database.types";
 
-// Define types for profile data
-type Profile = {
-  id: string;
-  display_name?: string | null;
-  avatar_url?: string | null;
-  updated_at?: string;
-};
-
-const Profile = () => {
+const ProfilePage = () => {
   const { user, displayName, updateDisplayName } = useAuth();
   const [name, setName] = useState(displayName);
   const [loading, setLoading] = useState(false);
@@ -60,12 +52,12 @@ const Profile = () => {
       
       console.log("Fetching profile for user ID:", user.id);
       
-      // Use type assertion to work with the profiles table
+      // Use proper typing for the profiles table
       const { data, error } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('avatar_url')
         .eq('id', user.id)
-        .single() as unknown as { data: Profile | null; error: Error | null };
+        .single();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -122,14 +114,14 @@ const Profile = () => {
 
       console.log("Selected predefined avatar:", imageUrl);
       
-      // Update or insert profile with avatar URL using type assertion
+      // Update or insert profile with avatar URL using proper typing
       const { error: upsertError } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .upsert({ 
           id: user.id, 
           avatar_url: imageUrl,
           updated_at: new Date().toISOString()
-        } as any);
+        }, { returning: 'minimal' });
         
       if (upsertError) {
         console.error("Profile update error:", upsertError);
@@ -242,4 +234,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;
