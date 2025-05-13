@@ -19,8 +19,8 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Load avatar from Supabase when user is authenticated
-  useState(() => {
+  // Changed from useState to useEffect to properly load avatar on component mount
+  useEffect(() => {
     const loadAvatar = async () => {
       if (!user) return;
       
@@ -40,7 +40,7 @@ const Header = () => {
     };
     
     loadAvatar();
-  });
+  }, [user]); // Add user as a dependency to reload when user changes
 
   const menuItems = [
     { label: t("home"), href: "/", icon: <Home className="h-4 w-4" /> },
