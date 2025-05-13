@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
@@ -65,7 +64,28 @@ const Profile = () => {
       
       console.log("Fetching profile for user ID:", user.id);
       
-      // Fetch the profile data from the new profiles table
+      // Check if the avatars bucket exists
+      const { data: buckets, error: bucketsError } = await supabase
+        .storage
+        .listBuckets();
+        
+      if (bucketsError) {
+        console.error("Error listing buckets:", bucketsError);
+        setUploadError("Storage system unavailable. Please try again later.");
+        return;
+      }
+      
+      const avatarsBucketExists = buckets?.some(b => b.name === 'avatars');
+      console.log("Available buckets:", buckets?.map(b => b.name));
+      console.log("Avatars bucket exists:", avatarsBucketExists);
+      
+      if (!avatarsBucketExists) {
+        console.error("Avatars bucket does not exist");
+        setUploadError("Storage bucket not available. Please contact support.");
+        return;
+      }
+      
+      // Fetch the profile data from the profiles table
       // Use type assertion to work around TypeScript error until types are regenerated
       const { data, error } = await supabase
         .from('profiles' as any)
@@ -95,6 +115,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.error("Error in getProfile function:", error);
+      setUploadError("Error loading profile. Please try again later.");
     }
   };
 
@@ -155,16 +176,23 @@ const Profile = () => {
       
       console.log("Uploading to path:", filePath);
       
-      // Check if avatars bucket exists
-      const { data: bucketData, error: bucketError } = await supabase.storage
-        .getBucket('avatars');
+      // Double check if avatars bucket exists
+      const { data: buckets, error: bucketsError } = await supabase
+        .storage
+        .listBuckets();
         
-      if (bucketError) {
-        console.error("Bucket error:", bucketError);
-        throw new Error("Storage bucket not available.");
+      if (bucketsError) {
+        console.error("Error listing buckets:", bucketsError);
+        throw new Error("Storage system unavailable. Please try again later.");
       }
       
-      console.log("Bucket exists:", bucketData);
+      const avatarsBucketExists = buckets?.some(b => b.name === 'avatars');
+      console.log("Available buckets:", buckets?.map(b => b.name));
+      
+      if (!avatarsBucketExists) {
+        console.error("Avatars bucket does not exist");
+        throw new Error("Storage bucket not available. Please contact support.");
+      }
       
       // Upload image to storage
       const { error: uploadError, data: uploadData } = await supabase.storage
@@ -184,6 +212,23 @@ const Profile = () => {
         .getPublicUrl(filePath);
       
       console.log("Public URL retrieved:", data);
+      
+      // Check if profiles table exists
+      const { error: tableError } = await supabase
+        .from('profiles' as any)
+        .select('id')
+        .limit(1);
+        
+      if (tableError) {
+        console.error("Profiles table error:", tableError);
+        // If the table doesn't exist, create it on the fly
+        // This should be done with a proper migration, but for quick fix
+        const { error: createError } = await supabase.rpc('create_profiles_if_not_exists');
+        if (createError) {
+          console.error("Error creating profiles table:", createError);
+          throw new Error("Database setup error. Please contact support.");
+        }
+      }
       
       // Update profile with avatar URL
       // Use type assertion to work around TypeScript error until types are regenerated

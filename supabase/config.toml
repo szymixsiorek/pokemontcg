@@ -3,3 +3,5 @@ project_id = "zlqzvvptrknyjexqzlpx"
 
 [storage.buckets.avatars]
 public = true
+file_size_limit = "5MB"
+allowed_mime_types = ["image/png", "image/jpeg", "image/gif", "image/webp"]
