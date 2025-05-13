@@ -39,14 +39,12 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Simplify the query without complex type declarations
-      const result = await supabase
+      // Simplified query without explicit type annotations
+      const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
         .limit(1);
-        
-      const { data, error } = result;
         
       if (error) {
         console.error("Error checking username:", error);
