@@ -19,6 +19,7 @@ import CardSets from "./pages/CardSets";
 import CardSet from "./pages/CardSet";
 import MyCollection from "./pages/MyCollection";
 import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
 import AuthError from "./pages/AuthError";
 import Donate from "./pages/Donate";
 import Contact from "./pages/Contact";
@@ -86,6 +87,7 @@ const App = () => (
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<AboutUs />} />
+                <Route path="/user/:username" element={<UserProfile />} />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />

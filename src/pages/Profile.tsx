@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User } from "lucide-react";
+import { User, Link as LinkIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ProfilePictureSelector } from "@/components/ProfilePictureSelector";
 import { Profile } from "@/types/database.types";
@@ -25,11 +25,15 @@ import { Profile } from "@/types/database.types";
 const ProfilePage = () => {
   const { user, displayName, updateDisplayName } = useAuth();
   const [name, setName] = useState(displayName);
+  const [username, setUsername] = useState<string>("");
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [joinDate, setJoinDate] = useState<string>("");
   const [collectionCount, setCollectionCount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [publicProfileUrl, setPublicProfileUrl] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -53,10 +57,9 @@ const ProfilePage = () => {
       
       console.log("Fetching profile for user ID:", user.id);
       
-      // Use proper typing for the profiles table
       const { data, error } = await supabase
         .from('profiles')
-        .select('avatar_url')
+        .select('avatar_url, username')
         .eq('id', user.id)
         .single();
 
@@ -68,12 +71,17 @@ const ProfilePage = () => {
       console.log("Profile data received:", data);
 
       // If profile has an avatar_url, set it
-      if (data && data.avatar_url) {
+      if (data?.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
         setAvatarUrl(data.avatar_url);
-      } else {
-        console.log("No avatar URL found in profile data");
       }
+      
+      // If profile has a username, set it
+      if (data?.username) {
+        setUsername(data.username);
+        setPublicProfileUrl(`${window.location.origin}/user/${data.username}`);
+      }
+      
     } catch (error) {
       console.error("Error in getProfile function:", error);
       setError("Error loading profile. Please try again later.");
@@ -115,7 +123,7 @@ const ProfilePage = () => {
 
       console.log("Selected predefined avatar:", imageUrl);
       
-      // Update or insert profile with avatar URL - fixed by removing invalid 'returning' option
+      // Update or insert profile with avatar URL
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert({ 
@@ -147,15 +155,107 @@ const ProfilePage = () => {
     }
   };
 
+  const checkUsernameAvailability = async (value: string) => {
+    if (!value) {
+      setUsernameError(null);
+      setUsernameAvailable(null);
+      return;
+    }
+    
+    // Check username format (letters, numbers, underscores only)
+    if (!value.match(/^[a-zA-Z0-9_]+$/)) {
+      setUsernameError("Username can only contain letters, numbers and underscores");
+      setUsernameAvailable(false);
+      return;
+    }
+    
+    try {
+      const { data } = await supabase
+        .from('public_profiles')
+        .select('id')
+        .eq('username', value)
+        .single();
+        
+      // If we found a profile with this username and it's not the current user
+      if (data && data.id !== user?.id) {
+        setUsernameError("Username already taken");
+        setUsernameAvailable(false);
+      } else {
+        setUsernameError(null);
+        setUsernameAvailable(true);
+      }
+    } catch (error) {
+      // If no rows were returned, the username is available
+      setUsernameError(null);
+      setUsernameAvailable(true);
+    }
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
+    setUsernameAvailable(null);
+  };
+
+  const handleUsernameBlur = () => {
+    if (username) {
+      checkUsernameAvailability(username);
+    }
+  };
+
   const handleUpdateProfile = async () => {
-    if (name !== displayName) {
-      const success = await updateDisplayName(name);
-      if (success) {
+    setLoading(true);
+    try {
+      let updateSuccess = true;
+      
+      // Update display name if changed
+      if (name !== displayName) {
+        updateSuccess = await updateDisplayName(name);
+      }
+      
+      // Update username if changed and available
+      if (username && usernameAvailable) {
+        const { error: usernameError } = await supabase
+          .from('profiles')
+          .update({ 
+            username: username,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user?.id);
+          
+        if (usernameError) {
+          throw new Error("Failed to update username");
+        }
+        
+        // Update the public profile URL
+        setPublicProfileUrl(`${window.location.origin}/user/${username}`);
+      }
+      
+      if (updateSuccess) {
         toast({
           title: "Profile updated!",
-          description: "Your display name has been updated successfully.",
+          description: "Your profile has been updated successfully.",
         });
       }
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update profile",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyProfileLink = () => {
+    if (publicProfileUrl) {
+      navigator.clipboard.writeText(publicProfileUrl);
+      toast({
+        title: "Link copied!",
+        description: "Your public profile link has been copied to clipboard.",
+      });
     }
   };
 
@@ -207,9 +307,52 @@ const ProfilePage = () => {
                   onChange={(e) => setName(e.target.value)} 
                 />
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <div className="relative">
+                  <Input 
+                    id="username" 
+                    value={username} 
+                    onChange={handleUsernameChange}
+                    onBlur={handleUsernameBlur}
+                    placeholder="Choose a unique username"
+                    className={usernameError ? "border-red-500" : usernameAvailable ? "border-green-500" : ""}
+                  />
+                  {usernameAvailable === true && !usernameError && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-sm">
+                      Available
+                    </div>
+                  )}
+                </div>
+                {usernameError && (
+                  <p className="text-destructive text-sm">{usernameError}</p>
+                )}
+                <p className="text-muted-foreground text-sm">
+                  Your username will be used for your public profile URL and must be unique.
+                </p>
+              </div>
+
+              {username && !usernameError && (
+                <div className="p-3 bg-muted rounded-md flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground truncate mr-2">
+                    {publicProfileUrl}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={copyProfileLink}
+                  >
+                    <LinkIcon className="h-4 w-4 mr-2" />
+                    Copy Link
+                  </Button>
+                </div>
+              )}
             </CardContent>
             <CardFooter>
-              <Button onClick={handleUpdateProfile}>Save Changes</Button>
+              <Button onClick={handleUpdateProfile} disabled={loading || (usernameError !== null && username !== "")}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
             </CardFooter>
           </Card>
 

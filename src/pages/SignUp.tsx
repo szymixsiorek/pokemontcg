@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,10 +17,58 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const { signUp, signInWithGoogle, isLoading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  
+  const checkUsernameAvailability = async (value: string) => {
+    if (!value) {
+      setUsernameError(null);
+      return;
+    }
+    
+    // Check username format (letters, numbers, underscores only)
+    if (!value.match(/^[a-zA-Z0-9_]+$/)) {
+      setUsernameError("Username can only contain letters, numbers and underscores");
+      return;
+    }
+    
+    try {
+      setCheckingUsername(true);
+      const { data } = await supabase
+        .from('public_profiles')
+        .select('id')
+        .eq('username', value)
+        .single();
+        
+      // If we found a profile with this username
+      if (data) {
+        setUsernameError("Username already taken");
+      } else {
+        setUsernameError(null);
+      }
+    } catch (error) {
+      // If no rows were returned, the username is available
+      setUsernameError(null);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
+  };
+
+  const handleUsernameBlur = () => {
+    if (username) {
+      checkUsernameAvailability(username);
+    }
+  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +78,12 @@ const SignUp = () => {
       return;
     }
     
+    if (usernameError) {
+      return;
+    }
+    
     setPasswordError("");
-    const success = await signUp(email, password, displayName);
+    const success = await signUp(email, password, displayName, username);
     if (success) {
       navigate("/");
     }
@@ -62,6 +115,28 @@ const SignUp = () => {
                   onChange={(e) => setDisplayName(e.target.value)}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input 
+                  id="username" 
+                  type="text" 
+                  placeholder="Choose a unique username" 
+                  value={username}
+                  onChange={handleUsernameChange}
+                  onBlur={handleUsernameBlur}
+                  className={usernameError ? "border-red-500" : ""}
+                  required
+                />
+                {usernameError && (
+                  <p className="text-destructive text-sm">{usernameError}</p>
+                )}
+                {checkingUsername && (
+                  <p className="text-muted-foreground text-sm">Checking username availability...</p>
+                )}
+                <p className="text-muted-foreground text-sm">
+                  Your username will be used for your public profile URL and must be unique.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">{t("email")}</Label>
@@ -100,7 +175,7 @@ const SignUp = () => {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isLoading}
+                disabled={isLoading || checkingUsername || !!usernameError}
               >
                 {isLoading ? t("creating_account") : t("sign_up")}
               </Button>
