@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -46,15 +45,14 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Use a more direct type assertion to prevent recursive type inference
-      const response = await supabase
+      // Use any to completely bypass the TypeScript inference
+      const response = await (supabase as any)
         .from('profiles')
         .select('id')
         .eq('username', value)
         .limit(1);
         
-      // Cast the response to our simplified type
-      const { data, error } = response as UsernameCheckResponse;
+      const { data, error } = response;
         
       if (error) {
         console.error("Error checking username:", error);
