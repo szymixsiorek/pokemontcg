@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,14 @@ import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { Progress } from "@/components/ui/progress";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
@@ -72,7 +81,28 @@ const CardSet = () => {
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Button variant="ghost" className="mb-6" asChild>
+        {/* Breadcrumb navigation */}
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/sets">Card Sets</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{set?.name || 'Loading...'}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        
+        <Button variant="outline" className="mb-6" asChild>
           <Link to="/sets">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Sets
