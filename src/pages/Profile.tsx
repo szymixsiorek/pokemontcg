@@ -20,18 +20,12 @@ import { Label } from "@/components/ui/label";
 import { Camera, User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Define types for profile data until Supabase types are regenerated
+// Define types for profile data
 type Profile = {
   id: string;
-  avatar_url?: string | null;
   display_name?: string | null;
+  avatar_url?: string | null;
   updated_at?: string;
-};
-
-// Define type for Supabase data response to help with type assertions
-type ProfileResponse = {
-  data: Profile | null;
-  error: Error | null;
 };
 
 const Profile = () => {
@@ -65,34 +59,12 @@ const Profile = () => {
       
       console.log("Fetching profile for user ID:", user.id);
       
-      // Check if the avatars bucket exists
-      const { data: buckets, error: bucketsError } = await supabase
-        .storage
-        .listBuckets();
-        
-      if (bucketsError) {
-        console.error("Error listing buckets:", bucketsError);
-        setUploadError("Storage system unavailable. Please try again later.");
-        return;
-      }
-      
-      const avatarsBucketExists = buckets?.some(b => b.name === 'avatars');
-      console.log("Available buckets:", buckets?.map(b => b.name));
-      console.log("Avatars bucket exists:", avatarsBucketExists);
-      
-      if (!avatarsBucketExists) {
-        console.error("Avatars bucket does not exist");
-        setUploadError("Storage bucket not available. Please contact support.");
-        return;
-      }
-      
       // Fetch the profile data from the profiles table
-      // Use type assertion to work around TypeScript error until types are regenerated
       const { data, error } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('avatar_url')
         .eq('id', user.id)
-        .single() as unknown as ProfileResponse;
+        .single();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -172,31 +144,13 @@ const Profile = () => {
       
       const fileExt = file.name.split('.').pop();
       
-      // Create a file path with user ID as first segment to match our RLS policy
+      // Create a file path with user ID as first segment for RLS policy
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
       
       console.log("Uploading to path:", filePath);
       
-      // Double check if avatars bucket exists
-      const { data: buckets, error: bucketsError } = await supabase
-        .storage
-        .listBuckets();
-        
-      if (bucketsError) {
-        console.error("Error listing buckets:", bucketsError);
-        throw new Error("Storage system unavailable. Please try again later.");
-      }
-      
-      const avatarsBucketExists = buckets?.some(b => b.name === 'avatars');
-      console.log("Available buckets:", buckets?.map(b => b.name));
-      
-      if (!avatarsBucketExists) {
-        console.error("Avatars bucket does not exist");
-        throw new Error("Storage bucket not available. Please contact support.");
-      }
-      
       // Upload image to storage
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
         
@@ -205,7 +159,7 @@ const Profile = () => {
         throw uploadError;
       }
       
-      console.log("Upload successful:", uploadData);
+      console.log("Upload successful");
       
       // Get the public URL
       const { data } = await supabase.storage
@@ -214,15 +168,14 @@ const Profile = () => {
       
       console.log("Public URL retrieved:", data);
       
-      // Check if profiles table exists by trying to insert directly
-      // This avoids calling an RPC function that's not in the TypeScript types
+      // Update or insert profile with avatar URL
       const { error: upsertError } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .upsert({ 
           id: user.id, 
           avatar_url: filePath,
           updated_at: new Date().toISOString()
-        } as any);
+        });
         
       if (upsertError) {
         console.error("Profile update error:", upsertError);
@@ -231,6 +184,7 @@ const Profile = () => {
       
       console.log("Profile updated with new avatar URL");
       
+      // Set the avatar URL in the UI
       setAvatarUrl(data.publicUrl);
       
       toast({
