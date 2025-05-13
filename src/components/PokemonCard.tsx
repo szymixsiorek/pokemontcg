@@ -1,9 +1,13 @@
+
+// This minimal adapter fixes the props in PokemonCard
+// Only modifying the type interface and references, not the functionality
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Plus, Minus, DollarSign, ExternalLink, Maximize } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
@@ -18,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface PokemonCardProps {
+export interface PokemonCardProps {
   card: Pokemon;
   inCollection?: boolean;
   onCollectionUpdate?: () => void;

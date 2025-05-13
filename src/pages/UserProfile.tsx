@@ -162,14 +162,14 @@ const UserProfilePage = () => {
             <CardHeader>
               <div className="flex flex-col md:flex-row md:items-center gap-6">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={profile.avatar_url || undefined} />
+                  <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback className="text-3xl">
-                    {profile.display_name ? profile.display_name.charAt(0).toUpperCase() : profile.username.charAt(0).toUpperCase()}
+                    {profile?.display_name ? profile.display_name.charAt(0).toUpperCase() : profile?.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle className="text-2xl">{profile.display_name || profile.username}</CardTitle>
-                  <CardDescription className="text-lg">@{profile.username}</CardDescription>
+                  <CardTitle className="text-2xl">{profile?.display_name || profile?.username}</CardTitle>
+                  <CardDescription className="text-lg">@{profile?.username}</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -177,9 +177,9 @@ const UserProfilePage = () => {
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
                 <div className="flex items-center gap-1">
                   <LayoutGrid className="h-4 w-4" />
-                  <span>{profile.collection_count} cards in collection</span>
+                  <span>{profile?.collection_count} cards in collection</span>
                 </div>
-                {profile.updated_at && (
+                {profile?.updated_at && (
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     <span>Last seen {new Date(profile.updated_at).toLocaleDateString()}</span>
@@ -193,7 +193,7 @@ const UserProfilePage = () => {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Collection Highlights</CardTitle>
-                {profile.collection_count > 0 && (
+                {profile?.collection_count > 0 && (
                   <Link to={`/collection/${profile.username}`} className="text-sm text-primary hover:underline">
                     View full collection
                   </Link>
@@ -212,11 +212,16 @@ const UserProfilePage = () => {
                   {collection.map((item) => (
                     <PokemonCard 
                       key={item.id} 
-                      cardId={item.card_id} 
-                      setId={item.set_id} 
-                      isInCollection={false}
-                      addToCollection={() => {}}
-                      removeFromCollection={() => {}}
+                      card={{
+                        id: item.card_id,
+                        setId: item.set_id,
+                        name: "",
+                        image: "",
+                        number: "",
+                        rarity: ""
+                      }}
+                      inCollection={false}
+                      onCollectionUpdate={() => {}}
                     />
                   ))}
                 </div>

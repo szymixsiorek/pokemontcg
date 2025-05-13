@@ -5,6 +5,7 @@ export type Profile = {
   display_name?: string | null;
   avatar_url?: string | null;
   updated_at?: string;
+  username?: string | null;
 };
 
 // Extend the Database type to include our profiles table
@@ -26,6 +27,18 @@ declare module '@supabase/supabase-js' {
             set_id: string;
           };
         };
+      };
+      Views: {
+        public_profiles: {
+          Row: {
+            id: string;
+            username: string | null;
+            display_name: string | null;
+            avatar_url: string | null;
+            updated_at: string | null;
+            collection_count: number;
+          }
+        }
       };
     };
   }
