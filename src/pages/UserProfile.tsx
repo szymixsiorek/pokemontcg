@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,8 +73,8 @@ const UserProfilePage = () => {
           return;
         }
 
-        // Define a safe profile with known structure
-        const safeProfile: Record<string, unknown> = profileData as Record<string, unknown>;
+        // Cast to unknown first to satisfy TypeScript
+        const safeProfile = profileData as unknown as Record<string, unknown>;
 
         // Get collection count
         const { count: collectionCount } = await supabase
