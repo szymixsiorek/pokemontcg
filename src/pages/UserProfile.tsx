@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,8 +54,8 @@ const UserProfilePage = () => {
       try {
         setLoading(true);
         
-        // Fetch the public profile by username
-        const { data: profileData, error: profileError } = await supabase
+        // Fetch the public profile by username using type casting to avoid deep type instantiation
+        const { data: profileData, error: profileError } = await (supabase as any)
           .from('profiles')  
           .select('id, username, display_name, avatar_url, updated_at')
           .eq('username', username)
@@ -73,30 +72,27 @@ const UserProfilePage = () => {
           return;
         }
 
-        // Cast to unknown first to satisfy TypeScript
-        const safeProfile = profileData as unknown as Record<string, unknown>;
-
         // Get collection count
         const { count: collectionCount } = await supabase
           .from('user_collections')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', String(safeProfile.id || ''));
+          .eq('user_id', profileData.id);
 
         // Create a profile object with proper type safety
         const profileWithCount: PublicProfile = {
-          id: String(safeProfile.id || ''),
-          username: String(safeProfile.username || username), // Fallback to URL parameter
-          display_name: safeProfile.display_name as string | null,
-          avatar_url: safeProfile.avatar_url as string | null,
-          updated_at: safeProfile.updated_at as string | null,
+          id: profileData.id,
+          username: profileData.username || username, // Fallback to URL parameter
+          display_name: profileData.display_name,
+          avatar_url: profileData.avatar_url,
+          updated_at: profileData.updated_at,
           collection_count: collectionCount || 0
         };
 
         setProfile(profileWithCount);
         
         // Fetch the user's collection
-        if (safeProfile.id) {
-          await fetchUserCollection(String(safeProfile.id));
+        if (profileData.id) {
+          await fetchUserCollection(profileData.id);
         }
         
       } catch (error) {

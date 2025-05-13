@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import { Menu, User, LogOut, Heart, Home, MessageSquare, Info, Library } from "l
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = () => {
-  const { user, displayName, signOut } = useAuth();
+  const { user, username, signOut } = useAuth();
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -92,7 +91,7 @@ const Header = () => {
                 <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                   <AvatarImage src={avatarUrl || undefined} />
                   <AvatarFallback className="text-xs">
-                    {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                    {username ? username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                   </AvatarFallback>
                 </Avatar>
               </Link>
@@ -138,7 +137,7 @@ const Header = () => {
               <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                 <AvatarImage src={avatarUrl || undefined} />
                 <AvatarFallback className="text-xs">
-                  {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                  {username ? username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -192,7 +191,7 @@ const Header = () => {
                         <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={avatarUrl} />
                           <AvatarFallback>
-                            {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                            {username ? username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                           </AvatarFallback>
                         </Avatar>
                       ) : (
@@ -203,7 +202,7 @@ const Header = () => {
                         className="text-sm hover:text-primary transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
-                        {displayName || "My Profile"}
+                        {username || "My Profile"}
                       </Link>
                     </div>
                     <Button
