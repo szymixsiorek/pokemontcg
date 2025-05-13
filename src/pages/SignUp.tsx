@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -87,7 +86,7 @@ const SignUp = () => {
     }
     
     setPasswordError("");
-    const success = await signUp(email, password, displayName, username);
+    const success = await signUp(email, password, displayName);
     if (success) {
       navigate("/");
     }

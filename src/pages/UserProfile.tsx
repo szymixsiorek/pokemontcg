@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,16 @@ type CollectionItem = {
   id: string;
   card_id: string;
   set_id: string;
+};
+
+type Pokemon = {
+  id: string;
+  setId: string;
+  name: string;
+  image: string;
+  number: string;
+  rarity: string;
+  type: string;
 };
 
 const UserProfilePage = () => {
@@ -62,6 +73,11 @@ const UserProfilePage = () => {
           return;
         }
 
+        if (!('id' in data)) {
+          setError("Invalid profile data");
+          return;
+        }
+
         // Get collection count
         const { count: collectionCount } = await supabase
           .from('user_collections')
@@ -69,7 +85,7 @@ const UserProfilePage = () => {
           .eq('user_id', data.id);
 
         const profileWithCount: PublicProfile = {
-          ...data,
+          ...data as any,
           collection_count: collectionCount || 0
         };
 
@@ -218,7 +234,8 @@ const UserProfilePage = () => {
                         name: "",
                         image: "",
                         number: "",
-                        rarity: ""
+                        rarity: "",
+                        type: "pokemon" // Adding required type property
                       }}
                       inCollection={false}
                       onCollectionUpdate={() => {}}
