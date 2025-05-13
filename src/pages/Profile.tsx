@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ProfilePictureSelector } from "@/components/ProfilePictureSelector";
 
 // Define types for profile data
 type Profile = {
@@ -77,12 +77,18 @@ const Profile = () => {
       if (data && data.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
         
-        const { data: publicUrlData } = await supabase.storage
-          .from('avatars')
-          .getPublicUrl(data.avatar_url);
-          
-        console.log("Public URL data:", publicUrlData);
-        setAvatarUrl(publicUrlData.publicUrl);
+        // If it's an external URL (starts with http), use it directly
+        if (data.avatar_url.startsWith('http') || data.avatar_url.startsWith('/lovable-uploads/')) {
+          setAvatarUrl(data.avatar_url);
+        } else {
+          // Otherwise, it's a Storage path - get the public URL
+          const { data: publicUrlData } = await supabase.storage
+            .from('avatars')
+            .getPublicUrl(data.avatar_url);
+            
+          console.log("Public URL data:", publicUrlData);
+          setAvatarUrl(publicUrlData.publicUrl);
+        }
       } else {
         console.log("No avatar URL found in profile data");
       }
@@ -210,6 +216,56 @@ const Profile = () => {
     }
   };
 
+  const selectPredefinedAvatar = async (imageUrl: string) => {
+    try {
+      setUploading(true);
+      setUploadError(null);
+      
+      if (!user) {
+        throw new Error("User must be logged in to select an avatar.");
+      }
+
+      console.log("Selected predefined avatar:", imageUrl);
+      
+      // Update or insert profile with avatar URL using type assertion
+      const { error: upsertError } = await supabase
+        .from('profiles' as any)
+        .upsert({ 
+          id: user.id, 
+          avatar_url: imageUrl,
+          updated_at: new Date().toISOString()
+        } as any);
+        
+      if (upsertError) {
+        console.error("Profile update error:", upsertError);
+        console.error("Error details:", JSON.stringify(upsertError, null, 2));
+        throw upsertError;
+      }
+      
+      console.log("Profile updated with new avatar URL");
+      
+      // Set the avatar URL in the UI
+      setAvatarUrl(imageUrl);
+      
+      toast({
+        title: "Avatar updated!",
+        description: "Your profile picture has been updated successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error in selectPredefinedAvatar:", error);
+      console.error("Error stack:", error.stack);
+      setUploadError(error.message || "Selection failed for unknown reason");
+      
+      toast({
+        title: "Selection failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (name !== displayName) {
       const success = await updateDisplayName(name);
@@ -266,10 +322,11 @@ const Profile = () => {
                     className="hidden"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 space-y-2">
                   <h3 className="text-lg font-medium">{displayName || user?.email}</h3>
                   <p className="text-muted-foreground">{user?.email}</p>
-                  {uploading && <p className="text-sm text-muted-foreground mt-2">Uploading...</p>}
+                  {uploading && <p className="text-sm text-muted-foreground mt-2">Processing...</p>}
+                  <ProfilePictureSelector onSelectPicture={selectPredefinedAvatar} />
                 </div>
               </div>
 
