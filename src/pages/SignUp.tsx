@@ -45,9 +45,9 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Use the SimpleProfile interface to avoid deep type instantiation
+      // Using a more compatible approach with current Supabase types
       const { data, error } = await supabase
-        .from<SimpleProfile>('profiles')
+        .from('profiles')
         .select('id')
         .eq('username', value)
         .limit(1);
