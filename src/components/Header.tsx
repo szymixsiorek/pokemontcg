@@ -62,9 +62,12 @@ const Header = () => {
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">
+              <Link 
+                to="/profile" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 {displayName || user.email}
-              </span>
+              </Link>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-2" />
                 {t("sign_out")}
@@ -148,7 +151,13 @@ const Header = () => {
                   <>
                     <div className="flex items-center py-2">
                       <User className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{displayName || user.email}</span>
+                      <Link
+                        to="/profile"
+                        className="text-sm hover:text-primary transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {displayName || user.email}
+                      </Link>
                     </div>
                     <Button
                       variant="ghost"

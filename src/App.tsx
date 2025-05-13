@@ -18,6 +18,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CardSets from "./pages/CardSets";
 import CardSet from "./pages/CardSet";
 import MyCollection from "./pages/MyCollection";
+import Profile from "./pages/Profile";
 import AuthError from "./pages/AuthError";
 import Donate from "./pages/Donate";
 import Contact from "./pages/Contact";
@@ -85,6 +86,11 @@ const App = () => (
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<AboutUs />} />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
                 <Route path="/my-collection" element={
                   <ProtectedRoute>
                     <MyCollection />
