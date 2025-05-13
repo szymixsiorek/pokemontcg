@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getCardSets } from "@/lib/api";
@@ -92,18 +91,18 @@ const Index = () => {
     return { groupedResults: sortedGroups, allCards };
   }, [searchResults, sortOrder, selectedSetId]);
   
-  const handleSearch = async () => {
-    if (searchQuery.trim()) {
+  const handleSearch = async (searchName: string) => {
+    if (searchName.trim()) {
       setIsSearching(true);
       setIsLoadingResults(true);
       
       try {
         // Clean up the name for searching - remove display formatting
-        const searchName = searchQuery.toLowerCase().replace(/\s+/g, '-');
-        console.log(`Searching for cards with name: ${searchName}`);
+        const formattedSearchName = searchName.toLowerCase().replace(/\s+/g, '-');
+        console.log(`Searching for cards with name: ${formattedSearchName}`);
         
         // Search for cards using the searchCardsByPokemon function
-        const { groupedCards } = await searchCardsByPokemon(searchName);
+        const { groupedCards } = await searchCardsByPokemon(formattedSearchName);
         setSearchResults(groupedCards);
         
         // Reset filtering and sorting options
@@ -119,7 +118,7 @@ const Index = () => {
         }
       } catch (error) {
         console.error("Error searching for cards:", error);
-        toast.error(`Error searching for ${searchQuery} cards`);
+        toast.error(`Error searching for ${searchName} cards`);
         setSearchResults([]);
       } finally {
         setIsLoadingResults(false);
@@ -141,31 +140,13 @@ const Index = () => {
     
     // Set the formatted name as the search query for better user experience
     setSearchQuery(displayName);
-    setIsSearching(true);
-    setIsLoadingResults(true);
-    
-    try {
-      console.log(`Searching for cards of Pokémon: ${rawName} (display: ${displayName})`);
-      const { groupedCards } = await searchCardsByPokemon(rawName);
-      
-      // Calculate total cards across all groups
-      const totalCards = groupedCards.reduce((sum, group) => sum + group.cards.length, 0);
-      console.log(`Found ${totalCards} results for ${displayName} across ${groupedCards.length} sets`);
-      
-      setSearchResults(groupedCards);
-      
-      if (totalCards > 0) {
-        toast.success(`Found ${totalCards} cards for ${displayName}`);
-      } else {
-        toast.info(`No cards found for ${displayName}`);
-      }
-    } catch (error) {
-      console.error("Error searching for cards:", error);
-      toast.error(`Error searching for ${displayName} cards`);
-      setSearchResults([]);
-    } finally {
-      setIsLoadingResults(false);
-    }
+    await handleSearch(rawName);
+  };
+  
+  // New function to handle manual search (when user presses Enter)
+  const handleManualSearch = async (searchText: string) => {
+    setSearchQuery(searchText);
+    await handleSearch(searchText);
   };
   
   // The sets are already sorted by release date in the API
@@ -191,6 +172,7 @@ const Index = () => {
           <div className="max-w-md mx-auto mb-8">
             <CardNameTypeahead 
               onSelect={handleCardSelect}
+              onManualSearch={handleManualSearch}
               placeholder={t("search_pokemon_cards")}
             />
           </div>

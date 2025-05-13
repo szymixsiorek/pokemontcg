@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { searchCardsByName } from '@/lib/api';
 import { CardSuggestion } from '@/components/CardNameTypeahead';
@@ -193,23 +192,22 @@ export const useCardSearch = () => {
     }
   }, []);
 
-  // Function to search for all cards of a specific Pokémon
-  const searchCardsByPokemon = useCallback(async (pokemonName: string) => {
-    if (!pokemonName.trim()) return { cards: [], groupedCards: [] };
+  // Function to search for all cards of a specific Pokémon or trainer
+  const searchCardsByPokemon = useCallback(async (searchTerm: string) => {
+    if (!searchTerm.trim()) return { cards: [], groupedCards: [] };
     
     try {
-      // Format the Pokémon name properly for search
-      // Remove any formatting we may have added for display purposes
-      const rawName = pokemonName.toLowerCase()
+      // Format the search term properly for the API
+      const formattedTerm = searchTerm.toLowerCase()
         .replace(/\s+/g, '-') // Convert spaces to hyphens for API compatibility
         .replace(/\./g, '') // Remove periods
         .trim();
       
-      console.log(`Searching for cards with Pokémon name: ${rawName}`);
+      console.log(`Searching for cards with term: ${formattedTerm}`);
       
       // Use the existing API function to search for cards
-      const cards = await searchCardsByName(rawName);
-      console.log(`Found ${cards.length} cards for ${rawName}, sorted oldest to newest`);
+      const cards = await searchCardsByName(formattedTerm);
+      console.log(`Found ${cards.length} cards for ${formattedTerm}`);
       
       // Group and sort the cards
       const groupedCards = groupAndSortCards(cards);

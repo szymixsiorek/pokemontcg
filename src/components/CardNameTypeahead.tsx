@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -17,13 +16,15 @@ interface CardNameTypeaheadProps {
   placeholder?: string;
   className?: string;
   searchEndpoint?: string; // Allow custom endpoint for flexibility
+  onManualSearch?: (searchText: string) => void; // Added prop for manual search handling
 }
 
 const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
   onSelect,
   placeholder,
   className,
-  searchEndpoint = "/api/cards"
+  searchEndpoint = "/api/cards",
+  onManualSearch
 }) => {
   const { t } = useLanguage();
   const [inputValue, setInputValue] = useState("");
@@ -108,8 +109,31 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
     });
   };
 
+  // Handle manual search submission
+  const handleManualSubmit = () => {
+    if (inputValue.trim() && onManualSearch) {
+      onManualSearch(inputValue.trim());
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
   // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // Handle Enter key for manual search when no suggestions are selected
+    if (e.key === "Enter") {
+      e.preventDefault();
+      
+      if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+        // If an item is selected in the dropdown, use that
+        handleSelectSuggestion(suggestions[selectedIndex]);
+      } else if (inputValue.trim() && onManualSearch) {
+        // Otherwise do a manual search with the current input value
+        handleManualSubmit();
+      }
+      return;
+    }
+    
     if (!showSuggestions || suggestions.length === 0) return;
     
     switch (e.key) {
@@ -120,12 +144,6 @@ const CardNameTypeahead: React.FC<CardNameTypeaheadProps> = ({
       case "ArrowUp":
         e.preventDefault();
         setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-          handleSelectSuggestion(suggestions[selectedIndex]);
-        }
         break;
       case "Escape":
         e.preventDefault();
