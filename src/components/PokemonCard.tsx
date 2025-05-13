@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Minus, DollarSign, ExternalLink, Maximize, Download, X } from "lucide-react";
+import { Plus, Minus, DollarSign, ExternalLink, Maximize } from "lucide-react";
 import type { Pokemon } from "@/lib/api";
 import { addCardToCollection, removeCardFromCollection } from "@/lib/api";
 import { Link } from "react-router-dom";
@@ -18,12 +17,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface PokemonCardProps {
   card: Pokemon;
@@ -107,25 +100,6 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
   const getHighResImage = (imageUrl: string): string => {
     return imageUrl.replace(/\.png$/, '_hires.png');
   };
-  
-  const handleDownloadImage = () => {
-    // Get high-res image URL
-    const highResImageUrl = getHighResImage(card.image);
-    
-    // Create invisible link element
-    const link = document.createElement('a');
-    link.href = highResImageUrl;
-    link.download = `${card.name.replace(/\s+/g, '-').toLowerCase()}-${card.number}.png`;
-    
-    // Add to document, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      description: "Image download started",
-    });
-  };
 
   const tcgPlayerPriceData = getTCGPlayerPriceData();
   const cardmarketData = card.cardmarket;
@@ -188,56 +162,24 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
                             (e.target as HTMLImageElement).src = card.image;
                           }}
                         />
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            onClick={() => setIsFullSizeImage(true)}
-                            variant="outline"
-                            size="icon"
-                            className="bg-background/80 rounded-full"
-                          >
-                            <Maximize className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <button
+                          onClick={() => setIsFullSizeImage(true)}
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 rounded-full p-1"
+                        >
+                          <Maximize className="h-4 w-4" />
+                        </button>
                       </div>
                       
                       <Dialog open={isFullSizeImage} onOpenChange={setIsFullSizeImage}>
                         <DialogContent className="max-w-3xl">
-                          <div className="relative">
-                            <img 
-                              src={getHighResImage(card.image)} 
-                              alt={card.name} 
-                              className="w-full object-contain"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = card.image;
-                              }}
-                            />
-                            <div className="absolute top-3 right-3 flex items-center gap-2">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      onClick={handleDownloadImage}
-                                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                                      size="icon"
-                                    >
-                                      <Download className="h-5 w-5" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Download card image</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                              
-                              <Button
-                                onClick={() => setIsFullSizeImage(false)}
-                                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                                size="icon"
-                              >
-                                <X className="h-5 w-5" />
-                              </Button>
-                            </div>
-                          </div>
+                          <img 
+                            src={getHighResImage(card.image)} 
+                            alt={card.name} 
+                            className="w-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = card.image;
+                            }}
+                          />
                         </DialogContent>
                       </Dialog>
                     </div>
@@ -356,4 +298,3 @@ const PokemonCard = ({ card, inCollection = false, onCollectionUpdate }: Pokemon
 };
 
 export default PokemonCard;
-
