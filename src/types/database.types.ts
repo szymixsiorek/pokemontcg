@@ -5,7 +5,7 @@ export type Profile = {
   display_name?: string | null;
   avatar_url?: string | null;
   updated_at?: string;
-  username?: string | null;
+  username: string | null;
 };
 
 // Extend the Database type to include our profiles table

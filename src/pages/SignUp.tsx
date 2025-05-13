@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -41,14 +40,13 @@ const SignUp = () => {
       setCheckingUsername(true);
       
       // Simplify the query to avoid deep instantiation error
-      const { data, error } = await supabase
+      const { count, error } = await supabase
         .from('profiles')
-        .select('id')
-        .eq('username', value)
-        .limit(1);
+        .select('*', { count: 'exact', head: true })
+        .eq('username', value);
         
       // If we found a profile with this username
-      if (data && data.length > 0) {
+      if (count && count > 0) {
         setUsernameError("Username already taken");
       } else if (error) {
         console.error("Error checking username:", error);

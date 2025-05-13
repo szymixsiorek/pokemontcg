@@ -55,50 +55,47 @@ const UserProfilePage = () => {
         setLoading(true);
         
         // Fetch the public profile by username
-        const { data, error } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')  
           .select('id, username, display_name, avatar_url, updated_at')
           .eq('username', username)
           .single();
 
-        if (error) {
-          console.error("Error fetching profile:", error);
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
           setError("Profile not found");
           return;
         }
 
-        if (!data) {
+        if (!profileData) {
           setError("Profile not found");
           return;
         }
 
-        // Explicitly check for required fields and use type assertions
-        if (!('id' in data)) {
-          setError("Invalid profile data");
-          return;
-        }
+        // Define a safe profile with known structure
+        const safeProfile: Record<string, unknown> = profileData as Record<string, unknown>;
 
         // Get collection count
         const { count: collectionCount } = await supabase
           .from('user_collections')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', data.id as string);
+          .eq('user_id', String(safeProfile.id || ''));
 
         // Create a profile object with proper type safety
         const profileWithCount: PublicProfile = {
-          id: data.id as string,
-          username: data.username as string || username, // Fallback to URL parameter
-          display_name: data.display_name as string | null,
-          avatar_url: data.avatar_url as string | null,
-          updated_at: data.updated_at as string | null,
+          id: String(safeProfile.id || ''),
+          username: String(safeProfile.username || username), // Fallback to URL parameter
+          display_name: safeProfile.display_name as string | null,
+          avatar_url: safeProfile.avatar_url as string | null,
+          updated_at: safeProfile.updated_at as string | null,
           collection_count: collectionCount || 0
         };
 
         setProfile(profileWithCount);
         
         // Fetch the user's collection
-        if (data.id) {
-          await fetchUserCollection(data.id as string);
+        if (safeProfile.id) {
+          await fetchUserCollection(String(safeProfile.id));
         }
         
       } catch (error) {
