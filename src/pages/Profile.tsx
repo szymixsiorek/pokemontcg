@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -213,35 +214,19 @@ const Profile = () => {
       
       console.log("Public URL retrieved:", data);
       
-      // Check if profiles table exists
-      const { error: tableError } = await supabase
-        .from('profiles' as any)
-        .select('id')
-        .limit(1);
-        
-      if (tableError) {
-        console.error("Profiles table error:", tableError);
-        // If the table doesn't exist, create it on the fly
-        // This should be done with a proper migration, but for quick fix
-        const { error: createError } = await supabase.rpc('create_profiles_if_not_exists');
-        if (createError) {
-          console.error("Error creating profiles table:", createError);
-          throw new Error("Database setup error. Please contact support.");
-        }
-      }
-      
-      // Update profile with avatar URL
-      // Use type assertion to work around TypeScript error until types are regenerated
-      const { error: updateError } = await supabase
+      // Check if profiles table exists by trying to insert directly
+      // This avoids calling an RPC function that's not in the TypeScript types
+      const { error: upsertError } = await supabase
         .from('profiles' as any)
         .upsert({ 
           id: user.id, 
-          avatar_url: filePath 
+          avatar_url: filePath,
+          updated_at: new Date().toISOString()
         } as any);
         
-      if (updateError) {
-        console.error("Profile update error:", updateError);
-        throw updateError;
+      if (upsertError) {
+        console.error("Profile update error:", upsertError);
+        throw upsertError;
       }
       
       console.log("Profile updated with new avatar URL");
