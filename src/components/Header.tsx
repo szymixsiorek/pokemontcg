@@ -1,21 +1,47 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import ThemeSelector from "@/components/ThemeSelector";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Menu, User, LogOut, Heart, Home, MessageSquare, Info, Library } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = () => {
   const { user, displayName, signOut } = useAuth();
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // Load avatar from Supabase when user is authenticated
+  useState(() => {
+    const loadAvatar = async () => {
+      if (!user) return;
+      
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.avatar_url) {
+          setAvatarUrl(data.avatar_url);
+        }
+      } catch (error) {
+        console.error("Error loading avatar in header:", error);
+      }
+    };
+    
+    loadAvatar();
+  });
 
   const menuItems = [
     { label: t("home"), href: "/", icon: <Home className="h-4 w-4" /> },
@@ -62,11 +88,13 @@ const Header = () => {
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
-              <Link 
-                to="/profile" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {displayName || user.email}
+              <Link to="/profile">
+                <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+                  <AvatarImage src={avatarUrl || undefined} />
+                  <AvatarFallback className="text-xs">
+                    {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
               <Button variant="ghost" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -105,6 +133,16 @@ const Header = () => {
             </Link>
           </Button>
           <ThemeSelector />
+          {user && (
+            <Link to="/profile" className="mx-2">
+              <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+                <AvatarImage src={avatarUrl || undefined} />
+                <AvatarFallback className="text-xs">
+                  {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          )}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="ml-2">
@@ -150,13 +188,22 @@ const Header = () => {
                 {user ? (
                   <>
                     <div className="flex items-center py-2">
-                      <User className="h-4 w-4 mr-2" />
+                      {avatarUrl ? (
+                        <Avatar className="h-6 w-6 mr-2">
+                          <AvatarImage src={avatarUrl} />
+                          <AvatarFallback>
+                            {displayName ? displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <User className="h-4 w-4 mr-2" />
+                      )}
                       <Link
                         to="/profile"
                         className="text-sm hover:text-primary transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
-                        {displayName || user.email}
+                        {displayName || "My Profile"}
                       </Link>
                     </div>
                     <Button
