@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -40,20 +39,17 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Use a more straightforward approach to check if username exists
+      // Avoid the deep type instantiation by using a simpler approach
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
-        .eq('username', value)
-        .limit(1)
-        .single();
+        .eq('username', value);
         
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116 means no rows returned, which is what we want (username is available)
+      if (error) {
         console.error("Error checking username:", error);
         setUsernameError("Error checking username availability");
-      } else if (data) {
-        // If we found a profile with this username
+      } else if (data && data.length > 0) {
+        // If we found any profiles with this username
         setUsernameError("Username already taken");
       } else {
         // No rows returned, username is available
