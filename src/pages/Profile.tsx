@@ -121,8 +121,12 @@ const Profile = () => {
       
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user?.id}.${fileExt}`;
-      const filePath = fileName;
+      
+      // Create a file path with user ID as first segment to match our RLS policy
+      // The policy expects: {userId}/filename.ext
+      const filePath = `${user?.id}/${Date.now()}.${fileExt}`;
+      
+      console.log("Uploading to path:", filePath);
       
       // Upload image to storage
       const { error: uploadError } = await supabase.storage
@@ -130,6 +134,7 @@ const Profile = () => {
         .upload(filePath, file, { upsert: true });
         
       if (uploadError) {
+        console.error("Upload error:", uploadError);
         throw uploadError;
       }
       
@@ -148,6 +153,7 @@ const Profile = () => {
         } as any);
         
       if (updateError) {
+        console.error("Profile update error:", updateError);
         throw updateError;
       }
       
@@ -158,6 +164,8 @@ const Profile = () => {
         description: "Your profile picture has been updated successfully.",
       });
     } catch (error: any) {
+      console.error("Error in uploadAvatar:", error);
+      
       toast({
         title: "Upload failed",
         description: error.message,
