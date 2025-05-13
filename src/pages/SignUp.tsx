@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Separator } from "@/components/ui/separator";
@@ -44,8 +44,7 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Using two generics approach to avoid type instantiation errors
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
@@ -95,6 +94,10 @@ const SignUp = () => {
     setPasswordError("");
     const success = await signUp(email, password, username);
     if (success) {
+      toast({
+        title: "Account created successfully",
+        description: "Please check your email to confirm your account",
+      });
       navigate("/");
     }
   };
