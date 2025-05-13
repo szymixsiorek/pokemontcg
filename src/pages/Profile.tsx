@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ProfilePictureSelector } from "@/components/ProfilePictureSelector";
 
@@ -31,11 +32,11 @@ type Profile = {
 const Profile = () => {
   const { user, displayName, updateDisplayName } = useAuth();
   const [name, setName] = useState(displayName);
-  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [joinDate, setJoinDate] = useState<string>("");
   const [collectionCount, setCollectionCount] = useState<number>(0);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -73,28 +74,16 @@ const Profile = () => {
 
       console.log("Profile data received:", data);
 
-      // If profile has an avatar_url, get the public URL
+      // If profile has an avatar_url, set it directly
       if (data && data.avatar_url) {
         console.log("Avatar URL from database:", data.avatar_url);
-        
-        // If it's an external URL (starts with http), use it directly
-        if (data.avatar_url.startsWith('http') || data.avatar_url.startsWith('/lovable-uploads/')) {
-          setAvatarUrl(data.avatar_url);
-        } else {
-          // Otherwise, it's a Storage path - get the public URL
-          const { data: publicUrlData } = await supabase.storage
-            .from('avatars')
-            .getPublicUrl(data.avatar_url);
-            
-          console.log("Public URL data:", publicUrlData);
-          setAvatarUrl(publicUrlData.publicUrl);
-        }
+        setAvatarUrl(data.avatar_url);
       } else {
         console.log("No avatar URL found in profile data");
       }
     } catch (error) {
       console.error("Error in getProfile function:", error);
-      setUploadError("Error loading profile. Please try again later.");
+      setError("Error loading profile. Please try again later.");
     }
   };
 
@@ -122,104 +111,10 @@ const Profile = () => {
     }
   };
 
-  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setUploading(true);
-      setUploadError(null);
-      
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error("You must select an image to upload.");
-      }
-      
-      if (!user) {
-        throw new Error("User must be logged in to upload avatar.");
-      }
-
-      const file = event.target.files[0];
-      console.log("Selected file:", file.name, "Size:", file.size, "Type:", file.type);
-      
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        throw new Error("File must be an image.");
-      }
-      
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error("Image size must be less than 5MB.");
-      }
-      
-      const fileExt = file.name.split('.').pop();
-      
-      // Create a file path with user ID as first segment for RLS policy
-      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
-      
-      console.log("Uploading to path:", filePath);
-      console.log("Bucket name:", 'avatars');
-      
-      // Upload image to storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-        
-      if (uploadError) {
-        console.error("Supabase storage.upload error:", uploadError);
-        console.error("Error details:", JSON.stringify(uploadError, null, 2));
-        alert(`Upload failed: ${uploadError.message}`);
-        throw uploadError;
-      }
-      
-      console.log("Upload successful, result:", uploadData);
-      
-      // Get the public URL
-      const { data } = await supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-      
-      console.log("Public URL retrieved:", data);
-      
-      // Update or insert profile with avatar URL using type assertion
-      const { error: upsertError } = await supabase
-        .from('profiles' as any)
-        .upsert({ 
-          id: user.id, 
-          avatar_url: filePath,
-          updated_at: new Date().toISOString()
-        } as any);
-        
-      if (upsertError) {
-        console.error("Profile update error:", upsertError);
-        console.error("Error details:", JSON.stringify(upsertError, null, 2));
-        throw upsertError;
-      }
-      
-      console.log("Profile updated with new avatar URL");
-      
-      // Set the avatar URL in the UI
-      setAvatarUrl(data.publicUrl);
-      
-      toast({
-        title: "Avatar updated!",
-        description: "Your profile picture has been updated successfully.",
-      });
-    } catch (error: any) {
-      console.error("Error in uploadAvatar:", error);
-      console.error("Error stack:", error.stack);
-      setUploadError(error.message || "Upload failed for unknown reason");
-      
-      toast({
-        title: "Upload failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const selectPredefinedAvatar = async (imageUrl: string) => {
     try {
-      setUploading(true);
-      setUploadError(null);
+      setLoading(true);
+      setError(null);
       
       if (!user) {
         throw new Error("User must be logged in to select an avatar.");
@@ -247,22 +142,15 @@ const Profile = () => {
       // Set the avatar URL in the UI
       setAvatarUrl(imageUrl);
       
-      toast({
-        title: "Avatar updated!",
-        description: "Your profile picture has been updated successfully.",
-      });
+      return Promise.resolve();
     } catch (error: any) {
       console.error("Error in selectPredefinedAvatar:", error);
       console.error("Error stack:", error.stack);
-      setUploadError(error.message || "Selection failed for unknown reason");
+      setError(error.message || "Selection failed for unknown reason");
       
-      toast({
-        title: "Selection failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      return Promise.reject(error);
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
 
@@ -290,10 +178,10 @@ const Profile = () => {
               <CardDescription>Update your profile information and how others see you on the site.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {uploadError && (
+              {error && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {uploadError}
+                    {error}
                   </AlertDescription>
                 </Alert>
               )}
@@ -306,27 +194,15 @@ const Profile = () => {
                       {displayName ? displayName.charAt(0).toUpperCase() : <User />}
                     </AvatarFallback>
                   </Avatar>
-                  <label 
-                    htmlFor="avatarUpload" 
-                    className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-2 rounded-full cursor-pointer"
-                  >
-                    <Camera className="h-4 w-4" />
-                    <span className="sr-only">Upload avatar</span>
-                  </label>
-                  <Input
-                    id="avatarUpload"
-                    type="file"
-                    accept="image/*"
-                    onChange={uploadAvatar}
-                    disabled={uploading}
-                    className="hidden"
-                  />
                 </div>
                 <div className="flex-1 space-y-2">
                   <h3 className="text-lg font-medium">{displayName || user?.email}</h3>
                   <p className="text-muted-foreground">{user?.email}</p>
-                  {uploading && <p className="text-sm text-muted-foreground mt-2">Processing...</p>}
-                  <ProfilePictureSelector onSelectPicture={selectPredefinedAvatar} />
+                  {loading && <p className="text-sm text-muted-foreground mt-2">Processing...</p>}
+                  <ProfilePictureSelector 
+                    onSelectPicture={selectPredefinedAvatar}
+                    currentAvatarUrl={avatarUrl} 
+                  />
                 </div>
               </div>
 

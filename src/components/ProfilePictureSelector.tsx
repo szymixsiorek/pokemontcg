@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useToast } from "@/components/ui/use-toast";
 
 type ProfilePicture = {
   id: string;
@@ -34,17 +35,32 @@ const predefinedPictures: ProfilePicture[] = [
 
 interface ProfilePictureSelectorProps {
   onSelectPicture: (url: string) => Promise<void>;
+  currentAvatarUrl?: string | null;
 }
 
-export const ProfilePictureSelector = ({ onSelectPicture }: ProfilePictureSelectorProps) => {
+export const ProfilePictureSelector = ({ onSelectPicture, currentAvatarUrl }: ProfilePictureSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleSelect = async (picture: ProfilePicture) => {
+    if (isLoading) return; // Prevent multiple selections while processing
+    
     setIsLoading(picture.id);
     try {
       await onSelectPicture(picture.url);
       setIsOpen(false);
+      toast({
+        title: "Avatar updated",
+        description: "Your profile picture has been updated successfully."
+      });
+    } catch (error) {
+      console.error("Error selecting avatar:", error);
+      toast({
+        title: "Failed to update avatar",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(null);
     }
@@ -55,11 +71,11 @@ export const ProfilePictureSelector = ({ onSelectPicture }: ProfilePictureSelect
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 text-sm"
+          className="flex items-center gap-2 text-sm w-full"
           type="button"
         >
           <Images className="h-4 w-4" />
-          Choose Predefined Avatar
+          Choose Avatar
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl">
@@ -73,7 +89,9 @@ export const ProfilePictureSelector = ({ onSelectPicture }: ProfilePictureSelect
           {predefinedPictures.map((picture) => (
             <div 
               key={picture.id} 
-              className="group relative cursor-pointer rounded-md overflow-hidden border hover:border-primary hover:shadow-md transition-all"
+              className={`group relative cursor-pointer rounded-md overflow-hidden border transition-all ${
+                currentAvatarUrl === picture.url ? 'ring-2 ring-primary border-primary' : 'hover:border-primary hover:shadow-md'
+              }`}
               onClick={() => handleSelect(picture)}
             >
               <AspectRatio ratio={1/1} className="bg-muted">
@@ -86,6 +104,13 @@ export const ProfilePictureSelector = ({ onSelectPicture }: ProfilePictureSelect
               {isLoading === picture.id && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                   <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                </div>
+              )}
+              {currentAvatarUrl === picture.url && (
+                <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
                 </div>
               )}
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
