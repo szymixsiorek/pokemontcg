@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, User } from "lucide-react";
 
-// Define a type for profile data until Supabase types are regenerated
+// Define types for profile data until Supabase types are regenerated
 type Profile = {
   id: string;
   avatar_url?: string | null;
@@ -56,8 +56,9 @@ const Profile = () => {
       if (!user) return;
       
       // Fetch the profile data from the new profiles table
+      // Use type assertion to work around TypeScript error until types are regenerated
       const { data, error } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('avatar_url')
         .eq('id', user.id)
         .single();
@@ -132,12 +133,13 @@ const Profile = () => {
         .getPublicUrl(filePath);
       
       // Update profile with avatar URL
+      // Use type assertion to work around TypeScript error until types are regenerated
       const { error: updateError } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .upsert({ 
           id: user?.id, 
           avatar_url: filePath 
-        });
+        } as any);
         
       if (updateError) {
         throw updateError;
