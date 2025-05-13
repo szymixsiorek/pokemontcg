@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -15,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 // Simple interface to avoid deep type instantiation
 interface SimpleProfile {
   id: string;
+  username?: string | null;
 }
 
 const SignUp = () => {
@@ -44,11 +46,12 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
+      // Use type assertion to prevent excessive type instantiation
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
-        .limit(1);
+        .limit(1) as { data: SimpleProfile[] | null, error: any };
         
       if (error) {
         console.error("Error checking username:", error);
