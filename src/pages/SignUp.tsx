@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -40,15 +39,14 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Use a type assertion to explicitly tell TypeScript what we expect
-      const { data, error } = await supabase
+      // Simplify the query without complex type declarations
+      const result = await supabase
         .from('profiles')
         .select('id')
         .eq('username', value)
-        .limit(1) as { 
-          data: Array<{ id: string }> | null; 
-          error: Error | null;
-        };
+        .limit(1);
+        
+      const { data, error } = result;
         
       if (error) {
         console.error("Error checking username:", error);
