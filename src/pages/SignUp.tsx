@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -10,6 +11,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Separator } from "@/components/ui/separator";
+
+// Simple interface to avoid deep type instantiation
+interface SimpleProfile {
+  id: string;
+}
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -39,9 +45,9 @@ const SignUp = () => {
     try {
       setCheckingUsername(true);
       
-      // Simplified query without explicit type annotations
+      // Use the SimpleProfile interface to avoid deep type instantiation
       const { data, error } = await supabase
-        .from('profiles')
+        .from<SimpleProfile>('profiles')
         .select('id')
         .eq('username', value)
         .limit(1);
