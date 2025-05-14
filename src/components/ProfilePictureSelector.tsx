@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Images } from "lucide-react";
 import { 
@@ -21,31 +20,31 @@ type ProfilePicture = {
 };
 
 const predefinedPictures: ProfilePicture[] = [
-  { id: "1", url: "/lovable-uploads/ef03190e-c12d-4797-8bff-9bb3a256aa24.png", alt: "Anime character with angry expression" },
-  { id: "2", url: "/lovable-uploads/5a5540c8-338a-493f-b87e-10147c18d7ea.png", alt: "Anime character with goggles" },
-  { id: "3", url: "/lovable-uploads/fb217e0b-3ff0-4925-82a9-6e9c9891ac6d.png", alt: "Eevee Pokemon" },
-  { id: "4", url: "/lovable-uploads/a5f8dc87-2084-4fa1-9607-7fe2ce91a0f0.png", alt: "Detective Pikachu" },
-  { id: "5", url: "/lovable-uploads/611c21aa-d447-452a-94cc-e88e2143b5ef.png", alt: "Anime character with red hat" },
-  { id: "6", url: "/lovable-uploads/4b93384c-5a6a-429b-bcc6-cfde85876c50.png", alt: "Ash Ketchum" },
-  { id: "7", url: "/lovable-uploads/2da0c75d-c9de-4e95-a98f-94245e140a9b.png", alt: "Anime character with blonde hair" },
-  { id: "8", url: "/lovable-uploads/7b5d6b50-db10-49ed-b69a-7ba27e3d48a6.png", alt: "Anime character with green hair" },
-  { id: "9", url: "/lovable-uploads/d5258abf-ca0e-45b2-8d97-8235f42118c6.png", alt: "Anime character with side glance" },
-  { id: "10", url: "/lovable-uploads/618abaa9-a034-48dc-a320-398152c7f5eb.png", alt: "Brock from Pokemon" },
-  { id: "11", url: "/lovable-uploads/49b36c21-0417-425f-adfd-04fde67c4081.png", alt: "Misty from Pokemon" },
-  // Adding new AniPoke profile pictures
-  { id: "12", url: "/lovable-uploads/1d9aac1a-187e-40e8-9675-1149e9c5442c.png", alt: "Anime character with blue hair yelling" },
-  { id: "13", url: "/lovable-uploads/b9595a2f-cf16-4427-b8a8-748ccdd5b9ea.png", alt: "Ash with surprised expression" },
-  { id: "14", url: "/lovable-uploads/52a4ed14-ce42-4f0a-824d-9607199187ab.png", alt: "Serena with pink hat looking annoyed" },
-  { id: "15", url: "/lovable-uploads/34205626-71c6-4dae-a1df-82bb22c43e3a.png", alt: "Serena with pink hat smiling" },
-  { id: "16", url: "/lovable-uploads/5e195504-d96c-4331-8581-b8a1214686b8.png", alt: "Team Rocket Jessie laughing" },
-  { id: "17", url: "/lovable-uploads/6bd8fc5c-d6e4-4e0f-8124-d2a75b67398c.png", alt: "Ash shouting with Pikachu" },
-  { id: "18", url: "/lovable-uploads/2dafbd96-54ed-4f13-bf00-574446cc746a.png", alt: "Clemont with glasses and blonde hair" },
-  { id: "19", url: "/lovable-uploads/e1c437e2-056a-4c2f-ab3b-0ed2bb9249be.png", alt: "Dawn with white hat smiling" },
-  { id: "20", url: "/lovable-uploads/97cc4dab-4e82-445c-9987-4ecf8391c736.png", alt: "Dawn with tired expression" },
-  { id: "21", url: "/lovable-uploads/d5e0e421-38ef-450b-8f28-372a6e08e7f8.png", alt: "Dragonite with annoyed expression" },
-  { id: "22", url: "/lovable-uploads/e3e08fcb-47ce-4cee-8228-f0c9a140ea3e.png", alt: "Lucario profile view" },
-  { id: "23", url: "/lovable-uploads/2ad64464-6cd0-4780-befa-8ff2bbd4e69a.png", alt: "Lucario surprised face" },
-  { id: "24", url: "/lovable-uploads/2e709463-e958-4aca-8e5c-5f026043d9aa.png", alt: "Lucario with glowing eyes" },
+  { id: "1", url: "/lovable-uploads/ef03190e-c12d-4797-8bff-9bb3a256aa24.png", alt: "Sigma rage mode activated" },
+  { id: "2", url: "/lovable-uploads/5a5540c8-338a-493f-b87e-10147c18d7ea.png", alt: "No cap, these goggles are fire" },
+  { id: "3", url: "/lovable-uploads/fb217e0b-3ff0-4925-82a9-6e9c9891ac6d.png", alt: "Eevee got that drip frfr" },
+  { id: "4", url: "/lovable-uploads/a5f8dc87-2084-4fa1-9607-7fe2ce91a0f0.png", alt: "Detective Rizz-achu on the case" },
+  { id: "5", url: "/lovable-uploads/611c21aa-d447-452a-94cc-e88e2143b5ef.png", alt: "Lowkey bussin' with the red hat" },
+  { id: "6", url: "/lovable-uploads/4b93384c-5a6a-429b-bcc6-cfde85876c50.png", alt: "Ash caught these hands in Ohio" },
+  { id: "7", url: "/lovable-uploads/2da0c75d-c9de-4e95-a98f-94245e140a9b.png", alt: "Blonde hair, don't care, kinda sus" },
+  { id: "8", url: "/lovable-uploads/7b5d6b50-db10-49ed-b69a-7ba27e3d48a6.png", alt: "Green hair energy, no cap" },
+  { id: "9", url: "/lovable-uploads/d5258abf-ca0e-45b2-8d97-8235f42118c6.png", alt: "Side-eye serving main character vibes" },
+  { id: "10", url: "/lovable-uploads/618abaa9-a034-48dc-a320-398152c7f5eb.png", alt: "Brock's rizz level is over 9000" },
+  { id: "11", url: "/lovable-uploads/49b36c21-0417-425f-adfd-04fde67c4081.png", alt: "Misty be throwing shade, sheesh" },
+  // Adding new AniPoke profile pictures with slang names
+  { id: "12", url: "/lovable-uploads/1d9aac1a-187e-40e8-9675-1149e9c5442c.png", alt: "Bro is absolutely tweakin'" },
+  { id: "13", url: "/lovable-uploads/b9595a2f-cf16-4427-b8a8-748ccdd5b9ea.png", alt: "That's the Ohio face frfr" },
+  { id: "14", url: "/lovable-uploads/52a4ed14-ce42-4f0a-824d-9607199187ab.png", alt: "Giving main character energy, no cap" },
+  { id: "15", url: "/lovable-uploads/34205626-71c6-4dae-a1df-82bb22c43e3a.png", alt: "Big rizz energy, type beat" },
+  { id: "16", url: "/lovable-uploads/5e195504-d96c-4331-8581-b8a1214686b8.png", alt: "Devious ahh laugh, so based" },
+  { id: "17", url: "/lovable-uploads/6bd8fc5c-d6e4-4e0f-8124-d2a75b67398c.png", alt: "Bro chose violence, yeet" },
+  { id: "18", url: "/lovable-uploads/2dafbd96-54ed-4f13-bf00-574446cc746a.png", alt: "Nerd ahh glasses, but still bussin'" },
+  { id: "19", url: "/lovable-uploads/e1c437e2-056a-4c2f-ab3b-0ed2bb9249be.png", alt: "W smile, kinda slay ngl" },
+  { id: "20", url: "/lovable-uploads/97cc4dab-4e82-445c-9987-4ecf8391c736.png", alt: "Down bad, no rizz, core memory damaged" },
+  { id: "21", url: "/lovable-uploads/d5e0e421-38ef-450b-8f28-372a6e08e7f8.png", alt: "Dragonite boutta throw hands frfr" },
+  { id: "22", url: "/lovable-uploads/e3e08fcb-47ce-4cee-8228-f0c9a140ea3e.png", alt: "Lucario with that sigma stare" },
+  { id: "23", url: "/lovable-uploads/2ad64464-6cd0-4780-befa-8ff2bbd4e69a.png", alt: "Bro caught in 4K, straight bussin'" },
+  { id: "24", url: "/lovable-uploads/2e709463-e958-4aca-8e5c-5f026043d9aa.png", alt: "Lucario's villain arc, respectfully" },
 ];
 
 interface ProfilePictureSelectorProps {
