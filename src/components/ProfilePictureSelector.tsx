@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ProfilePicture = {
   id: string;
@@ -92,47 +93,50 @@ export const ProfilePictureSelector = ({ onSelectPicture, currentAvatarUrl }: Pr
           Choose Avatar
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Choose a Profile Picture</DialogTitle>
           <DialogDescription>
             Select one of these AniPoke pictures as your profile avatar.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4 max-h-[60vh] overflow-y-auto p-2">
-          {predefinedPictures.map((picture) => (
-            <div 
-              key={picture.id} 
-              className={`group relative cursor-pointer rounded-md overflow-hidden border transition-all ${
-                currentAvatarUrl === picture.url ? 'ring-2 ring-primary border-primary' : 'hover:border-primary hover:shadow-md'
-              }`}
-              onClick={() => handleSelect(picture)}
-            >
-              <AspectRatio ratio={1/1} className="bg-muted">
-                <img
-                  src={picture.url}
-                  alt={picture.alt}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-110"
-                />
-              </AspectRatio>
-              {isLoading === picture.id && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+        
+        <ScrollArea className="h-[60vh] pr-4">
+          <div className="grid grid-cols-2 gap-4 p-1">
+            {predefinedPictures.map((picture) => (
+              <div 
+                key={picture.id} 
+                className={`group relative cursor-pointer rounded-md overflow-hidden border transition-all ${
+                  currentAvatarUrl === picture.url ? 'ring-2 ring-primary border-primary' : 'hover:border-primary hover:shadow-md'
+                }`}
+                onClick={() => handleSelect(picture)}
+              >
+                <AspectRatio ratio={1/1} className="bg-muted">
+                  <img
+                    src={picture.url}
+                    alt={picture.alt}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                </AspectRatio>
+                {isLoading === picture.id && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  </div>
+                )}
+                {currentAvatarUrl === picture.url && (
+                  <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  {picture.alt}
                 </div>
-              )}
-              {currentAvatarUrl === picture.url && (
-                <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                Select
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
