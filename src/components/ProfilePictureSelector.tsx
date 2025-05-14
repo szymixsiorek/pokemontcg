@@ -93,7 +93,7 @@ export const ProfilePictureSelector = ({ onSelectPicture, currentAvatarUrl }: Pr
           Choose Avatar
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Choose a Profile Picture</DialogTitle>
           <DialogDescription>
@@ -102,7 +102,7 @@ export const ProfilePictureSelector = ({ onSelectPicture, currentAvatarUrl }: Pr
         </DialogHeader>
         
         <ScrollArea className="h-[60vh] pr-4">
-          <div className="grid grid-cols-2 gap-4 p-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-1">
             {predefinedPictures.map((picture) => (
               <div 
                 key={picture.id} 
