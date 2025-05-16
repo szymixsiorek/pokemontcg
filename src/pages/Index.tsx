@@ -42,20 +42,37 @@ const Index = () => {
     const today = new Date();
     const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     
-    // Use the date seed to select 3 different sets
-    const selectedSets = [];
-    let availableSets = [...sets];
+    // Group sets by series/era
+    const setsByEra: Record<string, typeof sets> = {};
     
-    for (let i = 0; i < 3; i++) {
-      if (availableSets.length === 0) break;
-      
-      // Use the date seed and the current iteration to get a deterministic "random" index
-      const index = (dateSeed + i * 100) % availableSets.length;
-      selectedSets.push(availableSets[index]);
-      
-      // Remove the selected set from available sets to prevent duplicates
-      availableSets = [...availableSets.slice(0, index), ...availableSets.slice(index + 1)];
-    }
+    sets.forEach(set => {
+      if (!setsByEra[set.series]) {
+        setsByEra[set.series] = [];
+      }
+      setsByEra[set.series].push(set);
+    });
+    
+    // Get all available eras
+    const eras = Object.keys(setsByEra);
+    
+    // Use the date seed to randomize the order of eras
+    const shuffledEras = [...eras].sort((a, b) => {
+      // Use the date seed to create a deterministic shuffle
+      const hashA = (dateSeed + a.charCodeAt(0)) % 100;
+      const hashB = (dateSeed + b.charCodeAt(0)) % 100;
+      return hashA - hashB;
+    });
+    
+    // Take the first 3 eras (or less if fewer eras exist)
+    const selectedEras = shuffledEras.slice(0, 3);
+    
+    // Select one set from each selected era
+    const selectedSets = selectedEras.map(era => {
+      const eraSets = setsByEra[era];
+      // Use the date seed to select a set from this era
+      const index = (dateSeed + era.charCodeAt(0)) % eraSets.length;
+      return eraSets[index];
+    });
     
     return selectedSets;
   }, [sets]);
@@ -324,7 +341,7 @@ const Index = () => {
             )}
             
             <div className="text-center mt-8 text-sm text-muted-foreground">
-              <p>New sets featured daily. Check back tomorrow for new recommendations!</p>
+              <p>New sets featured daily from different eras. Check back tomorrow for new recommendations!</p>
             </div>
           </div>
         </section>
