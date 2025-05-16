@@ -8,9 +8,10 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink, ShoppingCart } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,6 +25,7 @@ const CardSet = () => {
   const { setId } = useParams<{ setId: string }>();
   const { user } = useAuth();
   const { getSeriesColors } = useTheme();
+  const { toast } = useToast();
   const [logoError, setLogoError] = useState(false);
   
   const { data: set, isLoading: isLoadingSet } = useQuery({
@@ -56,6 +58,29 @@ const CardSet = () => {
   const collectionPercentage = totalCardsCount > 0 
     ? Math.round((collectedCardsCount / totalCardsCount) * 100)
     : 0;
+  
+  // Format set name for CardMarket URL
+  const getCardMarketUrl = () => {
+    if (!set) return "";
+    
+    // Replace spaces with hyphens and remove special characters
+    const formattedName = set.name
+      .replace(/[&]/g, "and")
+      .replace(/[^a-zA-Z0-9- ]/g, "")
+      .replace(/ /g, "-");
+    
+    return `https://www.cardmarket.com/en/Pokemon/Expansions/${formattedName}`;
+  };
+  
+  const handleCheckPrices = () => {
+    // For now, we'll just show a toast message
+    // In the future, this would use the CardMarket API
+    toast({
+      title: "Coming Soon",
+      description: "Price checking functionality will be available soon.",
+      duration: 3000,
+    });
+  };
   
   // Sort cards by card number
   const sortedCards = set?.cards 
@@ -102,12 +127,38 @@ const CardSet = () => {
           </BreadcrumbList>
         </Breadcrumb>
         
-        <Button variant="outline" className="mb-6" asChild>
-          <Link to="/sets">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Sets
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-3 mb-6 items-center">
+          <Button variant="outline" asChild>
+            <Link to="/sets">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Sets
+            </Link>
+          </Button>
+          
+          {set && (
+            <>
+              <Button 
+                variant="default" 
+                className="gap-2"
+                asChild
+              >
+                <a href={getCardMarketUrl()} target="_blank" rel="noopener noreferrer">
+                  <ShoppingCart className="h-4 w-4" />
+                  Shop This Set
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={handleCheckPrices}
+                className="gap-2"
+              >
+                Check Set Prices
+              </Button>
+            </>
+          )}
+        </div>
         
         {isLoading ? (
           <div className="text-center py-12">
