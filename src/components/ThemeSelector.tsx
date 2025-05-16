@@ -19,7 +19,7 @@ const ThemeSelector = () => {
       value={theme} 
       onValueChange={(value) => setTheme(value as any)}
     >
-      <SelectTrigger className="w-[120px]">
+      <SelectTrigger className="w-[100px] h-9 px-3 text-sm">
         <SelectValue placeholder={t("choose_theme")} />
       </SelectTrigger>
       <SelectContent>
