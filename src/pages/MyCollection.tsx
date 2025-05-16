@@ -9,7 +9,10 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library, TrendingUp, Award } from "lucide-react";
+import { Search, Library, TrendingUp, Award, Download } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import CollectionExports from "@/components/CollectionExports";
 import {
   Select,
   SelectContent,
@@ -23,9 +26,11 @@ import { Card, CardContent } from "@/components/ui/card";
 const MyCollection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"all" | "bySet">("all");
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   
   useEffect(() => {
     if (!user) {
@@ -116,6 +121,61 @@ const MyCollection = () => {
   
   const isLoading = isLoadingIds || isLoadingCards || isLoadingSets;
   
+  // Handle export generation
+  const handleExport = async (format: 'pdf' | 'image') => {
+    if (!user || collectionCards.length === 0) {
+      toast({
+        title: "Cannot create export",
+        description: "Your collection is empty.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsExporting(true);
+    
+    try {
+      // Call the edge function to generate the export
+      const { data, error } = await supabase.functions.invoke('generate-collection-export', {
+        body: {
+          userId: user.id,
+          format,
+          cards: collectionCards.map(card => ({
+            id: card.id,
+            name: card.name,
+            number: card.number,
+            setId: card.setId,
+            setName: card.setName,
+            image: card.image
+          }))
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Export created",
+        description: "Your collection export has been created successfully."
+      });
+      
+      // Open download link if available
+      if (data.downloadUrl) {
+        window.open(data.downloadUrl, '_blank');
+      }
+    } catch (error) {
+      console.error("Error generating export:", error);
+      toast({
+        title: "Export failed",
+        description: "There was an error generating your collection export. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+  
   if (!user) {
     return null; // Redirect handled by useEffect
   }
@@ -125,7 +185,26 @@ const MyCollection = () => {
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold mb-6">My Collection</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">My Collection</h1>
+          
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              disabled={isLoading || collectionCards.length === 0}
+              onClick={() => handleExport('pdf')}
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+            
+            <CollectionExports 
+              onExport={handleExport} 
+              isExporting={isExporting} 
+            />
+          </div>
+        </div>
         
         {/* Collection stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
