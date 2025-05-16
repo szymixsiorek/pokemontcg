@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -64,6 +65,9 @@ const CardSet = () => {
     
     // Special case mapping for known sets
     const specialCaseMap: Record<string, string> = {
+      // Base Set special case
+      "Base": "Base-Set",
+      
       // Scarlet & Violet sets
       "Scarlet & Violet": "Scarlet-Violet",
       "Scarlet & Violet—Paradox Rift": "Paradox-Rift",
