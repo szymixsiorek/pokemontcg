@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -190,29 +191,29 @@ const MyCollection = () => {
       <Header />
       
       <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <h1 className="text-3xl font-bold">My Collection</h1>
           
-          <div className="flex space-x-2">
-            {/* Export dropdown button - more visible */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  <span>Export Collection</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleExport('pdf')} disabled={isExporting}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Export as PDF
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport('image')} disabled={isExporting}>
-                  <FileImage className="h-4 w-4 mr-2" />
-                  Export as Image
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+            {/* Primary Export Buttons - more visible */}
+            <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
+              <Button 
+                onClick={() => handleExport('pdf')} 
+                disabled={isExporting}
+                className="flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                Export PDF
+              </Button>
+              <Button 
+                onClick={() => handleExport('image')} 
+                disabled={isExporting}
+                className="flex items-center gap-2"
+              >
+                <FileImage className="h-4 w-4" />
+                Export Image
+              </Button>
+            </div>
             
             <CollectionExports 
               onExport={handleExport} 

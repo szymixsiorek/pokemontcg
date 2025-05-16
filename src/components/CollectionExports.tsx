@@ -136,8 +136,8 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          Manage Exports
+        <Button variant="outline" className="w-full sm:w-auto">
+          Export History
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl">
@@ -148,7 +148,7 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs defaultValue="create">
+        <Tabs defaultValue="history">
           <TabsList className="grid grid-cols-2 mb-4">
             <TabsTrigger value="create">Create Export</TabsTrigger>
             <TabsTrigger value="history">Export History</TabsTrigger>
