@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -88,7 +87,7 @@ const Header = () => {
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
-              <Link to="/profile" className="mx-2"> {/* Reduced from mx-4 to mx-2 for better spacing */}
+              <Link to="/profile">
                 <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                   <AvatarImage src={avatarUrl || undefined} />
                   <AvatarFallback className="text-xs">
@@ -134,7 +133,7 @@ const Header = () => {
           </Button>
           <ThemeSelector />
           {user && (
-            <Link to="/profile" className="mx-1.5"> {/* Reduced from mx-3 to mx-1.5 for better spacing */}
+            <Link to="/profile" className="mx-2">
               <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                 <AvatarImage src={avatarUrl || undefined} />
                 <AvatarFallback className="text-xs">
