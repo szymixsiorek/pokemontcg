@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Download, File, FileText, Trash2, LoaderCircle } from "lucide-react";
+import { Download, FileText, FileImage, Trash2, LoaderCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface Export {
@@ -136,7 +136,7 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="ml-auto">
+        <Button variant="outline">
           Manage Exports
         </Button>
       </DialogTrigger>
@@ -168,7 +168,7 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
                   <Button 
                     onClick={() => onExport('pdf')} 
                     disabled={isExporting}
-                    variant="outline"
+                    className="w-full"
                   >
                     {isExporting ? (
                       <>
@@ -176,13 +176,16 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
                         Generating...
                       </>
                     ) : (
-                      'Generate PDF'
+                      <>
+                        <Download className="mr-2 h-4 w-4" />
+                        Generate PDF
+                      </>
                     )}
                   </Button>
                 </div>
                 
                 <div className="border rounded-lg p-6 text-center hover:bg-accent transition-colors">
-                  <File className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <FileImage className="h-12 w-12 mx-auto mb-4 text-primary" />
                   <h3 className="text-lg font-medium mb-2">Image Export</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Create an image gallery of your collection.
@@ -190,7 +193,7 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
                   <Button 
                     onClick={() => onExport('image')} 
                     disabled={isExporting}
-                    variant="outline"
+                    className="w-full"
                   >
                     {isExporting ? (
                       <>
@@ -198,7 +201,10 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
                         Generating...
                       </>
                     ) : (
-                      'Generate Image'
+                      <>
+                        <Download className="mr-2 h-4 w-4" />
+                        Generate Image
+                      </>
                     )}
                   </Button>
                 </div>

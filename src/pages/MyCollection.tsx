@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +8,7 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library, TrendingUp, Award, Download } from "lucide-react";
+import { Search, Library, TrendingUp, Award, Download, FilePdf, FileImage } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import CollectionExports from "@/components/CollectionExports";
@@ -22,6 +21,12 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MyCollection = () => {
   const { user } = useAuth();
@@ -189,15 +194,25 @@ const MyCollection = () => {
           <h1 className="text-3xl font-bold">My Collection</h1>
           
           <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2"
-              disabled={isLoading || collectionCards.length === 0}
-              onClick={() => handleExport('pdf')}
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Export</span>
-            </Button>
+            {/* Export dropdown button - more visible */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  <span>Export Collection</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleExport('pdf')} disabled={isExporting}>
+                  <FilePdf className="h-4 w-4 mr-2" />
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('image')} disabled={isExporting}>
+                  <FileImage className="h-4 w-4 mr-2" />
+                  Export as Image
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <CollectionExports 
               onExport={handleExport} 
