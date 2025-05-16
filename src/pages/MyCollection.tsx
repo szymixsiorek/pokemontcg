@@ -260,7 +260,7 @@ const MyCollection = () => {
           </Card>
         </div>
         
-        {/* Search and filter */}
+        {/* Search and filter - REORGANIZED THIS SECTION */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 items-start sm:items-center">
           <div className="relative flex-grow max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -273,26 +273,28 @@ const MyCollection = () => {
             />
           </div>
           
-          <Tabs 
-            value={viewMode} 
-            onValueChange={(value) => {
-              setViewMode(value as "all" | "bySet");
-              if (value === "all") {
-                setSelectedSet(null);
-              } else if (setsWithCards.length > 0 && !selectedSet) {
-                setSelectedSet(setsWithCards[0].id);
-              }
-            }}
-            className="w-full sm:w-auto"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="all">All Cards</TabsTrigger>
-              <TabsTrigger value="bySet">By Set</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          
-          <div className="text-sm text-muted-foreground ml-auto">
-            {filteredCollectionCards.length} cards collected
+          <div className="flex items-center gap-4 ml-auto">
+            <Tabs 
+              value={viewMode} 
+              onValueChange={(value) => {
+                setViewMode(value as "all" | "bySet");
+                if (value === "all") {
+                  setSelectedSet(null);
+                } else if (setsWithCards.length > 0 && !selectedSet) {
+                  setSelectedSet(setsWithCards[0].id);
+                }
+              }}
+              className="w-auto"
+            >
+              <TabsList className="grid w-[200px] grid-cols-2">
+                <TabsTrigger value="all">All Cards</TabsTrigger>
+                <TabsTrigger value="bySet">By Set</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="text-sm text-muted-foreground">
+              {filteredCollectionCards.length} cards
+            </div>
           </div>
         </div>
         
