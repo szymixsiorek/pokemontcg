@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,7 @@ const Header = () => {
           <ThemeSelector />
           {user ? (
             <div className="flex items-center space-x-4">
-              <Link to="/profile">
+              <Link to="/profile" className="mx-4"> {/* Added equal mx-4 for horizontal centering */}
                 <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                   <AvatarImage src={avatarUrl || undefined} />
                   <AvatarFallback className="text-xs">
@@ -133,7 +134,7 @@ const Header = () => {
           </Button>
           <ThemeSelector />
           {user && (
-            <Link to="/profile" className="mx-2">
+            <Link to="/profile" className="mx-3"> {/* Added equal mx-3 for mobile horizontal centering */}
               <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                 <AvatarImage src={avatarUrl || undefined} />
                 <AvatarFallback className="text-xs">
