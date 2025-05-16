@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library, TrendingUp, Award, Download, FilePdf, FileImage } from "lucide-react";
+import { Search, Library, TrendingUp, Award, Download, FileText, FileImage } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import CollectionExports from "@/components/CollectionExports";
@@ -204,7 +204,7 @@ const MyCollection = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleExport('pdf')} disabled={isExporting}>
-                  <FilePdf className="h-4 w-4 mr-2" />
+                  <FileText className="h-4 w-4 mr-2" />
                   Export as PDF
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleExport('image')} disabled={isExporting}>
