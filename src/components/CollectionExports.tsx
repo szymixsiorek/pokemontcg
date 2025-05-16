@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileText, FileImage, Trash2, LoaderCircle } from "lucide-react";
+import { Download, History, Trash2, LoaderCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface Export {
@@ -136,8 +135,13 @@ const CollectionExports = ({ onExport, isExporting }: CollectionExportsProps) =>
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-auto">
-          Export History
+        <Button 
+          variant="outline"
+          size="sm" 
+          className="flex items-center gap-2 whitespace-nowrap"
+        >
+          <History className="h-4 w-4" />
+          History
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl">

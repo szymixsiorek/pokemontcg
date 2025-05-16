@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +8,7 @@ import Layout from "@/components/Layout";
 import PokemonCard from "@/components/PokemonCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Library, TrendingUp, Award, Download, FileText, FileImage } from "lucide-react";
+import { Search, Library, TrendingUp, Award, FileText, FileImage, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import CollectionExports from "@/components/CollectionExports";
@@ -183,33 +184,6 @@ const MyCollection = () => {
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <h1 className="text-3xl font-bold">My Collection</h1>
-          
-          <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
-            {/* Primary Export Buttons - more visible */}
-            <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
-              <Button 
-                onClick={() => handleExport('pdf')} 
-                disabled={isExporting}
-                className="flex items-center gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                Export PDF
-              </Button>
-              <Button 
-                onClick={() => handleExport('image')} 
-                disabled={isExporting}
-                className="flex items-center gap-2"
-              >
-                <FileImage className="h-4 w-4" />
-                Export Image
-              </Button>
-            </div>
-            
-            <CollectionExports 
-              onExport={handleExport} 
-              isExporting={isExporting} 
-            />
-          </div>
         </div>
         
         {/* Collection stats */}
@@ -260,7 +234,7 @@ const MyCollection = () => {
           </Card>
         </div>
         
-        {/* Search and filter - REORGANIZED THIS SECTION */}
+        {/* Search and filter with export buttons on the right */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 items-start sm:items-center">
           <div className="relative flex-grow max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -273,7 +247,8 @@ const MyCollection = () => {
             />
           </div>
           
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center space-x-3 ml-auto">
+            {/* Moved tabs here and made them smaller */}
             <Tabs 
               value={viewMode} 
               onValueChange={(value) => {
@@ -292,7 +267,35 @@ const MyCollection = () => {
               </TabsList>
             </Tabs>
             
-            <div className="text-sm text-muted-foreground">
+            {/* Export buttons moved to the right */}
+            <Button 
+              onClick={() => handleExport('pdf')} 
+              disabled={isExporting}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 whitespace-nowrap"
+            >
+              <FileText className="h-4 w-4" />
+              PDF
+            </Button>
+            
+            <Button 
+              onClick={() => handleExport('image')} 
+              disabled={isExporting}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 whitespace-nowrap"
+            >
+              <FileImage className="h-4 w-4" />
+              Image
+            </Button>
+            
+            <CollectionExports 
+              onExport={handleExport} 
+              isExporting={isExporting} 
+            />
+            
+            <div className="text-sm text-muted-foreground whitespace-nowrap">
               {filteredCollectionCards.length} cards
             </div>
           </div>
