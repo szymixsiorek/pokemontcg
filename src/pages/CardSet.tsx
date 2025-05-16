@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -59,11 +58,61 @@ const CardSet = () => {
     ? Math.round((collectedCardsCount / totalCardsCount) * 100)
     : 0;
   
-  // Format set name for CardMarket URL
+  // Enhanced CardMarket URL mapping
   const getCardMarketUrl = () => {
     if (!set) return "";
     
-    // Replace spaces with hyphens and remove special characters
+    // Special case mapping for known sets
+    const specialCaseMap: Record<string, string> = {
+      // Scarlet & Violet sets
+      "Scarlet & Violet": "Scarlet-Violet",
+      "Scarlet & Violet—Paradox Rift": "Paradox-Rift",
+      "Scarlet & Violet—Obsidian Flames": "Obsidian-Flames",
+      "Scarlet & Violet—Paldea Evolved": "Paldea-Evolved",
+      "Scarlet & Violet—151": "151",
+      "Scarlet & Violet—Temporal Forces": "Temporal-Forces",
+      "Scarlet & Violet—Paldea Fates": "Paldea-Fates",
+      "Scarlet & Violet—Twilight Masquerade": "Twilight-Masquerade",
+      "Scarlet & Violet—Whimsical Painting": "Whimsical-Painting",
+      "Crown Zenith": "Crown-Zenith",
+      "Evolving Skies": "Evolving-Skies",
+      "Astral Radiance": "Astral-Radiance",
+      "Brilliant Stars": "Brilliant-Stars",
+      "Fusion Strike": "Fusion-Strike", 
+      "Chilling Reign": "Chilling-Reign",
+      "Battle Styles": "Battle-Styles",
+      "Shining Fates": "Shining-Fates",
+      "Journey Together": "Journey-Together", 
+      "Pokemon GO": "Pokemon-GO",
+      "Lost Origin": "Lost-Origin",
+      "Silver Tempest": "Silver-Tempest",
+      "Vivid Voltage": "Vivid-Voltage",
+      "Darkness Ablaze": "Darkness-Ablaze",
+      "Rebel Clash": "Rebel-Clash",
+      "Champions Path": "Champions-Path",
+      "Cosmic Eclipse": "Cosmic-Eclipse",
+      "Hidden Fates": "Hidden-Fates",
+      "Unified Minds": "Unified-Minds",
+      "Unbroken Bonds": "Unbroken-Bonds",
+      "Team Up": "Team-Up",
+      "Lost Thunder": "Lost-Thunder",
+      "Dragon Majesty": "Dragon-Majesty",
+      "Celestial Storm": "Celestial-Storm",
+      "Forbidden Light": "Forbidden-Light",
+      "Ultra Prism": "Ultra-Prism",
+      "Crimson Invasion": "Crimson-Invasion",
+      "Shining Legends": "Shining-Legends",
+      "Burning Shadows": "Burning-Shadows",
+      "Guardians Rising": "Guardians-Rising",
+      "Sun & Moon": "Sun-Moon",
+    };
+    
+    // Check if we have a special case mapping for this set
+    if (specialCaseMap[set.name]) {
+      return `https://www.cardmarket.com/en/Pokemon/Expansions/${specialCaseMap[set.name]}`;
+    }
+    
+    // Default formatting if no special case exists
     const formattedName = set.name
       .replace(/[&]/g, "and")
       .replace(/[^a-zA-Z0-9- ]/g, "")
