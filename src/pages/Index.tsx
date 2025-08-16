@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useApi } from "@/context/ApiContext";
+import { getCardSets } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import SetCard from "@/components/SetCard";
 import Layout from "@/components/Layout";
@@ -15,7 +15,6 @@ import CardDisplayOptions, { DisplayMode, SortOrder } from "@/components/CardDis
 
 const Index = () => {
   const { t } = useLanguage();
-  const { apiService } = useApi();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<CardGroup[]>([]);
@@ -29,10 +28,10 @@ const Index = () => {
   // Use our custom hook for card search functionality
   const { searchCardsByPokemon, formatPokemonName } = useCardSearch();
   
-  // Get card sets using the current API provider
+  // Get card sets
   const { data: sets = [], isLoading } = useQuery({
-    queryKey: ['cardSets', apiService.getProviderName()],
-    queryFn: () => apiService.getCardSets()
+    queryKey: ['cardSets'],
+    queryFn: () => getCardSets()
   });
   
   // Generate daily sets selection based on current date
