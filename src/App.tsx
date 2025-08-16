@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ApiContextProvider } from "@/context/ApiContext";
+import { SidebarLayout } from "@/components/SidebarLayout";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
 import Index from "./pages/Index";
@@ -72,34 +74,38 @@ const App = () => (
         <LanguageProvider>
           <BrowserRouter>
             <AuthProvider>
-              <ThemeTransition />
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/sign-in" element={<SignIn />} />
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/auth-error" element={<AuthError />} />
-                <Route path="/sets" element={<CardSets />} />
-                <Route path="/sets/:setId" element={<CardSet />} />
-                <Route path="/donate" element={<Donate />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/about" element={<AboutUs />} />
-                <Route path="/user/:username" element={<UserProfile />} />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/my-collection" element={
-                  <ProtectedRoute>
-                    <MyCollection />
-                  </ProtectedRoute>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <ApiContextProvider>
+                <SidebarLayout>
+                  <ThemeTransition />
+                  <Toaster />
+                  <Sonner />
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/sign-in" element={<SignIn />} />
+                    <Route path="/sign-up" element={<SignUp />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/auth-error" element={<AuthError />} />
+                    <Route path="/sets" element={<CardSets />} />
+                    <Route path="/sets/:setId" element={<CardSet />} />
+                    <Route path="/donate" element={<Donate />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/user/:username" element={<UserProfile />} />
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/my-collection" element={
+                      <ProtectedRoute>
+                        <MyCollection />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </SidebarLayout>
+              </ApiContextProvider>
             </AuthProvider>
           </BrowserRouter>
         </LanguageProvider>
